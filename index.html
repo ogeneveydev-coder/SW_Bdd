@@ -6,16 +6,39 @@
   <title>Monster Search</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#000000">
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    input, button { padding: 0.5rem; margin: 0.5rem 0; }
+    #result { margin-top: 1rem; padding: 1rem; border: 1px solid #ccc; }
+  </style>
 </head>
 <body>
   <h1>Monster Search</h1>
   <p>Bienvenue dans mon appli PWA ✨</p>
+
+  <label for="monsterId">ID du monstre :</label><br>
+  <input type="text" id="monsterId" placeholder="ex: 17011">
+  <button onclick="searchMonster()">Rechercher</button>
+
+  <div id="result"></div>
 
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("sw.js")
         .then(() => console.log("Service Worker installé"))
         .catch(err => console.error("Erreur SW", err));
+    }
+
+    function searchMonster() {
+      const id = document.getElementById("monsterId").value;
+      const resultDiv = document.getElementById("result");
+
+      // Exemple : pour l’instant, juste une fausse donnée
+      if (id === "17011") {
+        resultDiv.innerHTML = "<h3>Ragdoll (Dragon Knight)</h3><p>HP: 12000, ATK: 900, DEF: 700</p>";
+      } else {
+        resultDiv.innerHTML = "<p>Aucun monstre trouvé pour l’ID " + id + "</p>";
+      }
     }
   </script>
 </body>
