@@ -10,6 +10,7 @@
     body { font-family: sans-serif; margin: 2rem; }
     input, button { padding: 0.5rem; margin: 0.5rem 0; }
     #result { margin-top: 1rem; padding: 1rem; border: 1px solid #ccc; }
+    .stat { margin: 0.2rem 0; }
   </style>
 </head>
 <body>
@@ -24,22 +25,26 @@
 
   <script>
     async function searchMonster() {
-      const id = document.getElementById("monsterId").value;
+      const id = document.getElementById("monsterId").value.trim();
       const resultDiv = document.getElementById("result");
 
       try {
-        const response = await fetch("monsters.json");
+        const response = await fetch("monsters_sw.json");
         const monsters = await response.json();
 
-        const monster = monsters.find(m => m.id === id);
+        // Chercher par com2us_id
+        const monster = monsters.find(m => m.com2us_id === id);
 
         if (monster) {
           resultDiv.innerHTML = `
             <h3>${monster.name}</h3>
-            <p>Élément: ${monster.element}</p>
-            <p>HP: ${monster.hp}</p>
-            <p>ATK: ${monster.atk}</p>
-            <p>DEF: ${monster.def}</p>
+            <p class="stat"><strong>Élément :</strong> ${monster.element}</p>
+            <p class="stat"><strong>Archétype :</strong> ${monster.archetype}</p>
+            <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars}</p>
+            <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp}</p>
+            <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack}</p>
+            <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense}</p>
+            <p class="stat"><strong>Vitesse :</strong> ${monster.speed}</p>
           `;
         } else {
           resultDiv.innerHTML = `<p>Aucun monstre trouvé pour l'ID ${id}</p>`;
