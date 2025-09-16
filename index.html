@@ -7,34 +7,15 @@
 
   <!--
     FICHIER : index.html
-    VERSION : 1.8
-    NOUVEAUTÉS v1.8 :
-      - Icônes des ÉLÉMENTS : chargées depuis le dossier local "icons/".
-      - ARCHÉTYPES : affichés en texte ("Archétype : ..."), plus d’icône.
-      - Suppression des tooltips.
+    VERSION : 2.0
+    NOUVEAUTÉS v2.0 :
+      - Styles déplacés dans "style.css".
+      - Ajout d’une animation (fade-in + montée) lors de l’affichage des cartes.
   -->
 
   <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
   <meta name="theme-color" content="#000000">
-
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 2rem; color: #222; }
-    .version { font-size: 0.9rem; color: #666; text-align: right; margin-bottom: 0.5rem; }
-    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-    .search-block { position: relative; }
-    .search-block input { width: 100%; padding: 0.5rem; margin-top: 0.25rem; border: 1px solid #ccc; border-radius: 6px; }
-    .search-block button { margin-top: 0.5rem; padding: 0.55rem 0.9rem; border-radius: 6px; border: none; background: #2b8; color: #fff; cursor: pointer; width: 100%; }
-    .suggestions { border: 1px solid #ddd; background: #fff; position: absolute; top: 60px; left: 0; right: 0; z-index: 1000; box-shadow: 0 6px 18px rgba(0,0,0,0.06); border-radius: 6px; overflow: hidden; }
-    .suggestions div { padding: 0.45rem 0.6rem; cursor: pointer; font-size: 0.95rem; color: #222; }
-    .suggestions div:hover, .suggestions .active { background: #f4f7fb; }
-    .results { margin-top: 1rem; }
-    .card { border: 1px solid #e2e8f0; padding: 0.9rem; border-radius: 10px; background: #fff; text-align: center; box-shadow: 0 2px 6px rgba(20,20,20,0.03); }
-    .card img.monster { border-radius: 8px; border: 1px solid #ddd; width: 80px; height: 80px; object-fit: contain; margin-bottom: 0.5rem; }
-    .icon { width: 24px; height: 24px; vertical-align: middle; margin: 0 5px; }
-    .stat { margin: 0.18rem 0; font-size: 0.95rem; }
-    .small { color: #666; font-size: 0.85rem; }
-    @media (max-width:900px){ .grid{grid-template-columns:1fr} }
-  </style>
 </head>
 <body>
   <div class="version" id="versionLabel">Version</div>
@@ -66,7 +47,7 @@
   </div>
 
   <script>
-    const APP_VERSION = "1.8";
+    const APP_VERSION = "2.0";
     document.getElementById("versionLabel").textContent = `Version ${APP_VERSION}`;
     let monsters = [];
     const SUGGESTION_LIMIT = 5;
@@ -121,24 +102,26 @@
         const leaderId = (monster.leader_skill || "").toString().trim();
         let leaderHtml = "";
         if (leaderId) {
-          leaderHtml = `<p class="stat"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#777"/></svg> Leader ID: ${leaderId}</p>`;
+          leaderHtml = `<div><strong>Leader Skill:</strong> ID ${leaderId}</div>`;
         }
 
         const card = document.createElement('div');
-        card.className = 'card';
+        card.className = 'card fade-in';
         card.innerHTML = `
           <img class="monster" src="${imgUrl}" alt="${monster.name}">
           <h3>${monster.name}</h3>
-          <p class="stat">
+          <p>
             ${elemIconUrl ? `<img class="icon" src="${elemIconUrl}" alt="${monster.element}">` : ""}
-            ${monster.element || "–"}
+            <span class="small">${monster.element || "–"}</span>
           </p>
           <p class="stat">Archétype : ${monster.archetype || "–"}</p>
-          <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars || "–"}</p>
-          <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp || monster.base_hp || "–"}</p>
-          <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack || monster.base_attack || "–"}</p>
-          <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense || monster.base_defense || "–"}</p>
-          <p class="stat"><strong>Vitesse :</strong> ${monster.speed || "–"}</p>
+          <div class="stat-grid">
+            <div><strong>Étoiles :</strong> ${monster.base_stars || "–"}</div>
+            <div><strong>HP :</strong> ${monster.max_lvl_hp || monster.base_hp || "–"}</div>
+            <div><strong>ATK :</strong> ${monster.max_lvl_attack || monster.base_attack || "–"}</div>
+            <div><strong>DEF :</strong> ${monster.max_lvl_defense || monster.base_defense || "–"}</div>
+            <div><strong>Vitesse :</strong> ${monster.speed || "–"}</div>
+          </div>
           ${leaderHtml}
         `;
         results.appendChild(card);
