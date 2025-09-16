@@ -9,7 +9,14 @@
   <style>
     body { font-family: sans-serif; margin: 2rem; }
     input, button { padding: 0.5rem; margin: 0.5rem 0; }
-    #result { margin-top: 1rem; padding: 1rem; border: 1px solid #ccc; }
+    #results { margin-top: 1rem; }
+    .card {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
     .stat { margin: 0.2rem 0; }
   </style>
 </head>
@@ -18,26 +25,48 @@
   <p>Bienvenue dans mon appli PWA ✨</p>
 
   <label for="monsterName">Nom du monstre :</label><br>
-  <input type="text" id="monsterName" placeholder="ex: Ragdoll">
+  <input type="text" id="monsterName" placeholder="ex: Dragon">
   <button onclick="searchMonster()">Rechercher</button>
 
-  <div id="result"></div>
+  <div id="results"></div>
 
   <script>
     async function searchMonster() {
       const name = document.getElementById("monsterName").value.trim().toLowerCase();
-      const resultDiv = document.getElementById("result");
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = ""; // reset résultats
 
       try {
         const response = await fetch("monsters_sw.json");
         const monsters = await response.json();
 
-        // Chercher par nom (insensible à la casse)
-        const monster = monsters.find(m => m.name.toLowerCase() === name);
+        // Chercher tous les monstres dont le nom contient la recherche
+        const results = monsters.filter(m => m.name.toLowerCase().includes(name));
 
-        if (monster) {
-          resultDiv.innerHTML = `
-            <h3>${monster.name}</h3>
-            <p class="stat"><strong>Élément :</strong> ${monster.element}</p>
-            <p class="stat"><strong>Archétype :</strong> ${monster.archetype}</p>
-            <p class="stat"><strong>
+        if (results.length > 0) {
+          results.forEach(monster => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+            card.innerHTML = `
+              <h3>${monster.name}</h3>
+              <p class="stat"><strong>Élément :</strong> ${monster.element}</p>
+              <p class="stat"><strong>Archétype :</strong> ${monster.archetype}</p>
+              <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars}</p>
+              <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp}</p>
+              <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack}</p>
+              <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense}</p>
+              <p class="stat"><strong>Vitesse :</strong> ${monster.speed}</p>
+            `;
+            resultsDiv.appendChild(card);
+          });
+        } else {
+          resultsDiv.innerHTML = `<p>Aucun monstre trouvé pour "${name}"</p>`;
+        }
+      } catch (err) {
+        resultsDiv.innerHTML = `<p>Erreur lors du chargement des données.</p>`;
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
