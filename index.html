@@ -4,141 +4,390 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Monster Search</title>
+
+  <!--
+    FICHIER : index.html
+    BUT : PWA perso - recherche de monstres avec autocomplétion (max 5 suggestions)
+    NOTES GÉNÉRALES :
+      - Ce fichier contient des commentaires détaillés expliquant chaque partie (HTML/CSS/JS).
+      - Conserver ces commentaires pour toutes les nouvelles versions (convention demandée).
+      - La version de l'app est définie par la constante APP_VERSION dans le script.
+      - Les images sont hotlinkées depuis Swarfarm (si tu veux offline -> télécharger et servir localement).
+      - Le JSON attendu : monsters_sw.json (doit se trouver dans le même dossier que index.html).
+  -->
+
+  <!-- manifest + theme (PWA) -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#000000">
+
   <style>
-    body { font-family: sans-serif; margin: 2rem; }
+    /* ==== Styles généraux ==== */
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 2rem; color: #222; }
+    h1 { margin: 0 0 0.25rem 0; }
+    p.lead { margin: 0 0 1rem 0; color: #555; }
+
+    /* ==== Badge version (en haut à droite) ==== */
     .version {
       font-size: 0.9rem;
       color: #666;
       text-align: right;
+      margin-bottom: 0.5rem;
     }
-    input, button { padding: 0.5rem; margin: 0.5rem 0; }
+
+    /* Input & bouton wrapper (permet position absolue des suggestions) */
+    #searchWrap { position: relative; display: inline-block; } /* wrapper pour placer la liste de suggestions */
+    input#monsterName { padding: 0.5rem 0.6rem; width: 300px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; }
+    button#searchBtn { padding: 0.55rem 0.9rem; margin-left: 0.5rem; border-radius: 6px; border: 1px solid #2b6; background: #2b8; color: #fff; cursor: pointer; }
+
+    /* ==== Suggestions ==== */
+    /* NOUVEAUTÉ v1.0 : boîte de suggestions (max 5 éléments), positionnée juste sous l'input */
     #suggestions {
-      border: 1px solid #ccc;
+      border: 1px solid #ddd;
       max-width: 300px;
       background: #fff;
       position: absolute;
+      top: 44px; /* descend juste sous l'input */
+      left: 0;
       z-index: 1000;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      border-radius: 6px;
+      overflow: hidden;
     }
     #suggestions div {
-      padding: 0.5rem;
+      padding: 0.45rem 0.6rem;
       cursor: pointer;
+      font-size: 0.95rem;
+      color: #222;
     }
-    #suggestions div:hover {
-      background: #f0f0f0;
+    /* NOUVEAUTÉ v1.1 : .active = suggestion survolée ou sélectionnée par clavier */
+    #suggestions div:hover, #suggestions .active {
+      background: #f4f7fb;
     }
-    #results { margin-top: 3rem; }
+
+    /* ==== Résultats ==== */
+    #results { margin-top: 2.2rem; }
     .card {
-      border: 1px solid #ccc;
-      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      padding: 0.9rem;
       margin-bottom: 1rem;
-      border-radius: 8px;
-      background: #f9f9f9;
+      border-radius: 10px;
+      background: #fff;
       display: flex;
       align-items: center;
       gap: 1rem;
+      box-shadow: 0 2px 6px rgba(20,20,20,0.03);
     }
     .card img {
       border-radius: 8px;
-      border: 1px solid #aaa;
+      border: 1px solid #ddd;
       background: #fff;
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
     }
     .info { flex: 1; }
-    .stat { margin: 0.2rem 0; }
+    .stat { margin: 0.18rem 0; color: #333; font-size: 0.95rem; }
+    .small { color: #666; font-size: 0.85rem; }
+
+    /* responsive */
+    @media (max-width: 420px) {
+      input#monsterName { width: 220px; }
+      #suggestions { max-width: 220px; top: 42px; }
+    }
   </style>
 </head>
 <body>
-  <!-- ✅ Numéro de version -->
-  <div class="version">Version 1.0</div>
+  <!--
+    Affichage automatique du numéro de version via JavaScript.
+    -> Ne change pas manuellement ce texte dans le HTML, modifie APP_VERSION dans le script.
+  -->
+  <div class="version" id="versionLabel">Version</div>
 
   <h1>Monster Search</h1>
-  <p>Bienvenue dans mon appli PWA ✨</p>
+  <p class="lead">Recherche rapide de monstres — suggestions instantanées (max 5)</p>
 
-  <label for="monsterName">Nom du monstre :</label><br>
-  <input type="text" id="monsterName" placeholder="ex: Dragon">
-  <div id="suggestions"></div>
+  <!-- Zone recherche : wrapper pour positionner suggestions juste sous l'input -->
+  <div id="searchWrap">
+    <label for="monsterName" class="small">Nom du monstre :</label><br>
+    <!--
+      Input principal :
+        - on 'input' on met à jour les suggestions (touche par touche)
+        - on 'keydown' on gère Enter et navigation clavier (flèches) - NOUVEAUTÉ v1.1
+    -->
+    <input type="text" id="monsterName" placeholder="ex: Ragdoll" aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false">
+    <!-- Conteneur pour suggestions (rempli dynamiquement par JS) -->
+    <div id="suggestions" aria-hidden="true"></div>
+  </div>
+
   <button id="searchBtn">Rechercher</button>
 
-  <div id="results"></div>
+  <!-- Résultats -->
+  <div id="results" aria-live="polite"></div>
 
   <script>
-    let monsters = [];
+    /* ============================================
+       CONFIGURATION / VERSION (changer ici si besoin)
+       ============================================ */
+    const APP_VERSION = '1.1'; 
+    /* => Modifie uniquement APP_VERSION pour mettre à jour la version affichée
+       (affichée en haut à droite et logguée en console). */
 
+    /* ============================================
+       VARIABLES GLOBALES (simple usage local)
+       ============================================ */
+    let monsters = [];          // contiendra le tableau du JSON (monsters_sw.json)
+    const SUGGESTION_LIMIT = 5; // NOUVEAUTÉ : limite des suggestions affichées
+
+    /* ID des éléments DOM que l'on réutilise souvent */
+    const inputEl = document.getElementById('monsterName');
+    const suggestionsEl = document.getElementById('suggestions');
+    const resultsEl = document.getElementById('results');
+    const versionLabelEl = document.getElementById('versionLabel');
+
+    /* NOUVEAUTÉ v1.1 : index de la suggestion active (pour navigation clavier) */
+    let activeSuggestionIndex = -1;
+
+    /* ============================================
+       INITIALISATION UI
+       ============================================ */
+    // Affiche la version automatiquement (évite double modification)
+    versionLabelEl.textContent = `Version ${APP_VERSION}`;
+
+    // Charger les données JSON au démarrage (une seule fois)
+    // COMMENTAIRE : on garde le fetch simple ; si le fichier est gros, on peut paginer/charger à la demande.
     async function loadMonsters() {
       try {
-        const response = await fetch("monsters_sw.json");
-        monsters = await response.json();
+        const res = await fetch('monsters_sw.json');
+        monsters = await res.json(); // EXP : monsters est un tableau d'objets
+        console.log(`✅ Monster Search v${APP_VERSION} chargé avec ${monsters.length} monstres.`);
       } catch (err) {
-        console.error("Erreur de chargement du JSON:", err);
+        console.error('Erreur lors du chargement de monsters_sw.json :', err);
+        resultsEl.innerHTML = '<p class="small">Impossible de charger les données. Vérifie monsters_sw.json</p>';
       }
     }
 
+    /* ============================================
+       SUGGESTIONS (affichage dynamique en dessous du champ)
+       ============================================ */
+    /**
+     * updateSuggestions()
+     *  - lit la valeur de l'input
+     *  - filtre le tableau 'monsters' (sans casse)
+     *  - limite le résultat à SUGGESTION_LIMIT
+     *  - injecte des <div> cliquables dans #suggestions
+     *
+     * Remarques :
+     *  - .includes() : correspondance partielle (utile pour 'rag' -> 'Ragdoll')
+     *  - on évite de toucher au DOM si input vide pour performance
+     */
     function updateSuggestions() {
-      const input = document.getElementById("monsterName").value.trim().toLowerCase();
-      const suggestionsDiv = document.getElementById("suggestions");
-      suggestionsDiv.innerHTML = "";
+      const q = inputEl.value.trim().toLowerCase();
 
-      if (!input) return;
+      // Vider l'ancienne liste
+      suggestionsEl.innerHTML = '';
+      suggestionsEl.setAttribute('aria-hidden', 'true');
+      inputEl.setAttribute('aria-expanded', 'false');
 
+      // Reset index de navigation clavier (nouveauté v1.1)
+      activeSuggestionIndex = -1;
+
+      if (!q) return; // pas de suggestions si champ vide
+
+      // Filtre simple (insensible à la casse), garde seulement les N premiers
       const matches = monsters
-        .filter(m => m.name && m.name.toLowerCase().includes(input))
-        .slice(0, 5);
+        .filter(m => m.name && m.name.toLowerCase().includes(q))
+        .slice(0, SUGGESTION_LIMIT);
 
-      matches.forEach(m => {
-        const div = document.createElement("div");
-        div.textContent = m.name;
-        div.addEventListener("click", () => {
-          document.getElementById("monsterName").value = m.name;
-          suggestionsDiv.innerHTML = "";
-          searchMonster();
+      // Si aucune correspondance, on ne montre rien
+      if (matches.length === 0) return;
+
+      // Construire la liste de suggestions et l'afficher
+      suggestionsEl.setAttribute('aria-hidden', 'false');
+      inputEl.setAttribute('aria-expanded', 'true');
+
+      matches.forEach((m, idx) => {
+        const div = document.createElement('div');
+        // Affiche le nom et (optionnel) l'élément entre parenthèses pour plus d'infos.
+        div.textContent = `${m.name} ${m.element ? '(' + m.element + ')' : ''}`;
+        div.setAttribute('role', 'option');
+        div.dataset.index = idx;
+
+        // Quand l'utilisateur clique sur une suggestion :
+        // 1) remplir l'input, 2) vider suggestions, 3) lancer la recherche
+        div.addEventListener('click', () => {
+          inputEl.value = m.name;
+          suggestionsEl.innerHTML = '';
+          suggestionsEl.setAttribute('aria-hidden', 'true');
+          inputEl.setAttribute('aria-expanded', 'false');
+          searchMonster(); // lancement direct (pratique mobile/tactile)
         });
-        suggestionsDiv.appendChild(div);
+
+        suggestionsEl.appendChild(div);
       });
     }
 
+    /* ============================================
+       RECHERCHE ET RENDU DES RÉSULTATS
+       ============================================ */
+    /**
+     * searchMonster()
+     *  - lit le nom saisi
+     *  - filtre 'monsters' sur le nom (insensible à la casse)
+     *  - pour chaque résultat : crée une "card" HTML avec image + stats
+     *
+     * ATTENTION / REMARQUES :
+     *  - Les images sont hotlinkées depuis Swarfarm. Si le hotlinking est bloqué,
+     *    les images peuvent ne pas s'afficher — solution : télécharger les images et les servir localement.
+     *  - Si le JSON est très volumineux, envisager une recherche côté serveur ou un index côté client.
+     */
     async function searchMonster() {
-      const name = document.getElementById("monsterName").value.trim().toLowerCase();
-      const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = "";
+      const q = inputEl.value.trim().toLowerCase();
+      resultsEl.innerHTML = ''; // supprimer anciens résultats
 
-      const results = monsters.filter(m => m.name && m.name.toLowerCase().includes(name));
-
-      if (results.length > 0) {
-        results.forEach(monster => {
-          const card = document.createElement("div");
-          card.classList.add("card");
-          card.innerHTML = `
-            <img src="https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}" 
-                 alt="${monster.name}" width="80" height="80">
-            <div class="info">
-              <h3>${monster.name}</h3>
-              <p class="stat"><strong>Élément :</strong> ${monster.element}</p>
-              <p class="stat"><strong>Archétype :</strong> ${monster.archetype}</p>
-              <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars}</p>
-              <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp}</p>
-              <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack}</p>
-              <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense}</p>
-              <p class="stat"><strong>Vitesse :</strong> ${monster.speed}</p>
-            </div>
-          `;
-          resultsDiv.appendChild(card);
-        });
-      } else {
-        resultsDiv.innerHTML = `<p>Aucun monstre trouvé pour "${name}"</p>`;
+      if (!q) {
+        resultsEl.innerHTML = '<p class="small">Tape un nom ou un mot-clé pour rechercher.</p>';
+        return;
       }
+
+      // Filtrer (correspondance partielle)
+      const found = monsters.filter(m => m.name && m.name.toLowerCase().includes(q));
+
+      if (found.length === 0) {
+        resultsEl.innerHTML = `<p>Aucun monstre trouvé pour "<strong>${q}</strong>"</p>`;
+        return;
+      }
+
+      // Pour chaque monstre trouvé, on crée une carte lisible
+      // NOTE : on pourrait limiter le nombre de résultats affichés si nécessaire
+      found.forEach(monster => {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        // Construire URL de l'image sur Swarfarm (BASE_URL + image_filename)
+        // Si tu décides de stocker les images localement, remplace cette URL par "images/<filename>"
+        const imageUrl = monster.image_filename
+          ? `https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}`
+          : ''; // si pas de filename on laisse vide
+
+        // HTML de la carte : image à gauche + détails à droite
+        card.innerHTML = `
+          <img src="${imageUrl}" alt="${monster.name}" loading="lazy" width="80" height="80">
+          <div class="info">
+            <h3 style="margin:0;">${monster.name}</h3>
+            <div class="small">ID: ${monster.com2us_id || monster.pk || '–'}</div>
+            <p class="stat"><strong>Élément :</strong> ${monster.element || '–'}</p>
+            <p class="stat"><strong>Archétype :</strong> ${monster.archetype || '–'}</p>
+            <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars || '–'}</p>
+            <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp || monster.base_hp || '–'}</p>
+            <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack || monster.base_attack || '–'}</p>
+            <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense || monster.base_defense || '–'}</p>
+            <p class="stat"><strong>Vitesse :</strong> ${monster.speed || '–'}</p>
+          </div>
+        `;
+
+        resultsEl.appendChild(card);
+      });
     }
 
-    document.getElementById("monsterName").addEventListener("input", updateSuggestions);
-    document.getElementById("searchBtn").addEventListener("click", searchMonster);
-    document.getElementById("monsterName").addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        document.getElementById("suggestions").innerHTML = "";
+    /* ============================================
+       GESTION DES ÉVÉNEMENTS (interaction utilisateur)
+       ============================================ */
+
+    // Quand l'utilisateur tape dans l'input -> mise à jour live des suggestions
+    // NOUVEAUTÉ v1.0 : 'input' déclenche updateSuggestions pour suggestions dynamiques
+    inputEl.addEventListener('input', updateSuggestions);
+
+    // Lancer la recherche si l'utilisateur clique sur le bouton
+    document.getElementById('searchBtn').addEventListener('click', () => {
+      // nettoyer l'UI de suggestions pour garder l'affichage propre
+      suggestionsEl.innerHTML = '';
+      suggestionsEl.setAttribute('aria-hidden', 'true');
+      inputEl.setAttribute('aria-expanded', 'false');
+      searchMonster();
+    });
+
+    /* NOUVEAUTÉ v1.1 : gestion du clavier dans l’input
+       - ArrowDown / ArrowUp : navigue entre suggestions (modifie activeSuggestionIndex)
+       - Enter : si une suggestion est active -> sélectionne-la ; puis lance la recherche
+       - Escape : ferme la liste des suggestions
+       Remarque : on utilise 'keydown' pour capter les touches de navigation avant leur traitement par le navigateur.
+    */
+    inputEl.addEventListener('keydown', function(e) {
+      const items = suggestionsEl.querySelectorAll('div');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault(); // éviter le déplacement du caret dans l'input
+        if (items.length > 0) {
+          activeSuggestionIndex = (activeSuggestionIndex + 1) % items.length;
+          setActive(items);
+        }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (items.length > 0) {
+          activeSuggestionIndex = (activeSuggestionIndex - 1 + items.length) % items.length;
+          setActive(items);
+        }
+      } else if (e.key === 'Enter') {
+        e.preventDefault(); // empêche soumission involontaire
+        if (activeSuggestionIndex >= 0 && items[activeSuggestionIndex]) {
+          // Si une suggestion est active, on la choisit
+          inputEl.value = items[activeSuggestionIndex].textContent;
+          // fermer la liste pour un rendu propre
+          suggestionsEl.innerHTML = '';
+          suggestionsEl.setAttribute('aria-hidden', 'true');
+          inputEl.setAttribute('aria-expanded', 'false');
+          activeSuggestionIndex = -1;
+        }
+        // Lancer la recherche (même si aucune suggestion active)
         searchMonster();
+      } else if (e.key === 'Escape') {
+        // Fermer proprement la liste des suggestions
+        suggestionsEl.innerHTML = '';
+        suggestionsEl.setAttribute('aria-hidden', 'true');
+        inputEl.setAttribute('aria-expanded', 'false');
+        activeSuggestionIndex = -1;
       }
     });
 
+    /* Helper : appliquer la classe 'active' à la suggestion courante (pour l'UI) */
+    function setActive(items) {
+      items.forEach(el => el.classList.remove('active'));
+      if (activeSuggestionIndex >= 0 && items[activeSuggestionIndex]) {
+        items[activeSuggestionIndex].classList.add('active');
+        // Optionnel : scroll dans la liste si elle dépasse la zone visible
+        const el = items[activeSuggestionIndex];
+        if (el.scrollIntoView) el.scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    // Clic à l'extérieur : fermer la liste de suggestions (comportement UX attendu)
+    document.addEventListener('click', (ev) => {
+      // si le clic n'est pas dans le wrap de recherche -> fermer suggestions
+      if (!document.getElementById('searchWrap').contains(ev.target)) {
+        suggestionsEl.innerHTML = '';
+        suggestionsEl.setAttribute('aria-hidden', 'true');
+        inputEl.setAttribute('aria-expanded', 'false');
+        activeSuggestionIndex = -1;
+      }
+    });
+
+    /* ============================================
+       DÉMARRAGE : charger les monstres au chargement de la page
+       ============================================ */
     loadMonsters();
+
+    /* ============================================
+       COMMENTAIRES / SUGGESTIONS D'ÉVOLUTION (notes pour toi)
+       ============================================
+       - Si le JSON est énorme (> plusieurs Mo), envisager :
+         * Indexer côté client (Trie + Map de noms) pour des recherches très rapides,
+         * OU effectuer la recherche côté serveur (API) et ne charger que les résultats.
+       - Pour l'Offline complet : télécharge les images et référence-les localement (images/..)
+         puis ajoute-les dans sw.js au cache pour usage hors-ligne.
+       - Amélioration possible : ajouter un léger "debounce" sur updateSuggestions pour réduire
+         le nombre de calculs lors d'une frappe rapide (ex: 150ms).
+       - Amélioration accessibilité : gérer focus, aria-activedescendant pour la navigation clavier.
+       - Tous les commentaires "NOUVEAUTÉ" indiquent les changements apportés par version.
+    ============================================ */
   </script>
 </body>
 </html>
