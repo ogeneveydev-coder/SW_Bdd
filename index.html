@@ -16,7 +16,16 @@
       margin-bottom: 1rem;
       border-radius: 8px;
       background: #f9f9f9;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
     }
+    .card img {
+      border-radius: 8px;
+      border: 1px solid #aaa;
+      background: #fff;
+    }
+    .info { flex: 1; }
     .stat { margin: 0.2rem 0; }
   </style>
 </head>
@@ -25,7 +34,7 @@
   <p>Bienvenue dans mon appli PWA ✨</p>
 
   <label for="monsterName">Nom du monstre :</label><br>
-  <input type="text" id="monsterName" placeholder="ex: Ragdoll">
+  <input type="text" id="monsterName" placeholder="ex: Dragon">
   <button onclick="searchMonster()">Rechercher</button>
 
   <div id="results"></div>
@@ -40,7 +49,7 @@
         const response = await fetch("monsters_sw.json");
         const monsters = await response.json();
 
-        // Chercher tous les monstres dont le nom contient le texte saisi
+        // Filtrer par mot-clé dans le nom
         const results = monsters.filter(m => m.name && m.name.toLowerCase().includes(name));
 
         if (results.length > 0) {
@@ -48,14 +57,18 @@
             const card = document.createElement("div");
             card.classList.add("card");
             card.innerHTML = `
-              <h3>${monster.name}</h3>
-              <p class="stat"><strong>Élément :</strong> ${monster.element}</p>
-              <p class="stat"><strong>Archétype :</strong> ${monster.archetype}</p>
-              <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars}</p>
-              <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp}</p>
-              <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack}</p>
-              <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense}</p>
-              <p class="stat"><strong>Vitesse :</strong> ${monster.speed}</p>
+              <img src="https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}" 
+                   alt="${monster.name}" width="80" height="80">
+              <div class="info">
+                <h3>${monster.name}</h3>
+                <p class="stat"><strong>Élément :</strong> ${monster.element}</p>
+                <p class="stat"><strong>Archétype :</strong> ${monster.archetype}</p>
+                <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars}</p>
+                <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp}</p>
+                <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack}</p>
+                <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense}</p>
+                <p class="stat"><strong>Vitesse :</strong> ${monster.speed}</p>
+              </div>
             `;
             resultsDiv.appendChild(card);
           });
