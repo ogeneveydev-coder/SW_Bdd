@@ -1,15 +1,2 @@
-self.addEventListener("install", (e) => {
-  e.waitUntil(
-    caches.open("monster-cache").then((cache) => {
-      return cache.addAll(["/", "/index.html", "/monsters.json"]);
-    })
-  );
-});
-
-self.addEventListener("fetch", (e) => {
-  e.respondWith(
-    caches.match(e.request).then((response) => {
-      return response || fetch(e.request);
-    })
-  );
-});
+self.addEventListener('install', (e) => { console.log('Service Worker installé.'); });
+self.addEventListener('fetch', (e) => {});
