@@ -9,7 +9,25 @@
   <style>
     body { font-family: sans-serif; margin: 2rem; }
     input, button { padding: 0.5rem; margin: 0.5rem 0; }
-    #results { margin-top: 1rem; }
+
+    /* Zone des suggestions */
+    #suggestions {
+      border: 1px solid #ccc;
+      max-width: 300px;
+      background: #fff;
+      position: absolute;  /* pour apparaître juste sous l'input */
+      z-index: 1000;
+    }
+    #suggestions div {
+      padding: 0.5rem;
+      cursor: pointer;
+    }
+    #suggestions div:hover {
+      background: #f0f0f0;
+    }
+
+    /* Zone des résultats */
+    #results { margin-top: 3rem; }
     .card {
       border: 1px solid #ccc;
       padding: 1rem;
@@ -33,48 +51,83 @@
   <h1>Monster Search</h1>
   <p>Bienvenue dans mon appli PWA ✨</p>
 
+  <!-- Zone de recherche -->
   <label for="monsterName">Nom du monstre :</label><br>
-  <input type="text" id="monsterName" list="monsterSuggestions" placeholder="ex: Dragon">
-  <datalist id="monsterSuggestions"></datalist>
+  <input type="text" id="monsterName" placeholder="ex: Dragon">
+  <!-- Suggestions dynamiques -->
+  <div id="suggestions"></div>
+  <!-- Bouton de recherche -->
   <button id="searchBtn">Rechercher</button>
 
+  <!-- Résultats affichés ici -->
   <div id="results"></div>
 
   <script>
-    let monsters = [];
+    let monsters = []; // tableau qui contiendra tous les monstres du JSON
 
-    // Charger les données JSON une seule fois au démarrage
+    /**
+     * Charger le fichier JSON contenant tous les monstres
+     * -> Exécuté au démarrage de la page
+     */
     async function loadMonsters() {
       try {
-        const response = await fetch("monsters_sw.json");
-        monsters = await response.json();
-
-        // Remplir le <datalist> avec tous les noms
-        const datalist = document.getElementById("monsterSuggestions");
-        monsters.forEach(m => {
-          if (m.name) {
-            const option = document.createElement("option");
-            option.value = m.name;
-            datalist.appendChild(option);
-          }
-        });
+        const response = await fetch("monsters_sw.json"); // lire le fichier JSON
+        monsters = await response.json();                 // convertir en objet JS
       } catch (err) {
         console.error("Erreur de chargement du JSON:", err);
       }
     }
 
+    /**
+     * Mettre à jour les suggestions en fonction de ce que l'utilisateur tape
+     */
+    function updateSuggestions() {
+      const input = document.getElementById("monsterName").value.trim().toLowerCase();
+      const suggestionsDiv = document.getElementById("suggestions");
+      suggestionsDiv.innerHTML = ""; // effacer les anciennes suggestions
+
+      if (!input) return; // si rien tapé -> pas de suggestions
+
+      // Chercher les monstres dont le nom contient le texte saisi
+      const matches = monsters
+        .filter(m => m.name && m.name.toLowerCase().includes(input))
+        .slice(0, 5); // garder seulement les 5 premiers
+
+      // Créer un <div> par suggestion
+      matches.forEach(m => {
+        const div = document.createElement("div");
+        div.textContent = m.name; // afficher le nom du monstre
+
+        // Si on clique sur une suggestion :
+        div.addEventListener("click", () => {
+          document.getElementById("monsterName").value = m.name; // remplir le champ
+          suggestionsDiv.innerHTML = "";                        // effacer les suggestions
+          searchMonster();                                      // lancer la recherche
+        });
+
+        // Ajouter cette suggestion dans la liste
+        suggestionsDiv.appendChild(div);
+      });
+    }
+
+    /**
+     * Rechercher et afficher les monstres correspondant au texte saisi
+     */
     async function searchMonster() {
       const name = document.getElementById("monsterName").value.trim().toLowerCase();
       const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = "";
+      resultsDiv.innerHTML = ""; // nettoyer les anciens résultats
 
-      // Chercher par mot-clé dans les noms
+      // Chercher les monstres correspondant au texte
       const results = monsters.filter(m => m.name && m.name.toLowerCase().includes(name));
 
       if (results.length > 0) {
+        // Pour chaque monstre trouvé -> créer une "carte"
         results.forEach(monster => {
           const card = document.createElement("div");
           card.classList.add("card");
+
+          // HTML de la carte
           card.innerHTML = `
             <img src="https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}" 
                  alt="${monster.name}" width="80" height="80">
@@ -96,17 +149,21 @@
       }
     }
 
-    // Lancer recherche si clic bouton
+    // 🔹 Quand on tape dans l'input -> mettre à jour les suggestions
+    document.getElementById("monsterName").addEventListener("input", updateSuggestions);
+
+    // 🔹 Quand on clique sur le bouton -> lancer la recherche
     document.getElementById("searchBtn").addEventListener("click", searchMonster);
 
-    // Lancer recherche si Enter pressé
+    // 🔹 Quand on appuie sur Enter dans l'input -> lancer la recherche
     document.getElementById("monsterName").addEventListener("keypress", function(e) {
       if (e.key === "Enter") {
-        searchMonster();
+        document.getElementById("suggestions").innerHTML = ""; // effacer suggestions
+        searchMonster(); // lancer recherche
       }
     });
 
-    // Charger les monstres au démarrage
+    // Charger la liste des monstres au lancement
     loadMonsters();
   </script>
 </body>
