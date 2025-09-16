@@ -7,10 +7,10 @@
 
   <!--
     FICHIER : index.html
-    VERSION : 2.4
-    NOUVEAUTÉS v2.4 :
-      - Autocomplétion collée directement sous la zone de recherche (alignement parfait).
-      - Suppression de la ligne "Archétype" affichée sous la carte.
+    VERSION : 2.5
+    NOUVEAUTÉS v2.5 :
+      - Harmonisation des largeurs : la carte a désormais la même largeur que la zone de recherche (90%).
+      - Centrage de l’ensemble (input + carte) dans chaque bloc.
   -->
 
   <link rel="manifest" href="manifest.json">
@@ -47,7 +47,7 @@
   </div>
 
   <script>
-    const APP_VERSION = "2.4";
+    const APP_VERSION = "2.5";
     document.getElementById("versionLabel").textContent = `Version ${APP_VERSION}`;
     let monsters = [];
     const SUGGESTION_LIMIT = 5;
