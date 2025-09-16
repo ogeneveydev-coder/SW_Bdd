@@ -20,7 +20,7 @@ p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
 }
 .search-block label { font-size: 0.9rem; color: #ddd; font-weight: 500; }
 .search-block input {
-  width: 100%;
+  width: 90%; /* réduit pour ne pas dépasser de la carte */
   padding: 0.45rem 0.7rem;
   margin-top: 0.4rem;
   border: 1px solid #444;
@@ -36,9 +36,9 @@ p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
   border: none;
   background: #4a90e2;
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
-  display: inline-block;
+  display: inline-block; /* plus large */
   transition: background 0.2s;
 }
 .search-block button:hover { background: #357ab7; }
@@ -47,9 +47,9 @@ p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
   border: 1px solid #555;
   background: #2a2a3d;
   position: absolute;
-  top: 70px; /* collé juste en dessous de l’input */
+  top: calc(100% + 4px); /* colle directement sous l’input */
   left: 0;
-  right: 0;
+  width: 90%; /* suit la largeur de l’input */
   z-index: 1000;
   box-shadow: 0 6px 18px rgba(0,0,0,0.5);
   border-radius: 6px;
@@ -106,13 +106,6 @@ p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
   animation: fadeInUp 0.4s ease forwards;
 }
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
- 
