@@ -34,52 +34,80 @@
   <p>Bienvenue dans mon appli PWA ✨</p>
 
   <label for="monsterName">Nom du monstre :</label><br>
-  <input type="text" id="monsterName" placeholder="ex: Dragon">
-  <button onclick="searchMonster()">Rechercher</button>
+  <input type="text" id="monsterName" list="monsterSuggestions" placeholder="ex: Dragon">
+  <datalist id="monsterSuggestions"></datalist>
+  <button id="searchBtn">Rechercher</button>
 
   <div id="results"></div>
 
   <script>
+    let monsters = [];
+
+    // Charger les données JSON une seule fois au démarrage
+    async function loadMonsters() {
+      try {
+        const response = await fetch("monsters_sw.json");
+        monsters = await response.json();
+
+        // Remplir le <datalist> avec tous les noms
+        const datalist = document.getElementById("monsterSuggestions");
+        monsters.forEach(m => {
+          if (m.name) {
+            const option = document.createElement("option");
+            option.value = m.name;
+            datalist.appendChild(option);
+          }
+        });
+      } catch (err) {
+        console.error("Erreur de chargement du JSON:", err);
+      }
+    }
+
     async function searchMonster() {
       const name = document.getElementById("monsterName").value.trim().toLowerCase();
       const resultsDiv = document.getElementById("results");
       resultsDiv.innerHTML = "";
 
-      try {
-        const response = await fetch("monsters_sw.json");
-        const monsters = await response.json();
+      // Chercher par mot-clé dans les noms
+      const results = monsters.filter(m => m.name && m.name.toLowerCase().includes(name));
 
-        // Filtrer par mot-clé dans le nom
-        const results = monsters.filter(m => m.name && m.name.toLowerCase().includes(name));
-
-        if (results.length > 0) {
-          results.forEach(monster => {
-            const card = document.createElement("div");
-            card.classList.add("card");
-            card.innerHTML = `
-              <img src="https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}" 
-                   alt="${monster.name}" width="80" height="80">
-              <div class="info">
-                <h3>${monster.name}</h3>
-                <p class="stat"><strong>Élément :</strong> ${monster.element}</p>
-                <p class="stat"><strong>Archétype :</strong> ${monster.archetype}</p>
-                <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars}</p>
-                <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp}</p>
-                <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack}</p>
-                <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense}</p>
-                <p class="stat"><strong>Vitesse :</strong> ${monster.speed}</p>
-              </div>
-            `;
-            resultsDiv.appendChild(card);
-          });
-        } else {
-          resultsDiv.innerHTML = `<p>Aucun monstre trouvé pour "${name}"</p>`;
-        }
-      } catch (err) {
-        resultsDiv.innerHTML = `<p>Erreur lors du chargement des données.</p>`;
-        console.error(err);
+      if (results.length > 0) {
+        results.forEach(monster => {
+          const card = document.createElement("div");
+          card.classList.add("card");
+          card.innerHTML = `
+            <img src="https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}" 
+                 alt="${monster.name}" width="80" height="80">
+            <div class="info">
+              <h3>${monster.name}</h3>
+              <p class="stat"><strong>Élément :</strong> ${monster.element}</p>
+              <p class="stat"><strong>Archétype :</strong> ${monster.archetype}</p>
+              <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars}</p>
+              <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp}</p>
+              <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack}</p>
+              <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense}</p>
+              <p class="stat"><strong>Vitesse :</strong> ${monster.speed}</p>
+            </div>
+          `;
+          resultsDiv.appendChild(card);
+        });
+      } else {
+        resultsDiv.innerHTML = `<p>Aucun monstre trouvé pour "${name}"</p>`;
       }
     }
+
+    // Lancer recherche si clic bouton
+    document.getElementById("searchBtn").addEventListener("click", searchMonster);
+
+    // Lancer recherche si Enter pressé
+    document.getElementById("monsterName").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        searchMonster();
+      }
+    });
+
+    // Charger les monstres au démarrage
+    loadMonsters();
   </script>
 </body>
 </html>
