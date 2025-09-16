@@ -7,10 +7,14 @@
 
   <!--
     FICHIER : index.html
-    VERSION : 2.0
-    NOUVEAUTÉS v2.0 :
-      - Styles déplacés dans "style.css".
-      - Ajout d’une animation (fade-in + montée) lors de l’affichage des cartes.
+    VERSION : 2.1
+    NOUVEAUTÉS v2.1 :
+      - Un monstre choisi ne peut plus être sélectionné dans les autres recherches.
+      - Zone de recherche plus petite, mieux proportionnée avec la carte.
+      - Thème sombre avec cartes claires et ombres plus fortes.
+      - Suggestions collées à la zone de recherche.
+      - Bouton recherche réduit (plus de 100% de largeur).
+      - Suppression de la ligne parasite dans le bouton.
   -->
 
   <link rel="manifest" href="manifest.json">
@@ -47,10 +51,13 @@
   </div>
 
   <script>
-    const APP_VERSION = "2.0";
+    const APP_VERSION = "2.1";
     document.getElementById("versionLabel").textContent = `Version ${APP_VERSION}`;
     let monsters = [];
     const SUGGESTION_LIMIT = 5;
+
+    // Liste des monstres déjà sélectionnés pour éviter les doublons
+    const selectedMonsters = new Set();
 
     async function loadMonsters() {
       try {
@@ -74,7 +81,11 @@
         const q = input.value.trim().toLowerCase();
         clearSuggestions();
         if (!q) return;
-        const matches = monsters.filter(m => m.name && m.name.toLowerCase().includes(q)).slice(0, SUGGESTION_LIMIT);
+        const matches = monsters
+          .filter(m => m.name && m.name.toLowerCase().includes(q))
+          .filter(m => !selectedMonsters.has(m.name)) // évite les doublons
+          .slice(0, SUGGESTION_LIMIT);
+
         matches.forEach((m, idx) => {
           const div = document.createElement("div");
           div.textContent = m.name;
@@ -92,9 +103,12 @@
         const q = input.value.trim().toLowerCase();
         results.innerHTML = "";
         if (!q) return;
-        const found = monsters.filter(m => m.name && m.name.toLowerCase().includes(q));
+        const found = monsters.filter(m => m.name && m.name.toLowerCase() === q);
         if (found.length === 0) { results.innerHTML = `<p>Aucun monstre trouvé</p>`; return; }
         const monster = found[0];
+
+        // Ajoute le monstre choisi dans la liste des "déjà utilisés"
+        selectedMonsters.add(monster.name);
 
         const imgUrl = monster.image_filename ? `https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}` : "";
         const elemIconUrl = monster.element ? `icons/${monster.element.toLowerCase()}.png` : "";
