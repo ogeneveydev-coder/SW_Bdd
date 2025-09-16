@@ -25,7 +25,7 @@
   <p>Bienvenue dans mon appli PWA ✨</p>
 
   <label for="monsterName">Nom du monstre :</label><br>
-  <input type="text" id="monsterName" placeholder="ex: Dragon">
+  <input type="text" id="monsterName" placeholder="ex: Ragdoll">
   <button onclick="searchMonster()">Rechercher</button>
 
   <div id="results"></div>
@@ -34,14 +34,14 @@
     async function searchMonster() {
       const name = document.getElementById("monsterName").value.trim().toLowerCase();
       const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = ""; // reset résultats
+      resultsDiv.innerHTML = "";
 
       try {
         const response = await fetch("monsters_sw.json");
         const monsters = await response.json();
 
-        // Chercher tous les monstres dont le nom contient la recherche
-        const results = monsters.filter(m => m.name.toLowerCase().includes(name));
+        // Chercher tous les monstres dont le nom contient le texte saisi
+        const results = monsters.filter(m => m.name && m.name.toLowerCase().includes(name));
 
         if (results.length > 0) {
           results.forEach(monster => {
