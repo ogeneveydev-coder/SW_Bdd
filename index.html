@@ -113,4 +113,32 @@
                  alt="${monster.name}" width="80" height="80">
             <div class="info">
               <h3>${monster.name}</h3>
-              <p class="stat"><strong>Élément :</strong> ${mons
+              <p class="stat"><strong>Élément :</strong> ${monster.element}</p>
+              <p class="stat"><strong>Archétype :</strong> ${monster.archetype}</p>
+              <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars}</p>
+              <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp}</p>
+              <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack}</p>
+              <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense}</p>
+              <p class="stat"><strong>Vitesse :</strong> ${monster.speed}</p>
+            </div>
+          `;
+          resultsDiv.appendChild(card);
+        });
+      } else {
+        resultsDiv.innerHTML = `<p>Aucun monstre trouvé pour "${name}"</p>`;
+      }
+    }
+
+    document.getElementById("monsterName").addEventListener("input", updateSuggestions);
+    document.getElementById("searchBtn").addEventListener("click", searchMonster);
+    document.getElementById("monsterName").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        document.getElementById("suggestions").innerHTML = "";
+        searchMonster();
+      }
+    });
+
+    loadMonsters();
+  </script>
+</body>
+</html>
