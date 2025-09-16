@@ -7,14 +7,11 @@
 
   <!--
     FICHIER : index.html
-    VERSION : 1.7
-    NOUVEAUTÉS v1.7 :
-      - Utilisation des icônes OFFICIELLES Swarfarm pour les ARCHÉTYPES
-        (attack, defense, hp, support, material, general).
-      - Conservé : tooltips (title) au survol.
-    NOTES :
-      - On affiche toujours l’élément avec son icône Swarfarm.
-      - Le leader skill reste affiché en fallback (id ou icône générique), à améliorer plus tard.
+    VERSION : 1.8
+    NOUVEAUTÉS v1.8 :
+      - Icônes des ÉLÉMENTS : chargées depuis le dossier local "icons/".
+      - ARCHÉTYPES : affichés en texte ("Archétype : ..."), plus d’icône.
+      - Suppression des tooltips.
   -->
 
   <link rel="manifest" href="manifest.json">
@@ -33,7 +30,7 @@
     .results { margin-top: 1rem; }
     .card { border: 1px solid #e2e8f0; padding: 0.9rem; border-radius: 10px; background: #fff; text-align: center; box-shadow: 0 2px 6px rgba(20,20,20,0.03); }
     .card img.monster { border-radius: 8px; border: 1px solid #ddd; width: 80px; height: 80px; object-fit: contain; margin-bottom: 0.5rem; }
-    .icon { width: 24px; height: 24px; vertical-align: middle; margin: 0 5px; cursor: help; }
+    .icon { width: 24px; height: 24px; vertical-align: middle; margin: 0 5px; }
     .stat { margin: 0.18rem 0; font-size: 0.95rem; }
     .small { color: #666; font-size: 0.85rem; }
     @media (max-width:900px){ .grid{grid-template-columns:1fr} }
@@ -69,7 +66,7 @@
   </div>
 
   <script>
-    const APP_VERSION = "1.7";
+    const APP_VERSION = "1.8";
     document.getElementById("versionLabel").textContent = `Version ${APP_VERSION}`;
     let monsters = [];
     const SUGGESTION_LIMIT = 5;
@@ -119,14 +116,12 @@
         const monster = found[0];
 
         const imgUrl = monster.image_filename ? `https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}` : "";
-        const elemIconUrl = monster.element ? `https://swarfarm.com/static/herders/images/elements/${monster.element.toLowerCase()}.png` : "";
-        const archIconUrl = monster.archetype ? `https://swarfarm.com/static/herders/images/archetypes/${monster.archetype.toLowerCase()}.png` : "";
+        const elemIconUrl = monster.element ? `icons/${monster.element.toLowerCase()}.png` : "";
 
-        // Leader skill encore en fallback simple (on améliorera après)
         const leaderId = (monster.leader_skill || "").toString().trim();
         let leaderHtml = "";
         if (leaderId) {
-          leaderHtml = `<p class="stat"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#777"/></svg> <span title="Leader skill ID: ${leaderId}">Leader ID: ${leaderId}</span></p>`;
+          leaderHtml = `<p class="stat"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#777"/></svg> Leader ID: ${leaderId}</p>`;
         }
 
         const card = document.createElement('div');
@@ -135,13 +130,10 @@
           <img class="monster" src="${imgUrl}" alt="${monster.name}">
           <h3>${monster.name}</h3>
           <p class="stat">
-            ${elemIconUrl ? `<img class="icon" src="${elemIconUrl}" alt="${monster.element}" title="Élément : ${monster.element}">` : ""}
-            <span class="small">${monster.element || "–"}</span>
+            ${elemIconUrl ? `<img class="icon" src="${elemIconUrl}" alt="${monster.element}">` : ""}
+            ${monster.element || "–"}
           </p>
-          <p class="stat">
-            ${archIconUrl ? `<img class="icon" src="${archIconUrl}" alt="${monster.archetype}" title="Archétype : ${monster.archetype}">` : ""}
-            <span class="small">${monster.archetype || "–"}</span>
-          </p>
+          <p class="stat">Archétype : ${monster.archetype || "–"}</p>
           <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars || "–"}</p>
           <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp || monster.base_hp || "–"}</p>
           <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack || monster.base_attack || "–"}</p>
