@@ -17,43 +17,27 @@
   <h1>Monster Search</h1>
   <p>Bienvenue dans mon appli PWA ✨</p>
 
-  <label for="monsterId">ID du monstre :</label><br>
-  <input type="text" id="monsterId" placeholder="ex: 17011">
+  <label for="monsterName">Nom du monstre :</label><br>
+  <input type="text" id="monsterName" placeholder="ex: Ragdoll">
   <button onclick="searchMonster()">Rechercher</button>
 
   <div id="result"></div>
 
   <script>
     async function searchMonster() {
-      const id = document.getElementById("monsterId").value.trim();
+      const name = document.getElementById("monsterName").value.trim().toLowerCase();
       const resultDiv = document.getElementById("result");
 
       try {
         const response = await fetch("monsters_sw.json");
         const monsters = await response.json();
 
-        // Chercher par com2us_id
-        const monster = monsters.find(m => m.com2us_id === id);
+        // Chercher par nom (insensible à la casse)
+        const monster = monsters.find(m => m.name.toLowerCase() === name);
 
         if (monster) {
           resultDiv.innerHTML = `
             <h3>${monster.name}</h3>
             <p class="stat"><strong>Élément :</strong> ${monster.element}</p>
             <p class="stat"><strong>Archétype :</strong> ${monster.archetype}</p>
-            <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars}</p>
-            <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp}</p>
-            <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack}</p>
-            <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense}</p>
-            <p class="stat"><strong>Vitesse :</strong> ${monster.speed}</p>
-          `;
-        } else {
-          resultDiv.innerHTML = `<p>Aucun monstre trouvé pour l'ID ${id}</p>`;
-        }
-      } catch (err) {
-        resultDiv.innerHTML = `<p>Erreur lors du chargement des données.</p>`;
-        console.error(err);
-      }
-    }
-  </script>
-</body>
-</html>
+            <p class="stat"><strong>
