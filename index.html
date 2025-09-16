@@ -23,21 +23,30 @@
   <div id="result"></div>
 
   <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js")
-        .then(() => console.log("Service Worker installé"))
-        .catch(err => console.error("Erreur SW", err));
-    }
-
-    function searchMonster() {
+    async function searchMonster() {
       const id = document.getElementById("monsterId").value;
       const resultDiv = document.getElementById("result");
 
-      // Exemple : pour l’instant, juste une fausse donnée
-      if (id === "17011") {
-        resultDiv.innerHTML = "<h3>Ragdoll (Dragon Knight)</h3><p>HP: 12000, ATK: 900, DEF: 700</p>";
-      } else {
-        resultDiv.innerHTML = "<p>Aucun monstre trouvé pour l’ID " + id + "</p>";
+      try {
+        const response = await fetch("monsters.json");
+        const monsters = await response.json();
+
+        const monster = monsters.find(m => m.id === id);
+
+        if (monster) {
+          resultDiv.innerHTML = `
+            <h3>${monster.name}</h3>
+            <p>Élément: ${monster.element}</p>
+            <p>HP: ${monster.hp}</p>
+            <p>ATK: ${monster.atk}</p>
+            <p>DEF: ${monster.def}</p>
+          `;
+        } else {
+          resultDiv.innerHTML = `<p>Aucun monstre trouvé pour l'ID ${id}</p>`;
+        }
+      } catch (err) {
+        resultDiv.innerHTML = `<p>Erreur lors du chargement des données.</p>`;
+        console.error(err);
       }
     }
   </script>
