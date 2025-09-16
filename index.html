@@ -7,9 +7,10 @@
 
   <!--
     FICHIER : index.html
-    VERSION : 2.3
-    NOUVEAUTÉS v2.3 :
-      - Suppression complète du leader skill (plus de code, plus de ligne parasite).
+    VERSION : 2.4
+    NOUVEAUTÉS v2.4 :
+      - Autocomplétion collée directement sous la zone de recherche (alignement parfait).
+      - Suppression de la ligne "Archétype" affichée sous la carte.
   -->
 
   <link rel="manifest" href="manifest.json">
@@ -46,7 +47,7 @@
   </div>
 
   <script>
-    const APP_VERSION = "2.3";
+    const APP_VERSION = "2.4";
     document.getElementById("versionLabel").textContent = `Version ${APP_VERSION}`;
     let monsters = [];
     const SUGGESTION_LIMIT = 5;
@@ -76,7 +77,7 @@
         if (!q) return;
         const matches = monsters
           .filter(m => m.name && m.name.toLowerCase().includes(q))
-          .filter(m => !selectedMonsters.has(m.name)) // évite les doublons
+          .filter(m => !selectedMonsters.has(m.name))
           .slice(0, SUGGESTION_LIMIT);
 
         matches.forEach((m, idx) => {
@@ -100,7 +101,6 @@
         if (found.length === 0) { results.innerHTML = `<p>Aucun monstre trouvé</p>`; return; }
         const monster = found[0];
 
-        // Ajoute le monstre choisi dans la liste des "déjà utilisés"
         selectedMonsters.add(monster.name);
 
         const imgUrl = monster.image_filename ? `https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}` : "";
@@ -115,7 +115,6 @@
             ${elemIconUrl ? `<img class="icon" src="${elemIconUrl}" alt="${monster.element}">` : ""}
             <span class="small">${monster.element || "–"}</span>
           </p>
-          <p class="stat">Archétype : ${monster.archetype || "–"}</p>
           <div class="stat-grid">
             <div><strong>Étoiles :</strong> ${monster.base_stars || "–"}</div>
             <div><strong>HP :</strong> ${monster.max_lvl_hp || monster.base_hp || "–"}</div>
