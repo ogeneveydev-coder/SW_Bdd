@@ -1,0 +1,18 @@
+[
+  {
+    "id": "17011",
+    "name": "Ragdoll",
+    "element": "Dark",
+    "hp": 12000,
+    "atk": 900,
+    "def": 700
+  },
+  {
+    "id": "10101",
+    "name": "Veromos",
+    "element": "Dark",
+    "hp": 11000,
+    "atk": 850,
+    "def": 600
+  }
+]
