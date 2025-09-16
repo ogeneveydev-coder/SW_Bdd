@@ -1,4 +1,4 @@
-const APP_VERSION = "2.7";
+const APP_VERSION = "2.8";
 document.getElementById("versionLabel").textContent = `Version ${APP_VERSION}`;
 let monsters = [];
 const SUGGESTION_LIMIT = 5;
@@ -38,10 +38,15 @@ function initSearchBlock(block) {
       suggestions.appendChild(div);
     });
   }
+
   function setActive(items) {
     items.forEach(el => el.classList.remove('active'));
-    if (activeIndex >= 0 && items[activeIndex]) items[activeIndex].classList.add('active');
+    if (activeIndex >= 0 && items[activeIndex]) {
+      items[activeIndex].classList.add('active');
+      items[activeIndex].scrollIntoView({block:'nearest'});
+    }
   }
+
   function search() {
     const q = input.value.trim().toLowerCase();
     results.innerHTML = "";
@@ -71,15 +76,30 @@ function initSearchBlock(block) {
     `;
     results.appendChild(card);
   }
+
   input.addEventListener("input", updateSuggestions);
   btn.addEventListener("click", () => { clearSuggestions(); search(); });
+
   input.addEventListener("keydown", (e) => {
     const items = suggestions.querySelectorAll("div");
-    if (e.key === "ArrowDown") { e.preventDefault(); if (items.length > 0) { activeIndex = (activeIndex + 1) % items.length; setActive(items); } }
-    else if (e.key === "ArrowUp") { e.preventDefault(); if (items.length > 0) { activeIndex = (activeIndex - 1 + items.length) % items.length; setActive(items); } }
-    else if (e.key === "Enter") { e.preventDefault(); if (activeIndex >= 0 && items[activeIndex]) { input.value = items[activeIndex].textContent; clearSuggestions(); } search(); }
-    else if (e.key === "Escape") { clearSuggestions(); }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (items.length > 0) { activeIndex = (activeIndex + 1) % items.length; setActive(items); }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (items.length > 0) { activeIndex = (activeIndex - 1 + items.length) % items.length; setActive(items); }
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (activeIndex >= 0 && items[activeIndex]) {
+        input.value = items[activeIndex].textContent;
+        clearSuggestions();
+      }
+      search();
+    } else if (e.key === "Escape") {
+      clearSuggestions();
+    }
   });
+
   document.addEventListener("click", (ev) => { if (!block.contains(ev.target)) clearSuggestions(); });
 }
 

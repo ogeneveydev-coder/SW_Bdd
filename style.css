@@ -1,107 +1,26 @@
-body {
-  font-family: "Segoe UI", Roboto, Arial, sans-serif;
-  margin: 2rem;
-  color: #eee;
-  background: #1e1e2f;
-}
+body { font-family: "Segoe UI", Roboto, Arial, sans-serif; margin: 2rem; color: #eee; background: #1e1e2f; }
 h1 { margin: 0 0 0.5rem 0; font-size: 1.8rem; color: #fff; }
 p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
 .version { font-size: 0.9rem; color: #888; text-align: right; margin-bottom: 0.5rem; }
 .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-@media (max-width:1000px){ .grid{grid-template-columns:1fr} }
-.search-block {
-  position: relative;
-  background: #2a2a3d;
-  padding: 1rem;
-  border-radius: 14px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+@media (max-width: 1000px) { .grid { grid-template-columns: 1fr; } }
+.search-block { position: relative; background: #2a2a3d; padding: 1rem; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; }
 .search-block label { font-size: 0.9rem; color: #ddd; font-weight: 500; align-self: flex-start; }
-.search-block input {
-  width: 90%;
-  max-width: 300px;
-  padding: 0.45rem 0.7rem;
-  margin-top: 0.4rem;
-  border: 1px solid #444;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  background: #1c1c28;
-  color: #eee;
-}
-.search-block button {
-  margin-top: 0.6rem;
-  padding: 0.5rem 0.9rem;
-  border-radius: 8px;
-  border: none;
-  background: #4a90e2;
-  color: #fff;
-  font-size: 0.9rem;
-  cursor: pointer;
-  display: inline-block;
-  transition: background 0.2s;
-}
+.input-wrap { position: relative; width: 90%; max-width: 300px; }
+.input-wrap input { width: 100%; padding: 0.45rem 0.7rem; margin-top: 0.4rem; border: 1px solid #444; border-radius: 6px; font-size: 0.95rem; background: #1c1c28; color: #eee; }
+.input-wrap .suggestions { position: absolute; top: calc(100% + 4px); left: 0; width: 100%; background: #2a2a3d; border: 1px solid #555; box-shadow: 0 6px 18px rgba(0,0,0,0.5); border-radius: 6px; overflow: hidden; z-index: 2000; }
+.input-wrap .suggestions div { padding: 0.45rem 0.7rem; cursor: pointer; font-size: 0.9rem; color: #eee; }
+.input-wrap .suggestions div:hover, .input-wrap .suggestions .active { background: #3a3a55; }
+.search-block button { margin-top: 0.6rem; padding: 0.5rem 0.9rem; border-radius: 8px; border: none; background: #4a90e2; color: #fff; font-size: 0.9rem; cursor: pointer; display: inline-block; }
 .search-block button:hover { background: #357ab7; }
-.suggestions {
-  position: absolute;
-  top: calc(100% + 2px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 300px;
-  background: #2a2a3d;
-  border: 1px solid #555;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.5);
-  border-radius: 6px;
-  overflow: hidden;
-  z-index: 1000;
-}
-.suggestions div {
-  padding: 0.45rem 0.7rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #eee;
-}
-.suggestions div:hover,
-.suggestions .active { background: #3a3a55; }
 .results { margin-top: 1rem; width: 100%; display: flex; justify-content: center; }
-.card {
-  border: 1px solid #444;
-  padding: 1rem;
-  border-radius: 14px;
-  background: #2f2f45;
-  text-align: center;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  width: 90%;
-  max-width: 300px;
-}
+.card { border: 1px solid #444; padding: 1rem; border-radius: 14px; background: #2f2f45; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,0.6); transition: transform 0.25s ease, box-shadow 0.25s ease; width: 90%; max-width: 300px; }
 .card:hover { transform: scale(1.05); box-shadow: 0 12px 28px rgba(0,0,0,0.9); }
-.card img.monster {
-  border-radius: 10px;
-  border: 1px solid #555;
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-  margin-bottom: 0.6rem;
-  background: #1c1c28;
-}
+.card img.monster { border-radius: 10px; border: 1px solid #555; width: 100px; height: 100px; object-fit: contain; margin-bottom: 0.6rem; background: #1c1c28; }
 .card h3 { margin: 0.5rem 0; font-size: 1.2rem; color: #fff; }
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.3rem 0.8rem;
-  margin-top: 0.6rem;
-  text-align: left;
-  font-size: 0.9rem;
-}
+.stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.3rem 0.8rem; margin-top: 0.6rem; text-align: left; font-size: 0.9rem; }
 .stat-grid div strong { color: #ddd; }
 .icon { width: 22px; height: 22px; vertical-align: middle; margin-right: 6px; }
 .small { color: #aaa; font-size: 0.85rem; }
 .fade-in { animation: fadeInUp 0.4s ease forwards; }
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
