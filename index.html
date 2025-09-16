@@ -7,13 +7,14 @@
 
   <!--
     FICHIER : index.html
-    VERSION : 1.5
-    NOUVEAUTÉS :
-      - v1.4 : Ajout Leader Skill + icônes Élément/Archétype.
-      - v1.5 : Les icônes (Leader, Élément, Archétype) affichent désormais un tooltip
-               (via l’attribut title) au survol, pour un affichage plus léger.
+    VERSION : 1.7
+    NOUVEAUTÉS v1.7 :
+      - Utilisation des icônes OFFICIELLES Swarfarm pour les ARCHÉTYPES
+        (attack, defense, hp, support, material, general).
+      - Conservé : tooltips (title) au survol.
     NOTES :
-      - Tous les commentaires explicatifs des versions précédentes sont conservés.
+      - On affiche toujours l’élément avec son icône Swarfarm.
+      - Le leader skill reste affiché en fallback (id ou icône générique), à améliorer plus tard.
   -->
 
   <link rel="manifest" href="manifest.json">
@@ -21,33 +22,21 @@
 
   <style>
     body { font-family: system-ui, sans-serif; margin: 2rem; color: #222; }
-    h1 { margin: 0 0 0.25rem 0; }
-    p.lead { margin: 0 0 1rem 0; color: #555; }
     .version { font-size: 0.9rem; color: #666; text-align: right; margin-bottom: 0.5rem; }
-
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-
     .search-block { position: relative; }
     .search-block input { width: 100%; padding: 0.5rem; margin-top: 0.25rem; border: 1px solid #ccc; border-radius: 6px; }
-    .search-block button { margin-top: 0.5rem; padding: 0.55rem 0.9rem; border-radius: 6px; border: 1px solid #2b6; background: #2b8; color: #fff; cursor: pointer; width: 100%; }
-
+    .search-block button { margin-top: 0.5rem; padding: 0.55rem 0.9rem; border-radius: 6px; border: none; background: #2b8; color: #fff; cursor: pointer; width: 100%; }
     .suggestions { border: 1px solid #ddd; background: #fff; position: absolute; top: 60px; left: 0; right: 0; z-index: 1000; box-shadow: 0 6px 18px rgba(0,0,0,0.06); border-radius: 6px; overflow: hidden; }
     .suggestions div { padding: 0.45rem 0.6rem; cursor: pointer; font-size: 0.95rem; color: #222; }
     .suggestions div:hover, .suggestions .active { background: #f4f7fb; }
-
     .results { margin-top: 1rem; }
-    .card {
-      border: 1px solid #e2e8f0;
-      padding: 0.9rem;
-      border-radius: 10px;
-      background: #fff;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(20,20,20,0.03);
-    }
+    .card { border: 1px solid #e2e8f0; padding: 0.9rem; border-radius: 10px; background: #fff; text-align: center; box-shadow: 0 2px 6px rgba(20,20,20,0.03); }
     .card img.monster { border-radius: 8px; border: 1px solid #ddd; width: 80px; height: 80px; object-fit: contain; margin-bottom: 0.5rem; }
     .icon { width: 24px; height: 24px; vertical-align: middle; margin: 0 5px; cursor: help; }
     .stat { margin: 0.18rem 0; font-size: 0.95rem; }
     .small { color: #666; font-size: 0.85rem; }
+    @media (max-width:900px){ .grid{grid-template-columns:1fr} }
   </style>
 </head>
 <body>
@@ -80,22 +69,21 @@
   </div>
 
   <script>
-    const APP_VERSION = "1.5";
+    const APP_VERSION = "1.7";
+    document.getElementById("versionLabel").textContent = `Version ${APP_VERSION}`;
     let monsters = [];
     const SUGGESTION_LIMIT = 5;
-    document.getElementById("versionLabel").textContent = `Version ${APP_VERSION}`;
 
     async function loadMonsters() {
       try {
-        const res = await fetch("monsters_sw.json");
+        const res = await fetch('monsters_sw.json');
         monsters = await res.json();
         console.log(`✅ Monster Search v${APP_VERSION} chargé avec ${monsters.length} monstres.`);
       } catch (err) {
-        console.error("Erreur JSON :", err);
+        console.error('Erreur chargement monsters_sw.json :', err);
       }
     }
 
-    /* Initialiser un bloc de recherche avec navigation clavier */
     function initSearchBlock(block) {
       const input = block.querySelector("input");
       const btn = block.querySelector("button");
@@ -103,11 +91,7 @@
       const results = block.querySelector(".results");
       let activeIndex = -1;
 
-      function clearSuggestions() {
-        suggestions.innerHTML = "";
-        activeIndex = -1;
-      }
-
+      function clearSuggestions() { suggestions.innerHTML = ""; activeIndex = -1; }
       function updateSuggestions() {
         const q = input.value.trim().toLowerCase();
         clearSuggestions();
@@ -117,20 +101,13 @@
           const div = document.createElement("div");
           div.textContent = m.name;
           div.dataset.index = idx;
-          div.addEventListener("click", () => {
-            input.value = m.name;
-            clearSuggestions();
-            search();
-          });
+          div.addEventListener("click", () => { input.value = m.name; clearSuggestions(); search(); });
           suggestions.appendChild(div);
         });
       }
-
       function setActive(items) {
-        items.forEach(el => el.classList.remove("active"));
-        if (activeIndex >= 0 && items[activeIndex]) {
-          items[activeIndex].classList.add("active");
-        }
+        items.forEach(el => el.classList.remove('active'));
+        if (activeIndex >= 0 && items[activeIndex]) items[activeIndex].classList.add('active');
       }
 
       function search() {
@@ -138,68 +115,56 @@
         results.innerHTML = "";
         if (!q) return;
         const found = monsters.filter(m => m.name && m.name.toLowerCase().includes(q));
-        if (found.length === 0) {
-          results.innerHTML = `<p>Aucun monstre trouvé</p>`;
-          return;
-        }
+        if (found.length === 0) { results.innerHTML = `<p>Aucun monstre trouvé</p>`; return; }
         const monster = found[0];
 
-        // Construction des URLs des icônes
         const imgUrl = monster.image_filename ? `https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}` : "";
-        const elemIcon = monster.element ? `https://swarfarm.com/static/herders/images/elements/${monster.element.toLowerCase()}.png` : "";
-        const archIcon = monster.archetype ? `https://swarfarm.com/static/herders/images/archetypes/${monster.archetype.toLowerCase()}.png` : "";
-        const leaderIcon = monster.leader_skill && monster.leader_skill.image_filename 
-          ? `https://swarfarm.com/static/herders/images/skills/${monster.leader_skill.image_filename}`
-          : "";
+        const elemIconUrl = monster.element ? `https://swarfarm.com/static/herders/images/elements/${monster.element.toLowerCase()}.png` : "";
+        const archIconUrl = monster.archetype ? `https://swarfarm.com/static/herders/images/archetypes/${monster.archetype.toLowerCase()}.png` : "";
 
-        // NOUVEAUTÉ v1.5 : utilisation de title pour tooltips
-        const card = document.createElement("div");
-        card.className = "card";
+        // Leader skill encore en fallback simple (on améliorera après)
+        const leaderId = (monster.leader_skill || "").toString().trim();
+        let leaderHtml = "";
+        if (leaderId) {
+          leaderHtml = `<p class="stat"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#777"/></svg> <span title="Leader skill ID: ${leaderId}">Leader ID: ${leaderId}</span></p>`;
+        }
+
+        const card = document.createElement('div');
+        card.className = 'card';
         card.innerHTML = `
           <img class="monster" src="${imgUrl}" alt="${monster.name}">
           <h3>${monster.name}</h3>
-          <p>
-            ${elemIcon ? `<img class="icon" src="${elemIcon}" alt="${monster.element}" title="Élément : ${monster.element}">` : ""}
-            ${archIcon ? `<img class="icon" src="${archIcon}" alt="${monster.archetype}" title="Archétype : ${monster.archetype}">` : ""}
+          <p class="stat">
+            ${elemIconUrl ? `<img class="icon" src="${elemIconUrl}" alt="${monster.element}" title="Élément : ${monster.element}">` : ""}
+            <span class="small">${monster.element || "–"}</span>
+          </p>
+          <p class="stat">
+            ${archIconUrl ? `<img class="icon" src="${archIconUrl}" alt="${monster.archetype}" title="Archétype : ${monster.archetype}">` : ""}
+            <span class="small">${monster.archetype || "–"}</span>
           </p>
           <p class="stat"><strong>Étoiles :</strong> ${monster.base_stars || "–"}</p>
-          <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp || "–"}</p>
-          <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack || "–"}</p>
-          <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense || "–"}</p>
+          <p class="stat"><strong>HP :</strong> ${monster.max_lvl_hp || monster.base_hp || "–"}</p>
+          <p class="stat"><strong>ATK :</strong> ${monster.max_lvl_attack || monster.base_attack || "–"}</p>
+          <p class="stat"><strong>DEF :</strong> ${monster.max_lvl_defense || monster.base_defense || "–"}</p>
           <p class="stat"><strong>Vitesse :</strong> ${monster.speed || "–"}</p>
-          ${leaderIcon ? `
-          <p>
-            <img class="icon" src="${leaderIcon}" alt="Leader" title="Leader Skill : ${monster.leader_skill.string}">
-          </p>` : ""}
+          ${leaderHtml}
         `;
         results.appendChild(card);
       }
 
       input.addEventListener("input", updateSuggestions);
-      btn.addEventListener("click", search);
+      btn.addEventListener("click", () => { clearSuggestions(); search(); });
       input.addEventListener("keydown", (e) => {
         const items = suggestions.querySelectorAll("div");
-        if (e.key === "ArrowDown") {
-          e.preventDefault();
-          if (items.length > 0) { activeIndex = (activeIndex + 1) % items.length; setActive(items); }
-        } else if (e.key === "ArrowUp") {
-          e.preventDefault();
-          if (items.length > 0) { activeIndex = (activeIndex - 1 + items.length) % items.length; setActive(items); }
-        } else if (e.key === "Enter") {
-          e.preventDefault();
-          if (activeIndex >= 0 && items[activeIndex]) {
-            input.value = items[activeIndex].textContent;
-            clearSuggestions();
-          }
-          search();
-        } else if (e.key === "Escape") {
-          clearSuggestions();
-        }
+        if (e.key === "ArrowDown") { e.preventDefault(); if (items.length > 0) { activeIndex = (activeIndex + 1) % items.length; setActive(items); } }
+        else if (e.key === "ArrowUp") { e.preventDefault(); if (items.length > 0) { activeIndex = (activeIndex - 1 + items.length) % items.length; setActive(items); } }
+        else if (e.key === "Enter") { e.preventDefault(); if (activeIndex >= 0 && items[activeIndex]) { input.value = items[activeIndex].textContent; clearSuggestions(); } search(); }
+        else if (e.key === "Escape") { clearSuggestions(); }
       });
       document.addEventListener("click", (ev) => { if (!block.contains(ev.target)) clearSuggestions(); });
     }
 
-    ["search1", "search2", "search3"].forEach(id => initSearchBlock(document.getElementById(id)));
+    ["search1","search2","search3"].forEach(id => initSearchBlock(document.getElementById(id)));
     loadMonsters();
   </script>
 </body>
