@@ -51,7 +51,7 @@ p.lead {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: left;
 }
 
 .search-block label {
@@ -135,6 +135,7 @@ p.lead {
   color: #fff;
   cursor: pointer;
   transition: all 0.2s ease;
+   max-width: 100px;
 }
 .search-block button:hover {
   background: #357ab7;
