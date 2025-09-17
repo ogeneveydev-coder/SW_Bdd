@@ -135,7 +135,7 @@ p.lead {
   color: #fff;
   cursor: pointer;
   transition: all 0.2s ease;
-   max-width: 100px;
+   max-width: 150px;
 }
 .search-block button:hover {
   background: #357ab7;
