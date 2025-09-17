@@ -1,11 +1,8 @@
 /* ================================
-   STYLE.CSS - Version 3.1
-   Inspiré de l'image 4 (Dark themed cards)
-   - Thème sombre
-   - Cartes arrondies avec ombrage
-   - Inputs et boutons modernes
+   STYLE.CSS - Version 3.2
+   - Input centré dans la carte
+   - Bouton aligné sur le bord gauche de l’input
    - Autocomplete masquée si vide
-   - Recherche centrée dans la carte
    ================================ */
 
 /* ===== GLOBAL ===== */
@@ -69,7 +66,7 @@ p.lead {
   position: relative;
   width: 90%;
   max-width: 300px;
-  margin: 0.5rem auto 0 auto; /* centre l'input dans la carte */
+  margin: 0.5rem auto 0 auto; /* centre horizontalement l'input */
 }
 
 .input-wrap input {
@@ -126,8 +123,9 @@ p.lead {
 
 /* ===== BOUTON ===== */
 .search-block button {
-  margin: 0.8rem auto 0 auto; /* centré sous l'input */
-  display: block;
+  margin-top: 0.8rem;
+  margin-left: 5%;   /* aligné sur le bord gauche de l'input-wrap (qui fait 90% de largeur) */
+  display: inline-block;
   background: #4a90e2;
   border: none;
   border-radius: 12px;
