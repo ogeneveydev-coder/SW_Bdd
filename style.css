@@ -124,7 +124,7 @@ p.lead {
 /* ===== BOUTON ===== */
 .search-block button {
   margin-top: 0.8rem;
-  margin-left: 5%;   /* aligné sur le bord gauche de l'input-wrap (qui fait 90% de largeur) */
+  /*margin-left: 5%;   /* aligné sur le bord gauche de l'input-wrap (qui fait 90% de largeur) */
   display: inline-block;
   background: #4a90e2;
   border: none;
