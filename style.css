@@ -113,6 +113,12 @@ p.lead {
 .input-wrap .suggestions .active {
   background: #3a3f52;
 }
+ /* Cacher complètement la boîte de suggestions si elle est vide */
+.input-wrap .suggestions:empty {
+  display: none;
+  border: none;
+  box-shadow: none;
+}
 
 /* ===== BOUTON ===== */
 .search-block button {
