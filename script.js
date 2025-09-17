@@ -116,11 +116,14 @@ function multiSearch() {
   if (!input) return;
 
   // On découpe par espaces (max 3 noms)
-  const names = input.split(/\s+/).map(n => n.trim().toLowerCase()).slice(0,3);
+  const names = input.split(/\s+/).map(n => n.trim()).slice(0,3);
 
   names.forEach(name => {
-    const found = monsters.find(m => m.name.toLowerCase() === name);
+    const lower = name.toLowerCase();
+    const found = monsters.find(m => m.name.toLowerCase() === lower && !selectedMonsters.has(m.name));
     if (found) {
+      selectedMonsters.add(found.name); // marquer comme utilisé
+
       const imgUrl = found.image_filename
         ? `https://swarfarm.com/static/herders/images/monsters/${found.image_filename}`
         : "";
@@ -144,10 +147,91 @@ function multiSearch() {
       `;
       results.appendChild(card);
     } else {
-      results.innerHTML += `<p>Aucun monstre trouvé pour "${name}"</p>`;
+      results.innerHTML += `<p>Aucun monstre trouvé ou déjà sélectionné pour "${name}"</p>`;
     }
   });
 }
+
+// Autocomplétion multi-search
+(function initMultiAutocomplete() {
+  const input = document.getElementById("multiInput");
+  const suggestions = document.getElementById("multiSuggestions");
+  let activeIndex = -1;
+
+  function clearSuggestions() {
+    suggestions.innerHTML = "";
+    activeIndex = -1;
+  }
+
+  function updateSuggestions() {
+    const parts = input.value.trim().split(/\s+/);
+    const current = parts[parts.length - 1].toLowerCase();
+
+    clearSuggestions();
+    if (!current) return;
+
+    // Exclure les doublons (déjà saisis ou déjà sélectionnés ailleurs)
+    const existing = new Set(parts.map(n => n.toLowerCase()));
+    const matches = monsters
+      .filter(m => m.name && m.name.toLowerCase().includes(current))
+      .filter(m => !selectedMonsters.has(m.name) && !existing.has(m.name.toLowerCase()))
+      .slice(0, SUGGESTION_LIMIT);
+
+    matches.forEach((m, idx) => {
+      const div = document.createElement("div");
+      div.textContent = m.name;
+      div.dataset.index = idx;
+      div.addEventListener("click", () => {
+        parts[parts.length - 1] = m.name;
+        input.value = parts.join(" ");
+        clearSuggestions();
+      });
+      suggestions.appendChild(div);
+    });
+  }
+
+  function setActive(items) {
+    items.forEach(el => el.classList.remove("active"));
+    if (activeIndex >= 0 && items[activeIndex]) {
+      items[activeIndex].classList.add("active");
+      items[activeIndex].scrollIntoView({ block: "nearest" });
+    }
+  }
+
+  input.addEventListener("input", updateSuggestions);
+
+  input.addEventListener("keydown", (e) => {
+    const items = suggestions.querySelectorAll("div");
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (items.length > 0) {
+        activeIndex = (activeIndex + 1) % items.length;
+        setActive(items);
+      }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (items.length > 0) {
+        activeIndex = (activeIndex - 1 + items.length) % items.length;
+        setActive(items);
+      }
+    } else if (e.key === "Enter") {
+      if (activeIndex >= 0 && items[activeIndex]) {
+        parts = input.value.trim().split(/\s+/);
+        parts[parts.length - 1] = items[activeIndex].textContent;
+        input.value = parts.join(" ");
+        clearSuggestions();
+      }
+    } else if (e.key === "Escape") {
+      clearSuggestions();
+    }
+  });
+
+  document.addEventListener("click", (ev) => {
+    if (!document.getElementById("multiSearch").contains(ev.target)) {
+      clearSuggestions();
+    }
+  });
+})();
 
 document.getElementById("multiBtn").addEventListener("click", multiSearch);
 document.getElementById("multiInput").addEventListener("keydown", e => {

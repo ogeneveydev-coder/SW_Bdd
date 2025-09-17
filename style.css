@@ -1,13 +1,11 @@
 /* ================================
-   STYLE.CSS - Version 3.2
-   - Input centré dans la carte
-   - Bouton aligné sur le bord gauche de l’input
-   - Autocomplete masquée si vide
+   STYLE.CSS - Version 3.5
+   - Multi-search harmonisé
    ================================ */
 
 /* ===== GLOBAL ===== */
 body {
-  background: #181a20; /* fond sombre bleu/gris */
+  background: #181a20;
   color: #eee;
   font-family: "Segoe UI", Roboto, Arial, sans-serif;
   margin: 2rem;
@@ -19,17 +17,8 @@ h1 {
   color: #fff;
 }
 
-p.lead {
-  margin: 0 0 1.5rem 0;
-  color: #bbb;
-}
-
-.version {
-  font-size: 0.9rem;
-  color: #888;
-  text-align: right;
-  margin-bottom: 0.5rem;
-}
+p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
+.version { font-size: 0.9rem; color: #888; text-align: right; margin-bottom: 0.5rem; }
 
 /* ===== GRID PRINCIPALE ===== */
 .grid {
@@ -38,36 +27,37 @@ p.lead {
   gap: 2rem;
 }
 @media (max-width: 1000px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
+  .grid { grid-template-columns: 1fr; }
 }
 
 /* ===== BLOCS DE RECHERCHE ===== */
 .search-block {
-  background: #242731; /* gris foncé */
+  background: #242731;
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* place tout à gauche */
-
+  align-items: flex-start;
+  position: relative;
 }
 
 .search-block label {
   font-size: 0.9rem;
   color: #ddd;
   font-weight: 500;
-  align-self: center;
 }
 
-/* ===== INPUT + AUTOCOMPLETE ===== */
+/* ===== INPUT-WRAP (INPUT + SUGGESTIONS + BOUTON) ===== */
 .input-wrap {
   position: relative;
   width: 90%;
   max-width: 300px;
-  margin: 0.5rem 0 0 0; /* plus de auto qui centre, juste un peu de marge haut */
+  margin: 0.5rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-sizing: border-box;
 }
 
 .input-wrap input {
@@ -78,7 +68,7 @@ p.lead {
   font-size: 0.95rem;
   background: #1f2129;
   color: #fff;
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
 }
 .input-wrap input:focus {
   outline: none;
@@ -86,10 +76,10 @@ p.lead {
   box-shadow: 0 0 8px #4a90e2;
 }
 
-/* Suggestions collées sous l'input */
+/* Suggestions par défaut */
 .input-wrap .suggestions {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 8px);
   left: 0;
   width: 100%;
   background: #242731;
@@ -99,14 +89,11 @@ p.lead {
   overflow: hidden;
   z-index: 2000;
 }
-
-/* Masquer complètement quand il n'y a pas de suggestions */
 .input-wrap .suggestions:empty {
   display: none;
   border: none;
   box-shadow: none;
 }
-
 .input-wrap .suggestions div {
   padding: 0.5rem 0.8rem;
   cursor: pointer;
@@ -114,31 +101,27 @@ p.lead {
   color: #eee;
   border-bottom: 1px solid #333;
 }
-.input-wrap .suggestions div:last-child {
-  border-bottom: none;
-}
+.input-wrap .suggestions div:last-child { border-bottom: none; }
 .input-wrap .suggestions div:hover,
-.input-wrap .suggestions .active {
-  background: #3a3f52;
-}
+.input-wrap .suggestions .active { background: #3a3f52; }
 
-/* ===== BOUTON ===== */
-.search-block button {
+/* ===== BOUTONS ===== */
+.search-block button,
+.input-wrap .search-btn {
   margin-top: 0.8rem;
-  display: inline-block;
-  align-self: flex-start;  /* reste bien collé au bord gauche */
   background: #4a90e2;
   border: none;
   border-radius: 12px;
   padding: 0.6rem 1.2rem;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   color: #fff;
   cursor: pointer;
-  transition: all 0.2s ease;
-   max-width: 150px;
+  transition: all 0.18s ease;
+  align-self: flex-start;
 }
-.search-block button:hover {
+.search-block button:hover,
+.input-wrap .search-btn:hover {
   background: #357ab7;
   box-shadow: 0 0 12px #4a90e2;
 }
@@ -165,7 +148,6 @@ p.lead {
   transform: scale(1.03);
   box-shadow: 0 12px 32px rgba(0,0,0,0.8);
 }
-
 .card img.monster {
   border-radius: 12px;
   border: 1px solid #555;
@@ -175,11 +157,7 @@ p.lead {
   margin-bottom: 0.8rem;
   background: #1c1c28;
 }
-.card h3 {
-  margin: 0.5rem 0;
-  font-size: 1.2rem;
-  color: #fff;
-}
+.card h3 { margin: 0.5rem 0; font-size: 1.2rem; color: #fff; }
 
 /* ===== STATS ===== */
 .stat-grid {
@@ -190,25 +168,68 @@ p.lead {
   text-align: left;
   font-size: 0.9rem;
 }
-.stat-grid div strong {
-  color: #ddd;
+.stat-grid div strong { color: #ddd; }
+.icon { width: 22px; height: 22px; vertical-align: middle; margin-right: 6px; }
+.small { color: #aaa; font-size: 0.85rem; }
+
+/* ===== MULTI SEARCH ===== */
+#multiSearch {
+  margin-bottom: 2rem;
+  max-width: 600px;
+  width: 100%;
 }
-.icon {
-  width: 22px;
-  height: 22px;
-  vertical-align: middle;
-  margin-right: 6px;
+
+/* Input multi-search */
+#multiSearch .input-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0.5rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
-.small {
-  color: #aaa;
-  font-size: 0.85rem;
+
+/* Suggestions multi-search */
+#multiSuggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  background: #242731;
+  border: 1px solid #333;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  overflow: hidden;
+  z-index: 2000;
+}
+#multiSuggestions:empty {
+  display: none;
+}
+#multiSuggestions div {
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #eee;
+  border-bottom: 1px solid #333;
+}
+#multiSuggestions div:last-child {
+  border-bottom: none;
+}
+#multiSuggestions div:hover,
+#multiSuggestions .active {
+  background: #3a3f52;
+}
+
+/* Résultats multi-search */
+.results-multi {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 /* ===== ANIMATIONS ===== */
-.fade-in {
-  animation: fadeInUp 0.4s ease forwards;
-}
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+.fade-in { animation: fadeInUp 0.4s ease forwards; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
