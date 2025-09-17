@@ -1,5 +1,9 @@
 const APP_VERSION = "2.8";
 document.getElementById("versionLabel").textContent = `Version ${APP_VERSION}`;
+
+const CSS_VERSION = "3.2";
+document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
+
 let monsters = [];
 const SUGGESTION_LIMIT = 5;
 const selectedMonsters = new Set();
@@ -8,7 +12,7 @@ async function loadMonsters() {
   try {
     const res = await fetch('monsters_sw.json');
     monsters = await res.json();
-    console.log(`✅ Monster Search v${APP_VERSION} chargé avec ${monsters.length} monstres.`);
+    console.log(`✅ Monster Search chargé avec ${monsters.length} monstres.`);
   } catch (err) {
     console.error('Erreur chargement monsters_sw.json :', err);
   }
@@ -102,6 +106,56 @@ function initSearchBlock(block) {
 
   document.addEventListener("click", (ev) => { if (!block.contains(ev.target)) clearSuggestions(); });
 }
+
+// MultiSearch par espaces
+function multiSearch() {
+  const input = document.getElementById("multiInput").value.trim();
+  const results = document.querySelector(".results-multi");
+  results.innerHTML = "";
+
+  if (!input) return;
+
+  // On découpe par espaces (max 3 noms)
+  const names = input.split(/\s+/).map(n => n.trim().toLowerCase()).slice(0,3);
+
+  names.forEach(name => {
+    const found = monsters.find(m => m.name.toLowerCase() === name);
+    if (found) {
+      const imgUrl = found.image_filename
+        ? `https://swarfarm.com/static/herders/images/monsters/${found.image_filename}`
+        : "";
+      const elemIconUrl = found.element ? `icons/${found.element.toLowerCase()}.png` : "";
+      const card = document.createElement("div");
+      card.className = "card fade-in";
+      card.innerHTML = `
+        <img class="monster" src="${imgUrl}" alt="${found.name}">
+        <h3>${found.name}</h3>
+        <p>
+          ${elemIconUrl ? `<img class="icon" src="${elemIconUrl}" alt="${found.element}">` : ""}
+          <span class="small">${found.element || "–"}</span>
+        </p>
+        <div class="stat-grid">
+          <div><strong>Étoiles :</strong> ${found.base_stars || "–"}</div>
+          <div><strong>HP :</strong> ${found.max_lvl_hp || found.base_hp || "–"}</div>
+          <div><strong>ATK :</strong> ${found.max_lvl_attack || found.base_attack || "–"}</div>
+          <div><strong>DEF :</strong> ${found.max_lvl_defense || found.base_defense || "–"}</div>
+          <div><strong>Vitesse :</strong> ${found.speed || "–"}</div>
+        </div>
+      `;
+      results.appendChild(card);
+    } else {
+      results.innerHTML += `<p>Aucun monstre trouvé pour "${name}"</p>`;
+    }
+  });
+}
+
+document.getElementById("multiBtn").addEventListener("click", multiSearch);
+document.getElementById("multiInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    multiSearch();
+  }
+});
 
 ["search1","search2","search3"].forEach(id => initSearchBlock(document.getElementById(id)));
 loadMonsters();

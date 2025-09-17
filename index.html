@@ -10,8 +10,22 @@
 </head>
 <body>
   <div class="version" id="versionLabel">Version</div>
+  <div class="version" id="cssVersionLabel">CSS</div>
+
   <h1>Monster Search</h1>
-  <p class="lead">Comparez jusqu’à 3 monstres en parallèle</p>
+  <p class="lead">Comparez jusqu’à 3 monstres</p>
+
+  <!-- Multi Search -->
+  <div class="search-block" id="multiSearch">
+    <label for="multiInput">Rechercher 3 monstres en une fois</label>
+    <div class="input-wrap">
+      <input type="text" id="multiInput" placeholder="Ex: Ragdoll Perna Fran">
+    </div>
+    <button id="multiBtn">Rechercher</button>
+    <div class="results results-multi"></div>
+  </div>
+
+  <!-- Trois recherches distinctes -->
   <div class="grid">
     <div class="search-block" id="search1">
       <label for="monster1">Monstre 1</label>
@@ -41,6 +55,7 @@
       <div class="results"></div>
     </div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>
