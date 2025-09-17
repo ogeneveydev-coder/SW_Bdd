@@ -51,7 +51,8 @@ p.lead {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
-  align-items: left;
+  align-items: flex-start; /* place tout à gauche */
+
 }
 
 .search-block label {
@@ -66,7 +67,7 @@ p.lead {
   position: relative;
   width: 90%;
   max-width: 300px;
-  margin: 0.5rem auto 0 0; /* centre horizontalement l'input */
+  margin: 0.5rem 0 0 0; /* plus de auto qui centre, juste un peu de marge haut */
 }
 
 .input-wrap input {
@@ -124,8 +125,8 @@ p.lead {
 /* ===== BOUTON ===== */
 .search-block button {
   margin-top: 0.8rem;
-  /*margin-left: 5%;   /* aligné sur le bord gauche de l'input-wrap (qui fait 90% de largeur) */
   display: inline-block;
+  align-self: flex-start;  /* reste bien collé au bord gauche */
   background: #4a90e2;
   border: none;
   border-radius: 12px;
