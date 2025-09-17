@@ -1,9 +1,11 @@
 /* ================================
-   STYLE.CSS - Version 3.0
+   STYLE.CSS - Version 3.1
    Inspiré de l'image 4 (Dark themed cards)
    - Thème sombre
    - Cartes arrondies avec ombrage
    - Inputs et boutons modernes
+   - Autocomplete masquée si vide
+   - Recherche centrée dans la carte
    ================================ */
 
 /* ===== GLOBAL ===== */
@@ -67,12 +69,12 @@ p.lead {
   position: relative;
   width: 90%;
   max-width: 300px;
+  margin: 0.5rem auto 0 auto; /* centre l'input dans la carte */
 }
 
 .input-wrap input {
   width: 100%;
   padding: 0.6rem 1rem;
-  margin-top: 0.4rem;
   border: 1px solid #2d2f36;
   border-radius: 12px;
   font-size: 0.95rem;
@@ -99,6 +101,14 @@ p.lead {
   overflow: hidden;
   z-index: 2000;
 }
+
+/* Masquer complètement quand il n'y a pas de suggestions */
+.input-wrap .suggestions:empty {
+  display: none;
+  border: none;
+  box-shadow: none;
+}
+
 .input-wrap .suggestions div {
   padding: 0.5rem 0.8rem;
   cursor: pointer;
@@ -113,16 +123,11 @@ p.lead {
 .input-wrap .suggestions .active {
   background: #3a3f52;
 }
- /* Cacher complètement la boîte de suggestions si elle est vide */
-.input-wrap .suggestions:empty {
-  display: none;
-  border: none;
-  box-shadow: none;
-}
 
 /* ===== BOUTON ===== */
 .search-block button {
-  margin-top: 1rem;
+  margin: 0.8rem auto 0 auto; /* centré sous l'input */
+  display: block;
   background: #4a90e2;
   border: none;
   border-radius: 12px;
