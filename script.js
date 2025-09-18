@@ -6,6 +6,11 @@
    - Comments included for clarity
 */
 
+console.log(monsters.slice(0,10));
+
+
+
+
 const APP_VERSION = "2.9";
 document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
 
