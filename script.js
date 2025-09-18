@@ -4,7 +4,7 @@ document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
 const CSS_VERSION = "3.7";
 document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
 
-const SCRIPT_VERSION = "5.1";
+const SCRIPT_VERSION = "5.2";
 document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
 
 let monsters = [];
@@ -116,43 +116,6 @@ function createCard(monster) {
 }
 
 // =======================
-// Recherche simple
-// =======================
-function initSearchBlock(id) {
-  const block = document.getElementById(id);
-  const input = block.querySelector("input");
-  const btn = block.querySelector("button");
-  const results = block.querySelector(".results");
-  const suggestions = block.querySelector(".suggestions");
-
-  function doSearch() {
-    const q = input.value.trim().toLowerCase();
-    if (!q) return;
-    // 🔎 Recherche sur tous les monstres éveillés (pas seulement 6★)
-    const found = monsters.find(m => m.is_awakened === true && m.name && m.name.toLowerCase().includes(q));
-    results.innerHTML = "";
-    selectedMonsters.clear();
-    if (found) {
-      selectedMonsters.add(found.name);
-      results.appendChild(createCard(found));
-    }
-  }
-
-  btn.addEventListener("click", doSearch);
-  input.addEventListener("keypress", e => { if (e.key === "Enter") doSearch(); });
-
-  // Vide l'input avec Echap
-  input.addEventListener("keydown", e => {
-    if (e.key === "Escape") {
-      input.value = "";
-      suggestions.innerHTML = "";
-    }
-  });
-
-  autocomplete(input, suggestions, false);
-}
-
-// =======================
 // MultiSearch (3 noms)
 // =======================
 function initMultiSearch() {
@@ -201,7 +164,6 @@ function autocomplete(input, suggestionsBox, isMulti) {
     const lastWord = isMulti ? val.split(/\s+/).pop() : val;
     if (!lastWord) return;
 
-    // 🔎 Suggestions sur tous les monstres éveillés
     const matches = monsters
       .filter(m =>
         m.is_awakened === true &&
@@ -258,7 +220,7 @@ function initReset() {
   resetBtn.addEventListener("click", () => {
     selectedMonsters.clear();
     document.querySelectorAll("input").forEach(i => i.value = "");
-    document.querySelectorAll(".results, .results-multi").forEach(r => r.innerHTML = "");
+    document.querySelectorAll(".results-multi").forEach(r => r.innerHTML = "");
   });
 }
 
@@ -266,9 +228,6 @@ function initReset() {
 // Initialisation
 // =======================
 loadMonsters().then(() => {
-  initSearchBlock("search1");
-  initSearchBlock("search2");
-  initSearchBlock("search3");
   initMultiSearch();
   initReset();
 });
