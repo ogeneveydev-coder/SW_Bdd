@@ -115,8 +115,8 @@ function createCard(monster) {
     svg.appendChild(debugCircle);
 
     // Arc gris 3/4 repositionné
-    const startAngle = 135;
-    const endAngle = 405;
+    const startAngle = -45;
+    const endAngle = 235;
     const pathTrack = document.createElementNS(svgns, 'path');
     pathTrack.setAttribute('d', describeArc(center, center, radius, startAngle, endAngle));
     pathTrack.setAttribute('fill','none');
