@@ -1,219 +1,122 @@
 
-/* =============================
-   Jarvis Minimal Futuristic Theme v3
-   ============================= */
+/* style_jarvis_v4.css - Jarvis rings theme (minimal) */
 
-/* Base */
 body {
   margin: 0;
   font-family: 'Segoe UI', Roboto, sans-serif;
-  background-color: #0a0f1c; /* sombre */
+  background-color: #04060a;
   color: #e6f7ff;
   text-align: center;
   position: relative;
   overflow-x: hidden;
 }
 
-h1 {
-  color: #00eaff;
-  font-weight: 400;
-  margin: 20px 0;
-  text-shadow: 0 0 10px #00eaff;
-}
+h1 { color: #00eaff; margin-top: 18px; text-shadow: 0 0 8px #00eaff; font-weight: 400; }
 
-/* Recherche */
 .search-block {
-  margin: 20px auto;
+  margin: 18px auto;
   position: relative;
   width: 90%;
-  max-width: 500px;
+  max-width: 640px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .search-block input {
-  width: calc(100% - 110px);
-  padding: 10px 15px;
-  border: 1px solid #00eaff;
-  background: rgba(255, 255, 255, 0.05);
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,234,255,0.15);
+  background: rgba(255,255,255,0.02);
   color: #e6f7ff;
-  border-radius: 6px 0 0 6px;
   outline: none;
-  box-shadow: 0 0 10px rgba(0, 234, 255, 0.3);
+  box-shadow: inset 0 0 8px rgba(0,234,255,0.03);
 }
 
 .search-block button {
-  width: 110px;
-  padding: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
   border: none;
-  background: #00eaff;
-  color: #0a0f1c;
-  border-radius: 0 6px 6px 0;
+  background: linear-gradient(180deg,#00eaff,#00b2d9);
+  color: #04101a;
+  font-weight: 700;
   cursor: pointer;
-  font-weight: bold;
-  transition: all 0.2s ease;
+  box-shadow: 0 6px 18px rgba(0,234,255,0.08);
 }
 
-.search-block button:hover {
-  background: #00cce0;
-  box-shadow: 0 0 15px #00eaff;
-}
-
-/* Suggestions */
+/* suggestions */
 .suggestions {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 6px);
   left: 0;
   width: 100%;
-  background: rgba(10, 15, 28, 0.95);
-  border: 1px solid #00eaff;
-  border-top: none;
-  z-index: 10;
+  max-height: 220px;
+  overflow-y: auto;
+  background: rgba(4,6,10,0.95);
+  border: 1px solid rgba(0,234,255,0.08);
+  border-radius: 8px;
+  z-index: 40;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
 }
 
-.suggestion {
-  padding: 8px 12px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
+.suggestion { padding: 10px 12px; cursor: pointer; color: #bfeffb; }
+.suggestion:hover, .suggestion.active { background: rgba(0,234,255,0.06); color: #fff; }
 
-.suggestion:hover,
-.suggestion.active {
-  background: rgba(0, 234, 255, 0.2);
-}
-
-/* Résultats */
+/* results */
 .results-multi {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  gap: 15px;
+  gap: 18px;
   padding: 20px;
 }
 
-/* Animation holographique des cartes */
-@keyframes hologramFade {
-  0% {
-    opacity: 0;
-    transform: scale(0.9);
-    box-shadow: 0 0 0px rgba(0, 234, 255, 0);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.02);
-    box-shadow: 0 0 25px rgba(0, 234, 255, 0.4);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 15px rgba(0, 234, 255, 0.2);
-  }
+/* ring card */
+.ring-card {
+  width: 260px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+  border: 1px solid rgba(0,234,255,0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-/* Cartes */
-.card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(0, 234, 255, 0.3);
-  border-radius: 12px;
-  padding: 15px;
-  width: 220px;
-  text-align: center;
-  box-shadow: 0 0 15px rgba(0, 234, 255, 0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  animation: hologramFade 1s ease forwards;
+.ring-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,234,255,0.12); }
+
+.ring-visual { position: relative; width: 180px; height: 180px; margin: 0 auto; display: block; }
+.ring-svg { position: absolute; top: 0; left: 0; width: 180px; height: 180px; }
+
+.ring-img-wrap { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 96px; height: 96px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content:center; background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.05)); border: 1px solid rgba(255,255,255,0.03); box-shadow: 0 0 18px rgba(0,234,255,0.06); }
+
+.ring-monster { width: 84px; height: 84px; object-fit: cover; border-radius: 50%; display:block; }
+
+.ring-title { margin: 8px 0 4px 0; font-size: 1em; color: #dffaff; }
+.ring-meta { margin: 0; font-size: 0.85em; color: #9fd8e8; opacity: 0.9; }
+
+.ring-stats-text { margin-top:10px; font-size: 0.85em; color: #bfeffb; text-align:left; padding-top:8px; border-top: 1px dashed rgba(0,234,255,0.03); }
+
+.stat-line { margin:4px 0; }
+
+/* rings colors */
+.ring-progress { stroke-dasharray: 1 1; transition: stroke-dashoffset 0.8s ease, opacity 0.6s ease; opacity: 0.95; }
+.ring-hp { stroke: rgba(60,220,120,0.95); filter: drop-shadow(0 0 8px rgba(60,220,120,0.35)); }
+.ring-atk { stroke: rgba(255,90,90,0.95); filter: drop-shadow(0 0 8px rgba(255,90,90,0.35)); }
+.ring-def { stroke: rgba(255,200,90,0.95); filter: drop-shadow(0 0 8px rgba(255,200,90,0.28)); }
+.ring-spd { stroke: rgba(0,230,255,0.95); filter: drop-shadow(0 0 10px rgba(0,230,255,0.4)); }
+
+.ring-track { stroke-opacity: 0.08; }
+
+/* responsive */
+@media (max-width: 720px) {
+  .results-multi { justify-content: center; }
+  .ring-card { width: 220px; }
+  .ring-visual { width: 150px; height: 150px; }
+  .ring-img-wrap { width: 80px; height: 80px; }
+  .ring-monster { width: 72px; height: 72px; }
 }
 
-.card:hover {
-  transform: translateY(-4px) scale(1.05);
-  box-shadow: 0 0 35px rgba(0, 234, 255, 0.8);
-}
-
-.card img.monster {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-}
-
-/* Stats */
-.stat {
-  margin: 8px 0;
-  font-size: 0.9em;
-}
-
-.progress-bar {
-  position: relative;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  margin: 4px 0;
-}
-
-.progress {
-  height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, #00eaff, #007a99);
-}
-
-.progress.red {
-  background: linear-gradient(90deg, #ff4d4d, #990000);
-}
-
-.avg-marker {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: #fff;
-  box-shadow: 0 0 6px #00eaff;
-}
-
-/* Footer */
-footer {
-  margin-top: 20px;
-  font-size: 0.8em;
-  color: #88a;
-}
-
-/* =============================
-   Fond animé style Jarvis
-   ============================= */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at center, rgba(0,234,255,0.15) 0%, transparent 70%);
-  animation: pulse 8s infinite ease-in-out;
-  z-index: -2;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(120deg, rgba(0,234,255,0.05) 0%, rgba(0,120,180,0.05) 100%);
-  background-size: 300% 300%;
-  animation: gradientShift 20s ease infinite;
-  z-index: -3;
-}
-
-/* Animations */
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 0.4;
-  }
-  50% {
-    transform: scale(1.2);
-    opacity: 0.7;
-  }
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+/* animated background (subtle) */
+body::before { content: ""; position: fixed; inset: -20% -20% -20% -20%; background: radial-gradient(circle at 30% 20%, rgba(0,230,255,0.06), transparent 12%), radial-gradient(circle at 70% 80%, rgba(60,220,120,0.02), transparent 10%); z-index:-2; animation: bgPulse 12s ease-in-out infinite; }
+@keyframes bgPulse { 0% { transform: scale(1);} 50% { transform: scale(1.02);} 100% { transform: scale(1);} }
