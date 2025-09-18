@@ -188,7 +188,7 @@ function initSearchBlock(block) {
     const q = input.value.trim().toLowerCase();
     results.innerHTML = '';
     if (!q) return;
-    const found = monsters.find(m => m.name && m.name.toLowerCase() === q);
+    const found = monsters.find(m => m.name && m.name.toLowerCase().includes(q));
     if (!found) { results.innerHTML = '<p>Aucun monstre trouvé</p>'; return; }
     if (selectedMonsters.has(found.name)) { results.innerHTML = `<p>${found.name} déjà sélectionné</p>`; return; }
     selectedMonsters.add(found.name);
