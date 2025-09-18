@@ -1,10 +1,10 @@
-/* script_v54.js - Jauges concentriques 3/4 cercle avec point lumineux pour moyenne */
+/* script_v55.js - Arcs 3/4 cercle repositionnés correctement autour du haut + côtés */
 /* Versions */
-const APP_VERSION = "3.0";
+const APP_VERSION = "3.1";
 document.getElementById && document.getElementById("versionLabel") && (document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`);
 const CSS_VERSION = "jarvis-v5";
 document.getElementById && document.getElementById("cssVersionLabel") && (document.getElementById("cssVersionLabel").textContent = `CSS ${CSS_VERSION}`);
-const SCRIPT_VERSION = "5.4";
+const SCRIPT_VERSION = "5.5";
 document.getElementById && document.getElementById("scriptVersionLabel") && (document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`);
 
 let monsters = [];
@@ -64,7 +64,7 @@ function describeArc(x, y, radius, startAngle, endAngle){
   const start = polarToCartesian(x, y, radius, endAngle);
   const end = polarToCartesian(x, y, radius, startAngle);
   const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-  const d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y].join(" ");
+  const d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 1, end.x, end.y].join(" ");
   return d;
 }
 
@@ -101,9 +101,10 @@ function createCard(monster) {
 
   rings.forEach(r => {
     const radius = currentRadius - r.stroke/2;
-    const startAngle = 225;
-    const endAngle = -45;
+    const startAngle = 135; // arc commence en haut à gauche
+    const endAngle = 405;   // 270° (3/4 cercle)
 
+    // Track (fond)
     const pathTrack = document.createElementNS(svgns, 'path');
     pathTrack.setAttribute('d', describeArc(center, center, radius, startAngle, endAngle));
     pathTrack.setAttribute('fill','none');
@@ -111,7 +112,8 @@ function createCard(monster) {
     pathTrack.setAttribute('stroke-width', r.stroke);
     svg.appendChild(pathTrack);
 
-    const valAngle = startAngle - (270 * (r.value/100));
+    // Valeur
+    const valAngle = startAngle + (270 * (r.value/100));
     const pathVal = document.createElementNS(svgns,'path');
     pathVal.setAttribute('d', describeArc(center, center, radius, startAngle, valAngle));
     pathVal.setAttribute('fill','none');
@@ -119,7 +121,8 @@ function createCard(monster) {
     pathVal.classList.add('ring-progress', r.colorClass);
     svg.appendChild(pathVal);
 
-    const meanAngle = startAngle - (270 * (r.mean/100));
+    // Moyenne (point lumineux)
+    const meanAngle = startAngle + (270 * (r.mean/100));
     const meanPos = polarToCartesian(center, center, radius, meanAngle);
     const meanCircle = document.createElementNS(svgns,'circle');
     meanCircle.setAttribute('cx', meanPos.x);
