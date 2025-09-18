@@ -15,7 +15,7 @@ const selectedMonsters = new Set();
 
 async function loadMonsters() {
   try {
-    const res = await fetch('monsters_sw.json');
+    const res = await fetch('bestiary_data.json');
     monsters = await res.json();
     console.log(`✅ Monster Search chargé avec ${monsters.length} monstres.`);
 
