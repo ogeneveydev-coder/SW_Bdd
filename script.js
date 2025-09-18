@@ -4,7 +4,7 @@ document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
 const CSS_VERSION = "3.7";
 document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
 
-const SCRIPT_VERSION = "4.5";
+const SCRIPT_VERSION = "5.0";
 document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
 
 let monsters = [];
@@ -20,11 +20,8 @@ async function loadMonsters() {
   try {
     const res = await fetch('bestiary_data.json');
     const raw = await res.json();
-
-    // ✅ extraction des champs "fields"
     monsters = raw.map(m => m.fields);
-
-    console.log(`✅ Monster Search chargé avec ${monsters.length} monstres.`);
+    console.log(`✅ Loaded ${monsters.length} monsters from bestiary_data.json`);
 
     const total = { hp:0, atk:0, def:0, spd:0 };
     const min = { hp:Infinity, atk:Infinity, def:Infinity, spd:Infinity };
@@ -67,9 +64,8 @@ async function loadMonsters() {
     };
 
     statsRange = { min, max };
-    console.log("Moyennes calculées (6* éveillés) :", averages);
+    console.log("Moyennes (6★ éveillés) :", averages);
     console.log("Bornes min/max :", statsRange);
-
   } catch (err) {
     console.error("Erreur chargement bestiary_data.json :", err);
   }
@@ -133,10 +129,7 @@ function initSearchBlock(id) {
     if (!q) return;
     const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(q));
     results.innerHTML = "";
-
-    // ✅ Reset des sélections pour permettre de relancer une recherche complète
     selectedMonsters.clear();
-
     if (found) {
       selectedMonsters.add(found.name);
       results.appendChild(createCard(found));
@@ -145,6 +138,14 @@ function initSearchBlock(id) {
 
   btn.addEventListener("click", doSearch);
   input.addEventListener("keypress", e => { if (e.key === "Enter") doSearch(); });
+
+  // ✅ Vide l'input avec Echap
+  input.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+      input.value = "";
+      suggestions.innerHTML = "";
+    }
+  });
 
   autocomplete(input, suggestions, false);
 }
@@ -161,10 +162,7 @@ function initMultiSearch() {
   function doSearch() {
     const names = input.value.trim().toLowerCase().split(/\s+/);
     results.innerHTML = "";
-
-    // ✅ Reset des sélections ici aussi
     selectedMonsters.clear();
-
     names.forEach(n => {
       if (!n) return;
       const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(n));
@@ -178,6 +176,14 @@ function initMultiSearch() {
   btn.addEventListener("click", doSearch);
   input.addEventListener("keypress", e => { if (e.key === "Enter") doSearch(); });
 
+  // ✅ Vide l'input avec Echap
+  input.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+      input.value = "";
+      suggestions.innerHTML = "";
+    }
+  });
+
   autocomplete(input, suggestions, true);
 }
 
@@ -186,12 +192,10 @@ function initMultiSearch() {
 // =======================
 function autocomplete(input, suggestionsBox, isMulti) {
   let currentIndex = -1;
-
   input.addEventListener("input", () => {
     const val = input.value.toLowerCase();
     suggestionsBox.innerHTML = "";
     if (!val) return;
-
     const lastWord = isMulti ? val.split(/\s+/).pop() : val;
     if (!lastWord) return;
 
@@ -227,7 +231,6 @@ function autocomplete(input, suggestionsBox, isMulti) {
   input.addEventListener("keydown", e => {
     const items = suggestionsBox.querySelectorAll(".suggestion");
     if (!items.length) return;
-
     if (e.key === "ArrowDown") {
       currentIndex = (currentIndex + 1) % items.length;
       items.forEach(el => el.classList.remove("active"));
