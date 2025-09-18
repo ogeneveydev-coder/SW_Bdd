@@ -1,45 +1,272 @@
-.progress-bar {
+/* ================================
+   STYLE.CSS - Version 3.6
+   - Cartes réduites PC et mobile optimisé
+   ================================ */
+
+/* ===== GLOBAL ===== */
+body {
+  background: #181a20;
+  color: #eee;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  margin: 2rem;
+}
+
+h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  color: #fff;
+}
+
+p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
+.version { font-size: 0.9rem; color: #888; text-align: right; margin-bottom: 0.5rem; }
+
+/* ===== GRID PRINCIPALE ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+@media (max-width: 1000px) {
+  .grid { grid-template-columns: 1fr; }
+}
+
+/* ===== BLOCS DE RECHERCHE ===== */
+.search-block {
+  background: #242731;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+}
+
+.search-block label {
+  font-size: 0.9rem;
+  color: #ddd;
+  font-weight: 500;
+}
+
+/* ===== INPUT-WRAP ===== */
+.input-wrap {
+  position: relative;
+  width: 90%;
+  max-width: 300px;
+  margin: 0.5rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+.input-wrap input {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1px solid #2d2f36;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  background: #1f2129;
+  color: #fff;
+  transition: all 0.18s ease;
+}
+.input-wrap input:focus {
+  outline: none;
+  border-color: #4a90e2;
+  box-shadow: 0 0 8px #4a90e2;
+}
+
+/* Suggestions par défaut */
+.input-wrap .suggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  background: #242731;
+  border: 1px solid #333;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  overflow: hidden;
+  z-index: 2000;
+}
+.input-wrap .suggestions:empty {
+  display: none;
+  border: none;
+  box-shadow: none;
+}
+.input-wrap .suggestions div {
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #eee;
+  border-bottom: 1px solid #333;
+}
+.input-wrap .suggestions div:last-child { border-bottom: none; }
+.input-wrap .suggestions div:hover,
+.input-wrap .suggestions .active { background: #3a3f52; }
+
+/* ===== BOUTONS ===== */
+.search-block button {
+  margin-top: 0.8rem;
+  background: #4a90e2;
+  border: none;
+  border-radius: 12px;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  align-self: flex-start;
+}
+.search-block button:hover {
+  background: #357ab7;
+  box-shadow: 0 0 12px #4a90e2;
+}
+
+/* ===== CARTES MONSTRES (PC) ===== */
+.results {
+  margin-top: 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.card {
+  background: #242731;
+  border-radius: 16px;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 90%;
+  max-width: 180px; /* réduit pour PC */
+}
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.8);
+}
+.card img.monster {
+  border-radius: 12px;
+  border: 1px solid #555;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 0.8rem;
+  background: #1c1c28;
+}
+.card h3 { margin: 0.5rem 0; font-size: 1rem; color: #fff; }
+
+/* ===== STATS ===== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem 1rem;
+  margin-top: 0.8rem;
+  text-align: left;
+  font-size: 0.9rem;
+}
+.stat-grid div strong { color: #ddd; }
+.icon { width: 20px; height: 20px; vertical-align: middle; margin-right: 6px; }
+.small { color: #aaa; font-size: 0.85rem; }
+
+/* ===== MULTI SEARCH ===== */
+#multiSearch {
+  margin-bottom: 2rem;
+  max-width: 600px;
+  width: 100%;
+}
+#multiSearch .input-wrap {
   position: relative;
   width: 100%;
-  height: 8px;
-  background: #ddd; /* plus clair qu'avant */
-  border-radius: 4px;
-  margin: 4px 0;
+  max-width: 500px;
+  margin: 0.5rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+#multiSuggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  background: #242731;
+  border: 1px solid #333;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  overflow: hidden;
+  z-index: 2000;
+}
+#multiSuggestions:empty { display: none; }
+#multiSuggestions div {
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #eee;
+  border-bottom: 1px solid #333;
+}
+#multiSuggestions div:last-child { border-bottom: none; }
+#multiSuggestions div:hover,
+#multiSuggestions .active { background: #3a3f52; }
+
+.results-multi {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
+/* ===== MOBILE OPTIMISÉ ===== */
+@media (max-width: 768px) {
+  .results-multi {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .results-multi .card {
+    max-width: 120px;
+    padding: 0.5rem;
+  }
+  .results-multi .card img.monster {
+    width: 60px;
+    height: 60px;
+  }
+  .results-multi .card h3 { font-size: 0.9rem; }
+  /* Masquer toutes les stats sauf vitesse */
+  .results-multi .stat-grid div { display: none; }
+  .results-multi .stat-grid div:nth-child(5) { display: block; }
+  .results-multi .stat-grid {
+    grid-template-columns: 1fr;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+.fade-in { animation: fadeInUp 0.4s ease forwards; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+
+/* ===== PROGRESS BARS ===== */
+.stat { margin-bottom: 0.6rem; }
+.progress-bar {
+  position: relative;
+  background: #333;
+  border-radius: 6px;
+  height: 10px;
+  margin: 0.3rem 0;
+}
 .progress {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 6px;
 }
-
-.progress.green {
-  background: #4caf50;
-}
-
-.progress.red {
-  background: #f44336;
-}
-
+.progress.green { background: #4caf50; }
+.progress.red { background: #e53935; }
 .avg-marker {
   position: absolute;
   top: -2px;
   width: 2px;
-  height: 12px;
-  background: yellow;
-}
-
-/* Bouton reset */
-.reset-btn {
-  margin-top: 10px;
-  padding: 8px 16px;
-  background: #ff4d4d;
-  border: none;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.reset-btn:hover {
-  background: #e60000;
+  height: 14px;
+  background: #ffeb3b;
 }
