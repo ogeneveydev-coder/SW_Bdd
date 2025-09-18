@@ -1,17 +1,8 @@
-/* script_v58.js - Align SVG rings to image center (v5.8)
-   Corrections :
-   - SVG viewBox ajouté pour éviter les problèmes de mise à l'échelle
-   - Les arcs sont dessinés sur 3/4 de cercle (225° -> 495°)
-   - Conserve les points lumineux pour la moyenne
-   - Version : 5.8
+/* script_debug.js - Debug centrage des arcs
+   - Ajout cercle complet gris pour vérifier centrage
+   - Arc gris 3/4 repositionné (135° -> 405°)
+   - Version debug spéciale
 */
-
-const APP_VERSION = "3.1";
-document.getElementById && document.getElementById("versionLabel") && (document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`);
-const CSS_VERSION = "jarvis-v6";
-document.getElementById && document.getElementById("cssVersionLabel") && (document.getElementById("cssVersionLabel").textContent = `CSS ${CSS_VERSION}`);
-const SCRIPT_VERSION = "5.8";
-document.getElementById && document.getElementById("scriptVersionLabel") && (document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`);
 
 let monsters = [];
 let averages = {};
@@ -30,6 +21,7 @@ async function loadMonsters() {
     const min = { hp:Infinity, atk:Infinity, def:Infinity, spd:Infinity };
     const max = { hp:-Infinity, atk:-Infinity, def:-Infinity, spd:-Infinity };
     let count = 0;
+
     monsters.filter(m => m.base_stars === 6 && m.is_awakened === true).forEach(m => {
       const hp = Number(m.max_lvl_hp) || 0;
       const atk = Number(m.max_lvl_attack) || 0;
@@ -42,6 +34,7 @@ async function loadMonsters() {
         count++;
       }
     });
+
     averages = {
       hp: count ? Math.round(total.hp / count) : 0,
       atk: count ? Math.round(total.atk / count) : 0,
@@ -50,6 +43,7 @@ async function loadMonsters() {
     };
     statsRange = { min, max };
     console.log("Averages:", averages, "Ranges:", statsRange);
+
   } catch (err) {
     console.error("Erreur chargement bestiary_data.json :", err);
   }
@@ -66,16 +60,12 @@ function polarToCartesian(cx, cy, r, angleDeg) {
   return { x: cx + (r * Math.cos(rad)), y: cy + (r * Math.sin(rad)) };
 }
 
-// describeArc that returns an SVG arc path from startAngle to endAngle (degrees)
 function describeArc(x, y, radius, startAngle, endAngle){
   const start = polarToCartesian(x, y, radius, endAngle);
   const end = polarToCartesian(x, y, radius, startAngle);
-  // choose large-arc-flag based on sweep length
   const sweep = endAngle - startAngle;
   const largeArcFlag = (Math.abs(sweep) > 180) ? "1" : "0";
-  // use sweep-flag = 1 to draw in the expected direction
-  const d = ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 1, end.x, end.y].join(" ");
-  return d;
+  return ["M", start.x, start.y, "A", radius, radius, 0, largeArcFlag, 1, end.x, end.y].join(" ");
 }
 
 function createCard(monster) {
@@ -105,28 +95,36 @@ function createCard(monster) {
   const svg = document.createElementNS(svgns,'svg');
   svg.setAttribute('width', size);
   svg.setAttribute('height', size);
-  svg.setAttribute('viewBox', `0 0 ${size} ${size}`); // important pour alignement
+  svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
   svg.setAttribute('preserveAspectRatio','xMidYMid meet');
   svg.classList.add('ring-svg');
 
   let currentRadius = center-6;
 
-  // draw rings from outer to inner
   rings.forEach(r => {
     const radius = currentRadius - r.stroke/2;
-    const startAngle = 225; // start at upper-left quadrant (so arc spans across top)
-    const endAngle = 495;   // start + 270°
 
-    // Track (full 3/4 arc background)
+    // Cercle complet gris clair (DEBUG centrage)
+    const debugCircle = document.createElementNS(svgns, 'circle');
+    debugCircle.setAttribute('cx', center);
+    debugCircle.setAttribute('cy', center);
+    debugCircle.setAttribute('r', radius);
+    debugCircle.setAttribute('fill','none');
+    debugCircle.setAttribute('stroke','rgba(200,200,200,0.2)');
+    debugCircle.setAttribute('stroke-width', 1.5);
+    svg.appendChild(debugCircle);
+
+    // Arc gris 3/4 repositionné
+    const startAngle = 135;
+    const endAngle = 405;
     const pathTrack = document.createElementNS(svgns, 'path');
     pathTrack.setAttribute('d', describeArc(center, center, radius, startAngle, endAngle));
     pathTrack.setAttribute('fill','none');
-    pathTrack.setAttribute('stroke','rgba(255,255,255,0.05)');
+    pathTrack.setAttribute('stroke','rgba(255,255,255,0.08)');
     pathTrack.setAttribute('stroke-width', r.stroke);
-    pathTrack.classList.add('ring-track');
     svg.appendChild(pathTrack);
 
-    // Value arc (from startAngle to proportional angle)
+    // Arc de valeur
     const valAngle = startAngle + (270 * (r.value/100));
     const pathVal = document.createElementNS(svgns,'path');
     pathVal.setAttribute('d', describeArc(center, center, radius, startAngle, valAngle));
@@ -135,7 +133,7 @@ function createCard(monster) {
     pathVal.classList.add('ring-progress', r.colorClass);
     svg.appendChild(pathVal);
 
-    // Mean point (small luminous dot)
+    // Point moyen
     const meanAngle = startAngle + (270 * (r.mean/100));
     const meanPos = polarToCartesian(center, center, radius, meanAngle);
     const meanCircle = document.createElementNS(svgns,'circle');
@@ -148,7 +146,7 @@ function createCard(monster) {
     currentRadius -= (r.stroke + r.gap);
   });
 
-  // Image wrapper (centered) - image will be on top of SVG
+  // Image et infos
   const imgWrap = document.createElement('div');
   imgWrap.className = 'ring-img-wrap';
   const img = document.createElement('img');
@@ -170,21 +168,12 @@ function createCard(monster) {
   visual.appendChild(svg);
   visual.appendChild(imgWrap);
 
-  const statsText = document.createElement('div');
-  statsText.className = 'ring-stats-text';
-  statsText.innerHTML = `<div class="stat-line">HP: ${hp}</div>
-                         <div class="stat-line">ATK: ${atk}</div>
-                         <div class="stat-line">DEF: ${def}</div>
-                         <div class="stat-line">SPD: ${spd}</div>`;
-
   wrapper.appendChild(visual);
   wrapper.appendChild(title);
   wrapper.appendChild(meta);
-  wrapper.appendChild(statsText);
   return wrapper;
 }
 
-// autocomplete & search (unchanged behavior)
 function initMultiSearch() {
   const input = document.getElementById("multiInput");
   const btn = document.getElementById("multiBtn");
