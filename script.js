@@ -4,7 +4,7 @@ document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
 const CSS_VERSION = "3.6";
 document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
 
-const SCRIPT_VERSION = "4.0";
+const SCRIPT_VERSION = "4.1";
 document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
 
 let monsters = [];
@@ -122,6 +122,124 @@ function createCard(monster) {
   return card;
 }
 
-// TODO: ajouter initSearchBlock, multiSearch et autocomplete (inchangés de v3.9)
+// =======================
+// Recherche simple
+// =======================
+function initSearchBlock(id) {
+  const block = document.getElementById(id);
+  const input = block.querySelector("input");
+  const btn = block.querySelector("button");
+  const results = block.querySelector(".results");
+  const suggestions = block.querySelector(".suggestions");
 
-loadMonsters();
+  function doSearch() {
+    const q = input.value.trim().toLowerCase();
+    if (!q) return;
+    const found = monsters.find(m => m.name && m.name.toLowerCase().includes(q));
+    results.innerHTML = "";
+    if (found && !selectedMonsters.has(found.name)) {
+      selectedMonsters.add(found.name);
+      results.appendChild(createCard(found));
+    }
+  }
+
+  btn.addEventListener("click", doSearch);
+  input.addEventListener("keypress", e => { if (e.key === "Enter") doSearch(); });
+
+  autocomplete(input, suggestions, false);
+}
+
+// =======================
+// MultiSearch (3 noms)
+// =======================
+function initMultiSearch() {
+  const input = document.getElementById("multiInput");
+  const btn = document.getElementById("multiBtn");
+  const results = document.querySelector(".results-multi");
+  const suggestions = document.getElementById("multiSuggestions");
+
+  function doSearch() {
+    const names = input.value.trim().toLowerCase().split(/\s+/);
+    results.innerHTML = "";
+    names.forEach(n => {
+      if (!n) return;
+      const found = monsters.find(m => m.name && m.name.toLowerCase().includes(n));
+      if (found && !selectedMonsters.has(found.name)) {
+        selectedMonsters.add(found.name);
+        results.appendChild(createCard(found));
+      }
+    });
+  }
+
+  btn.addEventListener("click", doSearch);
+  input.addEventListener("keypress", e => { if (e.key === "Enter") doSearch(); });
+
+  autocomplete(input, suggestions, true);
+}
+
+// =======================
+// Autocomplétion
+// =======================
+function autocomplete(input, suggestionsBox, isMulti) {
+  let currentIndex = -1;
+
+  input.addEventListener("input", () => {
+    const val = input.value.toLowerCase();
+    suggestionsBox.innerHTML = "";
+    if (!val) return;
+
+    const lastWord = isMulti ? val.split(/\s+/).pop() : val;
+    if (!lastWord) return;
+
+    const matches = monsters
+      .filter(m => m.name && m.name.toLowerCase().includes(lastWord) && !selectedMonsters.has(m.name))
+      .slice(0, SUGGESTION_LIMIT);
+
+    matches.forEach(m => {
+      const div = document.createElement("div");
+      div.className = "suggestion";
+      div.textContent = m.name;
+      div.addEventListener("click", () => {
+        if (isMulti) {
+          const parts = input.value.trim().split(/\s+/);
+          parts.pop();
+          parts.push(m.name);
+          input.value = parts.join(" ") + " ";
+        } else {
+          input.value = m.name;
+        }
+        suggestionsBox.innerHTML = "";
+      });
+      suggestionsBox.appendChild(div);
+    });
+  });
+
+  input.addEventListener("keydown", e => {
+    const items = suggestionsBox.querySelectorAll(".suggestion");
+    if (!items.length) return;
+
+    if (e.key === "ArrowDown") {
+      currentIndex = (currentIndex + 1) % items.length;
+      items.forEach(el => el.classList.remove("active"));
+      items[currentIndex].classList.add("active");
+    } else if (e.key === "ArrowUp") {
+      currentIndex = (currentIndex - 1 + items.length) % items.length;
+      items.forEach(el => el.classList.remove("active"));
+      items[currentIndex].classList.add("active");
+    } else if (e.key === "Enter" && currentIndex >= 0) {
+      e.preventDefault();
+      items[currentIndex].click();
+      currentIndex = -1;
+    }
+  });
+}
+
+// =======================
+// Initialisation
+// =======================
+loadMonsters().then(() => {
+  initSearchBlock("search1");
+  initSearchBlock("search2");
+  initSearchBlock("search3");
+  initMultiSearch();
+});
