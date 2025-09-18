@@ -4,7 +4,7 @@ document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
 const CSS_VERSION = "3.7";
 document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
 
-const SCRIPT_VERSION = "5.0";
+const SCRIPT_VERSION = "5.1";
 document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
 
 let monsters = [];
@@ -28,6 +28,7 @@ async function loadMonsters() {
     const max = { hp:-Infinity, atk:-Infinity, def:-Infinity, spd:-Infinity };
     let count = 0;
 
+    // ⚡ Moyennes calculées uniquement sur les 6★ éveillés
     monsters
       .filter(m => m.base_stars === 6 && m.is_awakened === true)
       .forEach(m => {
@@ -127,7 +128,8 @@ function initSearchBlock(id) {
   function doSearch() {
     const q = input.value.trim().toLowerCase();
     if (!q) return;
-    const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(q));
+    // 🔎 Recherche sur tous les monstres éveillés (pas seulement 6★)
+    const found = monsters.find(m => m.is_awakened === true && m.name && m.name.toLowerCase().includes(q));
     results.innerHTML = "";
     selectedMonsters.clear();
     if (found) {
@@ -139,7 +141,7 @@ function initSearchBlock(id) {
   btn.addEventListener("click", doSearch);
   input.addEventListener("keypress", e => { if (e.key === "Enter") doSearch(); });
 
-  // ✅ Vide l'input avec Echap
+  // Vide l'input avec Echap
   input.addEventListener("keydown", e => {
     if (e.key === "Escape") {
       input.value = "";
@@ -165,7 +167,7 @@ function initMultiSearch() {
     selectedMonsters.clear();
     names.forEach(n => {
       if (!n) return;
-      const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(n));
+      const found = monsters.find(m => m.is_awakened === true && m.name && m.name.toLowerCase().includes(n));
       if (found && !selectedMonsters.has(found.name)) {
         selectedMonsters.add(found.name);
         results.appendChild(createCard(found));
@@ -176,7 +178,7 @@ function initMultiSearch() {
   btn.addEventListener("click", doSearch);
   input.addEventListener("keypress", e => { if (e.key === "Enter") doSearch(); });
 
-  // ✅ Vide l'input avec Echap
+  // Vide l'input avec Echap
   input.addEventListener("keydown", e => {
     if (e.key === "Escape") {
       input.value = "";
@@ -199,9 +201,9 @@ function autocomplete(input, suggestionsBox, isMulti) {
     const lastWord = isMulti ? val.split(/\s+/).pop() : val;
     if (!lastWord) return;
 
+    // 🔎 Suggestions sur tous les monstres éveillés
     const matches = monsters
       .filter(m =>
-        m.base_stars === 6 &&
         m.is_awakened === true &&
         m.name &&
         m.name.toLowerCase().includes(lastWord) &&
