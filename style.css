@@ -1,5 +1,5 @@
 /* ================================
-   STYLE.CSS - Version 3.6
+   STYLE.CSS - Version 5.0
    - Cartes réduites PC et mobile optimisé
    ================================ */
 
@@ -129,7 +129,7 @@ p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
   margin-top: 1rem;
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .card {
   background: #242731;
@@ -214,7 +214,7 @@ p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 /* ===== MOBILE OPTIMISÉ ===== */
