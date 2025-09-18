@@ -4,11 +4,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Monster Search</title>
-  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
-  <meta name="theme-color" content="#000000">
 </head>
 <body>
+  <!-- Versions: HTML / CSS / JS -->
   <div class="version" id="versionLabel">Version</div>
   <div class="version" id="cssVersionLabel">CSS</div>
   <div class="version" id="scriptVersionLabel">JS</div>
@@ -16,7 +15,7 @@
   <h1>Monster Search</h1>
   <p class="lead">Comparez jusqu’à 3 monstres</p>
 
-  <!-- Multi Search -->
+  <!-- Multi Search (saisie multiple séparée par espaces) -->
   <div class="search-block" id="multiSearch">
     <label for="multiInput">Rechercher 3 monstres en une fois</label>
     <div class="input-wrap">
@@ -35,25 +34,27 @@
         <input type="text" id="monster1" placeholder="Nom du monstre">
         <div class="suggestions"></div>
       </div>
-      <button>Rechercher</button>
+      <button class="search-btn">Rechercher</button>
       <div class="results"></div>
     </div>
+
     <div class="search-block" id="search2">
       <label for="monster2">Monstre 2</label>
       <div class="input-wrap">
         <input type="text" id="monster2" placeholder="Nom du monstre">
         <div class="suggestions"></div>
       </div>
-      <button>Rechercher</button>
+      <button class="search-btn">Rechercher</button>
       <div class="results"></div>
     </div>
+
     <div class="search-block" id="search3">
       <label for="monster3">Monstre 3</label>
       <div class="input-wrap">
         <input type="text" id="monster3" placeholder="Nom du monstre">
         <div class="suggestions"></div>
       </div>
-      <button>Rechercher</button>
+      <button class="search-btn">Rechercher</button>
       <div class="results"></div>
     </div>
   </div>
