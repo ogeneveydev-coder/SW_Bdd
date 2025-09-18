@@ -1,5 +1,5 @@
 
-/* style_jarvis_v5.css - Effet glace + arcs 3/4 cercle avec point lumineux */
+/* style_jarvis_v6.css - centrage SVG et effet glace ajusté */
 
 body {
   margin: 0;
@@ -49,32 +49,33 @@ body {
   width: 260px;
   border-radius: 14px;
   padding: 14px;
-  background: rgba(255,255,255,0.06);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.12);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.06);
   box-shadow: 0 6px 20px rgba(0,0,0,0.5);
   transition: transform .25s ease, box-shadow .25s ease;
 }
-.ring-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,234,255,0.3); }
+.ring-card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,234,255,0.25); }
 
-.ring-visual { position:relative; width:180px; height:180px; margin:0 auto; }
-.ring-svg { position:absolute; top:0; left:0; width:180px; height:180px; }
-
-.ring-img-wrap { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:96px; height:96px; border-radius:50%; overflow:hidden; }
-.ring-monster { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.ring-visual { position:relative; width:180px; height:180px; margin:0 auto; display:block; }
+.ring-svg { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:180px; height:180px; z-index:1; pointer-events:none; }
+.ring-img-wrap { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:96px; height:96px; border-radius:50%; overflow:hidden; z-index:2; }
+.ring-monster { width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
 
 .ring-title { margin: 8px 0 4px 0; font-size: 1em; color: #dffaff; }
 .ring-meta { margin:0; font-size:0.85em; color:#9fd8e8; opacity:0.9; }
 .ring-stats-text { margin-top:10px; font-size:0.85em; color:#bfeffb; text-align:left; }
 
 /* couleurs des arcs */
-.ring-progress { fill:none; stroke-linecap:round; }
-.ring-hp { stroke: rgba(60,220,120,0.95); filter: drop-shadow(0 0 6px rgba(60,220,120,0.3)); }
-.ring-atk { stroke: rgba(255,90,90,0.95); filter: drop-shadow(0 0 6px rgba(255,90,90,0.3)); }
+.ring-progress { fill:none; stroke-linecap:round; transition: stroke-dashoffset 0.6s ease, opacity 0.6s ease; }
+.ring-hp { stroke: rgba(60,220,120,0.95); filter: drop-shadow(0 0 6px rgba(60,220,120,0.35)); }
+.ring-atk { stroke: rgba(255,90,90,0.95); filter: drop-shadow(0 0 6px rgba(255,90,90,0.35)); }
 .ring-def { stroke: rgba(255,200,90,0.95); filter: drop-shadow(0 0 6px rgba(255,200,90,0.3)); }
-.ring-spd { stroke: rgba(0,230,255,0.95); filter: drop-shadow(0 0 6px rgba(0,230,255,0.3)); }
+.ring-spd { stroke: rgba(0,230,255,0.95); filter: drop-shadow(0 0 6px rgba(0,230,255,0.4)); }
 
-/* point lumineux pour moyenne */
+.ring-track { stroke-opacity: 0.06; }
+
+/* mean point */
 .ring-mean { fill: #fff; stroke:none; filter: drop-shadow(0 0 4px currentColor); }
 
 @media (max-width:720px) {
