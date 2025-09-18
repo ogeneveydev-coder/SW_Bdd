@@ -4,7 +4,7 @@ document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
 const CSS_VERSION = "3.6";
 document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
 
-const SCRIPT_VERSION = "4.3";
+const SCRIPT_VERSION = "4.4";
 document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
 
 let monsters = [];
@@ -133,7 +133,11 @@ function initSearchBlock(id) {
     if (!q) return;
     const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(q));
     results.innerHTML = "";
-    if (found && !selectedMonsters.has(found.name)) {
+
+    // ✅ Reset des sélections pour permettre de relancer une recherche complète
+    selectedMonsters.clear();
+
+    if (found) {
       selectedMonsters.add(found.name);
       results.appendChild(createCard(found));
     }
@@ -157,6 +161,10 @@ function initMultiSearch() {
   function doSearch() {
     const names = input.value.trim().toLowerCase().split(/\s+/);
     results.innerHTML = "";
+
+    // ✅ Reset des sélections ici aussi
+    selectedMonsters.clear();
+
     names.forEach(n => {
       if (!n) return;
       const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(n));
