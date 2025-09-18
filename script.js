@@ -1,10 +1,10 @@
 const APP_VERSION = "2.9";
 document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
 
-const CSS_VERSION = "3.6";
+const CSS_VERSION = "3.7";
 document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
 
-const SCRIPT_VERSION = "4.4";
+const SCRIPT_VERSION = "4.5";
 document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
 
 let monsters = [];
@@ -245,6 +245,19 @@ function autocomplete(input, suggestionsBox, isMulti) {
 }
 
 // =======================
+// Bouton Reset
+// =======================
+function initReset() {
+  const resetBtn = document.getElementById("resetBtn");
+  if (!resetBtn) return;
+  resetBtn.addEventListener("click", () => {
+    selectedMonsters.clear();
+    document.querySelectorAll("input").forEach(i => i.value = "");
+    document.querySelectorAll(".results, .results-multi").forEach(r => r.innerHTML = "");
+  });
+}
+
+// =======================
 // Initialisation
 // =======================
 loadMonsters().then(() => {
@@ -252,4 +265,5 @@ loadMonsters().then(() => {
   initSearchBlock("search2");
   initSearchBlock("search3");
   initMultiSearch();
+  initReset();
 });
