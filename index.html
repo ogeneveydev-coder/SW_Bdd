@@ -1,52 +1,63 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Monster Search</title>
-  <link rel="stylesheet" href="style_v37.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#000000">
 </head>
 <body>
-  <header>
-    <h1>Monster Search</h1>
-    <p id="versionLabel"></p>
-    <p id="cssVersionLabel"></p>
-    <p id="scriptVersionLabel"></p>
-  </header>
+  <div class="version" id="versionLabel">Version</div>
+  <div class="version" id="cssVersionLabel">CSS</div>
+  <div class="version" id="scriptVersionLabel">JS</div>
 
-  <main>
-    <section id="search1" class="search-block">
-      <input type="text" placeholder="Rechercher un monstre...">
+  <h1>Monster Search</h1>
+  <p class="lead">Comparez jusqu’à 3 monstres</p>
+
+  <!-- Multi Search -->
+  <div class="search-block" id="multiSearch">
+    <label for="multiInput">Rechercher 3 monstres en une fois</label>
+    <div class="input-wrap">
+      <input type="text" id="multiInput" placeholder="Ex: Ragdoll Perna Fran">
+      <div class="suggestions" id="multiSuggestions"></div>
+    </div>
+    <button id="multiBtn">Rechercher</button>
+    <div class="results results-multi"></div>
+  </div>
+
+  <!-- Trois recherches distinctes -->
+  <div class="grid">
+    <div class="search-block" id="search1">
+      <label for="monster1">Monstre 1</label>
+      <div class="input-wrap">
+        <input type="text" id="monster1" placeholder="Nom du monstre">
+        <div class="suggestions"></div>
+      </div>
       <button>Rechercher</button>
-      <div class="suggestions"></div>
       <div class="results"></div>
-    </section>
-
-    <section id="search2" class="search-block">
-      <input type="text" placeholder="Rechercher un monstre...">
+    </div>
+    <div class="search-block" id="search2">
+      <label for="monster2">Monstre 2</label>
+      <div class="input-wrap">
+        <input type="text" id="monster2" placeholder="Nom du monstre">
+        <div class="suggestions"></div>
+      </div>
       <button>Rechercher</button>
-      <div class="suggestions"></div>
       <div class="results"></div>
-    </section>
-
-    <section id="search3" class="search-block">
-      <input type="text" placeholder="Rechercher un monstre...">
+    </div>
+    <div class="search-block" id="search3">
+      <label for="monster3">Monstre 3</label>
+      <div class="input-wrap">
+        <input type="text" id="monster3" placeholder="Nom du monstre">
+        <div class="suggestions"></div>
+      </div>
       <button>Rechercher</button>
-      <div class="suggestions"></div>
       <div class="results"></div>
-    </section>
+    </div>
+  </div>
 
-    <section class="multi-search">
-      <input id="multiInput" type="text" placeholder="Rechercher 3 monstres séparés par des espaces">
-      <button id="multiBtn">Rechercher</button>
-      <div id="multiSuggestions" class="suggestions"></div>
-      <div class="results-multi"></div>
-    </section>
-
-    <!-- ✅ Bouton Reset ajouté -->
-    <button id="resetBtn" class="reset-btn">Réinitialiser</button>
-  </main>
-
-  <script src="script_v45.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
