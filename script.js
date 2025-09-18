@@ -1,10 +1,9 @@
-/* script_v55.js - Arcs 3/4 cercle repositionnés correctement autour du haut + côtés */
-/* Versions */
+/* script_v56.js - Arcs 3/4 cercle centrés en haut */
 const APP_VERSION = "3.1";
 document.getElementById && document.getElementById("versionLabel") && (document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`);
 const CSS_VERSION = "jarvis-v5";
 document.getElementById && document.getElementById("cssVersionLabel") && (document.getElementById("cssVersionLabel").textContent = `CSS ${CSS_VERSION}`);
-const SCRIPT_VERSION = "5.5";
+const SCRIPT_VERSION = "5.6";
 document.getElementById && document.getElementById("scriptVersionLabel") && (document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`);
 
 let monsters = [];
@@ -101,8 +100,8 @@ function createCard(monster) {
 
   rings.forEach(r => {
     const radius = currentRadius - r.stroke/2;
-    const startAngle = 135; // arc commence en haut à gauche
-    const endAngle = 405;   // 270° (3/4 cercle)
+    const startAngle = -45; // arc commence en haut droite
+    const endAngle = 225;   // 270° (3/4 cercle en haut)
 
     // Track (fond)
     const pathTrack = document.createElementNS(svgns, 'path');
