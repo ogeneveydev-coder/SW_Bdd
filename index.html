@@ -59,5 +59,12 @@
   </div>
 
   <script src="script.js"></script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .catch(err => console.warn('SW registration failed:', err));
+}
+</script>
 </body>
 </html>
