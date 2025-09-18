@@ -1,7 +1,7 @@
-/* script_debug.js - Debug centrage des arcs
-   - Ajout cercle complet gris pour vérifier centrage
-   - Arc gris 3/4 repositionné (135° -> 405°)
-   - Version debug spéciale
+/* script.js - Arcs 3/4 centrés en haut
+   - Correction orientation : -45° -> 225°
+   - Suppression des cercles debug
+   - Version 5.9 stable
 */
 
 let monsters = [];
@@ -104,19 +104,9 @@ function createCard(monster) {
   rings.forEach(r => {
     const radius = currentRadius - r.stroke/2;
 
-    // Cercle complet gris clair (DEBUG centrage)
-    const debugCircle = document.createElementNS(svgns, 'circle');
-    debugCircle.setAttribute('cx', center);
-    debugCircle.setAttribute('cy', center);
-    debugCircle.setAttribute('r', radius);
-    debugCircle.setAttribute('fill','none');
-    debugCircle.setAttribute('stroke','rgba(200,200,200,0.2)');
-    debugCircle.setAttribute('stroke-width', 1.5);
-    svg.appendChild(debugCircle);
-
-    // Arc gris 3/4 repositionné
+    // Arc gris 3/4 en haut (-45° -> 225°)
     const startAngle = -45;
-    const endAngle = 235;
+    const endAngle = 225;
     const pathTrack = document.createElementNS(svgns, 'path');
     pathTrack.setAttribute('d', describeArc(center, center, radius, startAngle, endAngle));
     pathTrack.setAttribute('fill','none');
@@ -124,7 +114,7 @@ function createCard(monster) {
     pathTrack.setAttribute('stroke-width', r.stroke);
     svg.appendChild(pathTrack);
 
-    // Arc de valeur
+    // Arc valeur
     const valAngle = startAngle + (270 * (r.value/100));
     const pathVal = document.createElementNS(svgns,'path');
     pathVal.setAttribute('d', describeArc(center, center, radius, startAngle, valAngle));
@@ -146,7 +136,7 @@ function createCard(monster) {
     currentRadius -= (r.stroke + r.gap);
   });
 
-  // Image et infos
+  // Image + infos
   const imgWrap = document.createElement('div');
   imgWrap.className = 'ring-img-wrap';
   const img = document.createElement('img');
