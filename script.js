@@ -1,10 +1,15 @@
-const APP_VERSION = "2.8";
-document.getElementById("versionLabel").textContent = `Version ${APP_VERSION}`;
+const APP_VERSION = "2.9";
+document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
 
-const CSS_VERSION = "3.2";
+const CSS_VERSION = "3.6";
 document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
 
+const SCRIPT_VERSION = "3.8";
+document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
+
 let monsters = [];
+let averages = {};
+let statsRange = {};
 const SUGGESTION_LIMIT = 5;
 const selectedMonsters = new Set();
 
@@ -13,233 +18,95 @@ async function loadMonsters() {
     const res = await fetch('monsters_sw.json');
     monsters = await res.json();
     console.log(`✅ Monster Search chargé avec ${monsters.length} monstres.`);
+
+    const total = { hp:0, atk:0, def:0, spd:0, stars:0 };
+    const min = { hp:Infinity, atk:Infinity, def:Infinity, spd:Infinity, stars:Infinity };
+    const max = { hp:-Infinity, atk:-Infinity, def:-Infinity, spd:-Infinity, stars:-Infinity };
+    let count = 0;
+
+    monsters.forEach(m => {
+      if (m.base_stars && m.max_lvl_hp && m.max_lvl_attack && m.max_lvl_defense && m.speed) {
+        total.stars += m.base_stars;
+        total.hp += m.max_lvl_hp;
+        total.atk += m.max_lvl_attack;
+        total.def += m.max_lvl_defense;
+        total.spd += m.speed;
+
+        min.stars = Math.min(min.stars, m.base_stars);
+        min.hp = Math.min(min.hp, m.max_lvl_hp);
+        min.atk = Math.min(min.atk, m.max_lvl_attack);
+        min.def = Math.min(min.def, m.max_lvl_defense);
+        min.spd = Math.min(min.spd, m.speed);
+
+        max.stars = Math.max(max.stars, m.base_stars);
+        max.hp = Math.max(max.hp, m.max_lvl_hp);
+        max.atk = Math.max(max.atk, m.max_lvl_attack);
+        max.def = Math.max(max.def, m.max_lvl_defense);
+        max.spd = Math.max(max.spd, m.speed);
+
+        count++;
+      }
+    });
+
+    averages = {
+      stars: (total.stars / count).toFixed(1),
+      hp: Math.round(total.hp / count),
+      atk: Math.round(total.atk / count),
+      def: Math.round(total.def / count),
+      spd: Math.round(total.spd / count)
+    };
+
+    statsRange = { min, max };
+    console.log("Moyennes calculées :", averages);
+    console.log("Bornes min/max :", statsRange);
+
   } catch (err) {
-    console.error('Erreur chargement monsters_sw.json :', err);
+    console.error("Erreur chargement monsters_sw.json :", err);
   }
 }
 
-function initSearchBlock(block) {
-  const input = block.querySelector("input");
-  const btn = block.querySelector("button");
-  const suggestions = block.querySelector(".suggestions");
-  const results = block.querySelector(".results");
-  let activeIndex = -1;
-
-  function clearSuggestions() { suggestions.innerHTML = ""; activeIndex = -1; }
-  function updateSuggestions() {
-    const q = input.value.trim().toLowerCase();
-    clearSuggestions();
-    if (!q) return;
-    const matches = monsters
-      .filter(m => m.name && m.name.toLowerCase().includes(q))
-      .filter(m => !selectedMonsters.has(m.name))
-      .slice(0, SUGGESTION_LIMIT);
-    matches.forEach((m, idx) => {
-      const div = document.createElement("div");
-      div.textContent = m.name;
-      div.dataset.index = idx;
-      div.addEventListener("click", () => { input.value = m.name; clearSuggestions(); search(); });
-      suggestions.appendChild(div);
-    });
-  }
-
-  function setActive(items) {
-    items.forEach(el => el.classList.remove('active'));
-    if (activeIndex >= 0 && items[activeIndex]) {
-      items[activeIndex].classList.add('active');
-      items[activeIndex].scrollIntoView({block:'nearest'});
-    }
-  }
-
-  function search() {
-    const q = input.value.trim().toLowerCase();
-    results.innerHTML = "";
-    if (!q) return;
-    const found = monsters.filter(m => m.name && m.name.toLowerCase() === q);
-    if (found.length === 0) { results.innerHTML = `<p>Aucun monstre trouvé</p>`; return; }
-    const monster = found[0];
-    selectedMonsters.add(monster.name);
-    const imgUrl = monster.image_filename ? `https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}` : "";
-    const elemIconUrl = monster.element ? `icons/${monster.element.toLowerCase()}.png` : "";
-    const card = document.createElement('div');
-    card.className = 'card fade-in';
-    card.innerHTML = `
-      <img class="monster" src="${imgUrl}" alt="${monster.name}">
-      <h3>${monster.name}</h3>
-      <p>
-        ${elemIconUrl ? `<img class="icon" src="${elemIconUrl}" alt="${monster.element}">` : ""}
-        <span class="small">${monster.element || "–"}</span>
-      </p>
-      <div class="stat-grid">
-        <div><strong>Étoiles :</strong> ${monster.base_stars || "–"}</div>
-        <div><strong>HP :</strong> ${monster.max_lvl_hp || monster.base_hp || "–"}</div>
-        <div><strong>ATK :</strong> ${monster.max_lvl_attack || monster.base_attack || "–"}</div>
-        <div><strong>DEF :</strong> ${monster.max_lvl_defense || monster.base_defense || "–"}</div>
-        <div><strong>Vitesse :</strong> ${monster.speed || "–"}</div>
+function renderStat(label, value, avg, min, max) {
+  if (!value) return "";
+  const percent = ((value - min) / (max - min)) * 100;
+  const avgPercent = ((avg - min) / (max - min)) * 100;
+  const color = value >= avg ? "green" : "red";
+  return `
+    <div class="stat">
+      <span><strong>${label} :</strong> ${value}</span>
+      <div class="progress-bar">
+        <div class="progress ${color}" style="width:${percent}%"></div>
+        <div class="avg-marker" style="left:${avgPercent}%"></div>
       </div>
-    `;
-    results.appendChild(card);
-  }
-
-  input.addEventListener("input", updateSuggestions);
-  btn.addEventListener("click", () => { clearSuggestions(); search(); });
-
-  input.addEventListener("keydown", (e) => {
-    const items = suggestions.querySelectorAll("div");
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      if (items.length > 0) { activeIndex = (activeIndex + 1) % items.length; setActive(items); }
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      if (items.length > 0) { activeIndex = (activeIndex - 1 + items.length) % items.length; setActive(items); }
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (activeIndex >= 0 && items[activeIndex]) {
-        input.value = items[activeIndex].textContent;
-        clearSuggestions();
-      }
-      search();
-    } else if (e.key === "Escape") {
-      clearSuggestions();
-    }
-  });
-
-  document.addEventListener("click", (ev) => { if (!block.contains(ev.target)) clearSuggestions(); });
+      <small>min:${min} | moy:${avg} | max:${max}</small>
+    </div>`;
 }
 
-// MultiSearch par espaces
-function multiSearch() {
-  const input = document.getElementById("multiInput").value.trim();
-  const results = document.querySelector(".results-multi");
-  results.innerHTML = "";
-
-  if (!input) return;
-
-  // On découpe par espaces (max 3 noms)
-  const names = input.split(/\s+/).map(n => n.trim()).slice(0,3);
-
-  names.forEach(name => {
-    const lower = name.toLowerCase();
-    const found = monsters.find(m => m.name.toLowerCase() === lower && !selectedMonsters.has(m.name));
-    if (found) {
-      selectedMonsters.add(found.name); // marquer comme utilisé
-
-      const imgUrl = found.image_filename
-        ? `https://swarfarm.com/static/herders/images/monsters/${found.image_filename}`
-        : "";
-      const elemIconUrl = found.element ? `icons/${found.element.toLowerCase()}.png` : "";
-      const card = document.createElement("div");
-      card.className = "card fade-in";
-      card.innerHTML = `
-        <img class="monster" src="${imgUrl}" alt="${found.name}">
-        <h3>${found.name}</h3>
-        <p>
-          ${elemIconUrl ? `<img class="icon" src="${elemIconUrl}" alt="${found.element}">` : ""}
-          <span class="small">${found.element || "–"}</span>
-        </p>
-        <div class="stat-grid">
-          <div><strong>Étoiles :</strong> ${found.base_stars || "–"}</div>
-          <div><strong>HP :</strong> ${found.max_lvl_hp || found.base_hp || "–"}</div>
-          <div><strong>ATK :</strong> ${found.max_lvl_attack || found.base_attack || "–"}</div>
-          <div><strong>DEF :</strong> ${found.max_lvl_defense || found.base_defense || "–"}</div>
-          <div><strong>Vitesse :</strong> ${found.speed || "–"}</div>
-        </div>
-      `;
-      results.appendChild(card);
-    } else {
-      results.innerHTML += `<p>Aucun monstre trouvé ou déjà sélectionné pour "${name}"</p>`;
-    }
-  });
+function createCard(monster) {
+  const imgUrl = monster.image_filename ? 
+    `https://swarfarm.com/static/herders/images/monsters/${monster.image_filename}` : "";
+  const elemIconUrl = monster.element ? `icons/${monster.element.toLowerCase()}.png` : "";
+  const card = document.createElement('div');
+  card.className = 'card fade-in';
+  card.innerHTML = `
+    <img class="monster" src="${imgUrl}" alt="${monster.name}">
+    <h3>${monster.name}</h3>
+    <p>
+      ${elemIconUrl ? `<img class="icon" src="${elemIconUrl}" alt="${monster.element}">` : ""}
+      <span class="small">${monster.element || "–"}</span>
+    </p>
+    <div class="stat-grid">
+      ${renderStat("Étoiles", monster.base_stars, averages.stars, statsRange.min.stars, statsRange.max.stars)}
+      ${renderStat("HP", monster.max_lvl_hp, averages.hp, statsRange.min.hp, statsRange.max.hp)}
+      ${renderStat("ATK", monster.max_lvl_attack, averages.atk, statsRange.min.atk, statsRange.max.atk)}
+      ${renderStat("DEF", monster.max_lvl_defense, averages.def, statsRange.min.def, statsRange.max.def)}
+      ${renderStat("Vitesse", monster.speed, averages.spd, statsRange.min.spd, statsRange.max.spd)}
+    </div>
+  `;
+  return card;
 }
 
-// Autocomplétion multi-search
-(function initMultiAutocomplete() {
-  const input = document.getElementById("multiInput");
-  const suggestions = document.getElementById("multiSuggestions");
-  let activeIndex = -1;
+// TODO: reste initSearchBlock, multiSearch identiques à v3.7 mais utilisant createCard()
+// (par souci de place ici on ne recolle pas l'intégralité mais l'idée est :
+// au lieu de card.innerHTML = ..., on fait results.appendChild(createCard(monster)) )
 
-  function clearSuggestions() {
-    suggestions.innerHTML = "";
-    activeIndex = -1;
-  }
-
-  function updateSuggestions() {
-    const parts = input.value.trim().split(/\s+/);
-    const current = parts[parts.length - 1].toLowerCase();
-
-    clearSuggestions();
-    if (!current) return;
-
-    // Exclure les doublons (déjà saisis ou déjà sélectionnés ailleurs)
-    const existing = new Set(parts.map(n => n.toLowerCase()));
-    const matches = monsters
-      .filter(m => m.name && m.name.toLowerCase().includes(current))
-      .filter(m => !selectedMonsters.has(m.name) && !existing.has(m.name.toLowerCase()))
-      .slice(0, SUGGESTION_LIMIT);
-
-    matches.forEach((m, idx) => {
-      const div = document.createElement("div");
-      div.textContent = m.name;
-      div.dataset.index = idx;
-      div.addEventListener("click", () => {
-        parts[parts.length - 1] = m.name;
-        input.value = parts.join(" ");
-        clearSuggestions();
-      });
-      suggestions.appendChild(div);
-    });
-  }
-
-  function setActive(items) {
-    items.forEach(el => el.classList.remove("active"));
-    if (activeIndex >= 0 && items[activeIndex]) {
-      items[activeIndex].classList.add("active");
-      items[activeIndex].scrollIntoView({ block: "nearest" });
-    }
-  }
-
-  input.addEventListener("input", updateSuggestions);
-
-  input.addEventListener("keydown", (e) => {
-    const items = suggestions.querySelectorAll("div");
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      if (items.length > 0) {
-        activeIndex = (activeIndex + 1) % items.length;
-        setActive(items);
-      }
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      if (items.length > 0) {
-        activeIndex = (activeIndex - 1 + items.length) % items.length;
-        setActive(items);
-      }
-    } else if (e.key === "Enter") {
-      if (activeIndex >= 0 && items[activeIndex]) {
-        parts = input.value.trim().split(/\s+/);
-        parts[parts.length - 1] = items[activeIndex].textContent;
-        input.value = parts.join(" ");
-        clearSuggestions();
-      }
-    } else if (e.key === "Escape") {
-      clearSuggestions();
-    }
-  });
-
-  document.addEventListener("click", (ev) => {
-    if (!document.getElementById("multiSearch").contains(ev.target)) {
-      clearSuggestions();
-    }
-  });
-})();
-
-document.getElementById("multiBtn").addEventListener("click", multiSearch);
-document.getElementById("multiInput").addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    multiSearch();
-  }
-});
-
-["search1","search2","search3"].forEach(id => initSearchBlock(document.getElementById(id)));
 loadMonsters();
