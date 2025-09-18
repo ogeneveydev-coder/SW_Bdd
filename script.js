@@ -4,7 +4,7 @@ document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
 const CSS_VERSION = "3.6";
 document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
 
-const SCRIPT_VERSION = "4.1";
+const SCRIPT_VERSION = "4.3";
 document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
 
 let monsters = [];
@@ -26,51 +26,48 @@ async function loadMonsters() {
 
     console.log(`✅ Monster Search chargé avec ${monsters.length} monstres.`);
 
-    const total = { hp:0, atk:0, def:0, spd:0, stars:0 };
-    const min = { hp:Infinity, atk:Infinity, def:Infinity, spd:Infinity, stars:Infinity };
-    const max = { hp:-Infinity, atk:-Infinity, def:-Infinity, spd:-Infinity, stars:-Infinity };
+    const total = { hp:0, atk:0, def:0, spd:0 };
+    const min = { hp:Infinity, atk:Infinity, def:Infinity, spd:Infinity };
+    const max = { hp:-Infinity, atk:-Infinity, def:-Infinity, spd:-Infinity };
     let count = 0;
 
-    monsters.forEach(m => {
-      const stars = Number(m.base_stars) || 0;
-      const hp = Number(m.max_lvl_hp) || 0;
-      const atk = Number(m.max_lvl_attack) || 0;
-      const def = Number(m.max_lvl_defense) || 0;
-      const spd = Number(m.speed) || 0;
+    monsters
+      .filter(m => m.base_stars === 6 && m.is_awakened === true)
+      .forEach(m => {
+        const hp = Number(m.max_lvl_hp) || 0;
+        const atk = Number(m.max_lvl_attack) || 0;
+        const def = Number(m.max_lvl_defense) || 0;
+        const spd = Number(m.speed) || 0;
 
-      if (stars && hp && atk && def && spd) {
-        total.stars += stars;
-        total.hp += hp;
-        total.atk += atk;
-        total.def += def;
-        total.spd += spd;
+        if (hp && atk && def && spd) {
+          total.hp += hp;
+          total.atk += atk;
+          total.def += def;
+          total.spd += spd;
 
-        min.stars = Math.min(min.stars, stars);
-        min.hp = Math.min(min.hp, hp);
-        min.atk = Math.min(min.atk, atk);
-        min.def = Math.min(min.def, def);
-        min.spd = Math.min(min.spd, spd);
+          min.hp = Math.min(min.hp, hp);
+          min.atk = Math.min(min.atk, atk);
+          min.def = Math.min(min.def, def);
+          min.spd = Math.min(min.spd, spd);
 
-        max.stars = Math.max(max.stars, stars);
-        max.hp = Math.max(max.hp, hp);
-        max.atk = Math.max(max.atk, atk);
-        max.def = Math.max(max.def, def);
-        max.spd = Math.max(max.spd, spd);
+          max.hp = Math.max(max.hp, hp);
+          max.atk = Math.max(max.atk, atk);
+          max.def = Math.max(max.def, def);
+          max.spd = Math.max(max.spd, spd);
 
-        count++;
-      }
-    });
+          count++;
+        }
+      });
 
     averages = {
-      stars: (total.stars / count).toFixed(1),
-      hp: Math.round(total.hp / count),
-      atk: Math.round(total.atk / count),
-      def: Math.round(total.def / count),
-      spd: Math.round(total.spd / count)
+      hp: count ? Math.round(total.hp / count) : 0,
+      atk: count ? Math.round(total.atk / count) : 0,
+      def: count ? Math.round(total.def / count) : 0,
+      spd: count ? Math.round(total.spd / count) : 0
     };
 
     statsRange = { min, max };
-    console.log("Moyennes calculées :", averages);
+    console.log("Moyennes calculées (6* éveillés) :", averages);
     console.log("Bornes min/max :", statsRange);
 
   } catch (err) {
@@ -112,7 +109,6 @@ function createCard(monster) {
       <span class="small">Archetype: ${monster.archetype || "–"}</span>
     </p>
     <div class="stat-grid">
-      ${renderStat("Étoiles", monster.base_stars, averages.stars, statsRange.min.stars, statsRange.max.stars)}
       ${renderStat("HP", monster.max_lvl_hp, averages.hp, statsRange.min.hp, statsRange.max.hp)}
       ${renderStat("ATK", monster.max_lvl_attack, averages.atk, statsRange.min.atk, statsRange.max.atk)}
       ${renderStat("DEF", monster.max_lvl_defense, averages.def, statsRange.min.def, statsRange.max.def)}
@@ -135,7 +131,7 @@ function initSearchBlock(id) {
   function doSearch() {
     const q = input.value.trim().toLowerCase();
     if (!q) return;
-    const found = monsters.find(m => m.name && m.name.toLowerCase().includes(q));
+    const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(q));
     results.innerHTML = "";
     if (found && !selectedMonsters.has(found.name)) {
       selectedMonsters.add(found.name);
@@ -163,7 +159,7 @@ function initMultiSearch() {
     results.innerHTML = "";
     names.forEach(n => {
       if (!n) return;
-      const found = monsters.find(m => m.name && m.name.toLowerCase().includes(n));
+      const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(n));
       if (found && !selectedMonsters.has(found.name)) {
         selectedMonsters.add(found.name);
         results.appendChild(createCard(found));
@@ -192,7 +188,13 @@ function autocomplete(input, suggestionsBox, isMulti) {
     if (!lastWord) return;
 
     const matches = monsters
-      .filter(m => m.name && m.name.toLowerCase().includes(lastWord) && !selectedMonsters.has(m.name))
+      .filter(m =>
+        m.base_stars === 6 &&
+        m.is_awakened === true &&
+        m.name &&
+        m.name.toLowerCase().includes(lastWord) &&
+        !selectedMonsters.has(m.name)
+      )
       .slice(0, SUGGESTION_LIMIT);
 
     matches.forEach(m => {
