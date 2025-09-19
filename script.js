@@ -1,5 +1,6 @@
 /* tada*/
 document.getElementById('searchBtn').addEventListener('click', searchMonster);
+document.getElementById('resetBtn').addEventListener('click', resetSearch);
 
 document.getElementById('searchInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
@@ -45,4 +46,9 @@ function searchMonster() {
 
 function showResult(html) {
   document.getElementById('result').innerHTML = html;
+}
+
+function resetSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('result').innerHTML = '';
 }
