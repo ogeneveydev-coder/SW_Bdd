@@ -1,17 +1,11 @@
-const APP_VERSION = "5.2";
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
-});
+const APP_VERSION = "2.9";
+document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
 
-const CSS_VERSION = "5.2";
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
-});
+const CSS_VERSION = "3.7";
+document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
 
-const SCRIPT_VERSION = "5.2";
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
-});
+const SCRIPT_VERSION = "4.5";
+document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
 
 let monsters = [];
 let averages = {};
@@ -27,10 +21,10 @@ async function loadMonsters() {
     const res = await fetch('bestiary_data.json');
     const raw = await res.json();
 
-    // âœ… extraction des champs "fields"
+    // ✅ extraction des champs "fields"
     monsters = raw.map(m => m.fields);
 
-    console.log(`âœ… Monster Search chargÃ© avec ${monsters.length} monstres.`);
+    console.log(`✅ Monster Search chargé avec ${monsters.length} monstres.`);
 
     const total = { hp:0, atk:0, def:0, spd:0 };
     const min = { hp:Infinity, atk:Infinity, def:Infinity, spd:Infinity };
@@ -73,7 +67,7 @@ async function loadMonsters() {
     };
 
     statsRange = { min, max };
-    console.log("Moyennes calculÃ©es (6* Ã©veillÃ©s) :", averages);
+    console.log("Moyennes calculées (6* éveillés) :", averages);
     console.log("Bornes min/max :", statsRange);
 
   } catch (err) {
@@ -111,8 +105,8 @@ function createCard(monster) {
     <h3>${monster.name}</h3>
     <p>
       ${elemIconUrl ? `<img class="icon" src="${elemIconUrl}" alt="${monster.element}">` : ""}
-      <span class="small">${monster.element || "â€""}</span><br>
-      <span class="small">Archetype: ${monster.archetype || "â€""}</span>
+      <span class="small">${monster.element || "–"}</span><br>
+      <span class="small">Archetype: ${monster.archetype || "–"}</span>
     </p>
     <div class="stat-grid">
       ${renderStat("HP", monster.max_lvl_hp, averages.hp, statsRange.min.hp, statsRange.max.hp)}
@@ -140,7 +134,11 @@ function initSearchBlock(id) {
     const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(q));
     results.innerHTML = "";
 
+    // ✅ Reset des sélections pour permettre de relancer une recherche complète
+    selectedMonsters.clear();
+
     if (found) {
+      selectedMonsters.add(found.name);
       results.appendChild(createCard(found));
     }
   }
@@ -164,10 +162,14 @@ function initMultiSearch() {
     const names = input.value.trim().toLowerCase().split(/\s+/);
     results.innerHTML = "";
 
+    // ✅ Reset des sélections ici aussi
+    selectedMonsters.clear();
+
     names.forEach(n => {
       if (!n) return;
       const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(n));
-      if (found) {
+      if (found && !selectedMonsters.has(found.name)) {
+        selectedMonsters.add(found.name);
         results.appendChild(createCard(found));
       }
     });
@@ -180,7 +182,7 @@ function initMultiSearch() {
 }
 
 // =======================
-// AutocomplÃ©tion
+// Autocomplétion
 // =======================
 function autocomplete(input, suggestionsBox, isMulti) {
   let currentIndex = -1;
@@ -198,7 +200,8 @@ function autocomplete(input, suggestionsBox, isMulti) {
         m.base_stars === 6 &&
         m.is_awakened === true &&
         m.name &&
-        m.name.toLowerCase().includes(lastWord)
+        m.name.toLowerCase().includes(lastWord) &&
+        !selectedMonsters.has(m.name)
       )
       .slice(0, SUGGESTION_LIMIT);
 
@@ -257,12 +260,10 @@ function initReset() {
 // =======================
 // Initialisation
 // =======================
-document.addEventListener('DOMContentLoaded', function() {
-  loadMonsters().then(() => {
-    initSearchBlock("search1");
-    initSearchBlock("search2");
-    initSearchBlock("search3");
-    initMultiSearch();
-    initReset();
-  });
+loadMonsters().then(() => {
+  initSearchBlock("search1");
+  initSearchBlock("search2");
+  initSearchBlock("search3");
+  initMultiSearch();
+  initReset();
 });
