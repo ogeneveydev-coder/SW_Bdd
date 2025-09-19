@@ -39,3 +39,30 @@ button:hover {
   border-radius: 8px;
   box-shadow: 0 0 5px #0002;
 }
+
+.results-container {
+  display: flex;
+  flex-wrap: wrap; /* Permet aux cartes de passer à la ligne si l'espace manque */
+  gap: 16px; /* Espace entre les cartes */
+  justify-content: center; /* Centre les cartes dans le conteneur */
+}
+
+.monster-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  width: 150px; /* Largeur fixe pour chaque carte */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: #f9f9f9;
+}
+
+.monster-card h2 {
+  margin-top: 0;
+  font-size: 1.1em;
+}
+
+.monster-card img {
+  max-width: 100px;
+  height: auto;
+}
