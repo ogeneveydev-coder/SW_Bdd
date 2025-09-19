@@ -25,15 +25,13 @@ function searchMonster() {
         return;
       }
 
-      // Construction de l'URL de l'image Swarfarm à partir du champ image_filename
-      const imgUrl = `https://swarfarm.com/static/images/monsters/${monster.fields.image_filename}`;
+
       // Construction de l'URL de l'image Swarfarm de manière plus fiable
       // La méthode que vous utilisez dans votre nouveau fichier est la meilleure :
       const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${monster.fields.image_filename}`;
 
       showResult(`
         <h2>${monster.fields.name}</h2>
-        <img src="${imgUrl}" alt="${monster.fields.name}">
         <img src="${imgUrl}" alt="${monster.fields.name}" style="max-width: 100px;">
       `);
     })
