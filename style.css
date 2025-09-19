@@ -1,6 +1,6 @@
 /* ================================
    STYLE.CSS - Version 5.0
-   - Cartes réduites PC et mobile optimisé
+   - Cartes rÃ©duites PC et mobile optimisÃ©
    ================================ */
 
 /* ===== GLOBAL ===== */
@@ -76,7 +76,7 @@ p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
   box-shadow: 0 0 8px #4a90e2;
 }
 
-/* Suggestions par défaut */
+/* Suggestions par dÃ©faut */
 .input-wrap .suggestions {
   position: absolute;
   top: calc(100% + 8px);
@@ -140,7 +140,7 @@ p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   width: 90%;
-  max-width: 180px; /* réduit pour PC */
+  max-width: 180px; /* rÃ©duit pour PC */
 }
 .card:hover {
   transform: scale(1.03);
@@ -181,4 +181,92 @@ p.lead { margin: 0 0 1.5rem 0; color: #bbb; }
   width: 100%;
   max-width: 500px;
   margin: 0.5rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+#multiSuggestions {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
+  background: #242731;
+  border: 1px solid #333;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  overflow: hidden;
+  z-index: 2000;
+}
+#multiSuggestions:empty { display: none; }
+#multiSuggestions div {
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #eee;
+  border-bottom: 1px solid #333;
+}
+#multiSuggestions div:last-child { border-bottom: none; }
+#multiSuggestions div:hover,
+#multiSuggestions .active { background: #3a3f52; }
+
+.results-multi {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ===== MOBILE OPTIMISÃ‰ ===== */
+@media (max-width: 768px) {
+  .results-multi {
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  .results-multi .card {
+    max-width: 120px;
+    padding: 0.5rem;
+  }
+  .results-multi .card img.monster {
+    width: 60px;
+    height: 60px;
+  }
+  .results-multi .card h3 { font-size: 0.9rem; }
+  /* Masquer toutes les stats sauf vitesse */
+  .results-multi .stat-grid div { display: none; }
+  .results-multi .stat-grid div:nth-child(5) { display: block; }
+  .results-multi .stat-grid {
+    grid-template-columns: 1fr;
+    font-size: 0.8rem;
+    text-align: center;
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+.fade-in { animation: fadeInUp 0.4s ease forwards; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+
+/* ===== PROGRESS BARS ===== */
+.stat { margin-bottom: 0.6rem; }
+.progress-bar {
+  position: relative;
+  background: #333;
+  border-radius: 6px;
+  height: 10px;
+  margin: 0.3rem 0;
+}
+.progress {
+  height: 100%;
+  border-radius: 6px;
+}
+.progress.green { background: #4caf50; }
+.progress.red { background: #e53935; }
+.avg-marker {
+  position: absolute;
+  top: -2px;
+  width: 2px;
+  height: 14px;
+  background: #ffeb3b;
 }
