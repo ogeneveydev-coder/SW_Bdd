@@ -1,11 +1,17 @@
-const APP_VERSION = "5.1";
-document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
+const APP_VERSION = "5.2";
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
+});
 
-const CSS_VERSION = "5.1";
-document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
+const CSS_VERSION = "5.2";
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
+});
 
-const SCRIPT_VERSION = "5.1";
-document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
+const SCRIPT_VERSION = "5.2";
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
+});
 
 let monsters = [];
 let averages = {};
@@ -134,11 +140,7 @@ function initSearchBlock(id) {
     const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(q));
     results.innerHTML = "";
 
-    // âœ… Reset des sÃ©lections pour permettre de relancer une recherche complÃ¨te
-    selectedMonsters.clear();
-
     if (found) {
-      selectedMonsters.add(found.name);
       results.appendChild(createCard(found));
     }
   }
@@ -162,14 +164,10 @@ function initMultiSearch() {
     const names = input.value.trim().toLowerCase().split(/\s+/);
     results.innerHTML = "";
 
-    // âœ… Reset des sÃ©lections ici aussi
-    selectedMonsters.clear();
-
     names.forEach(n => {
       if (!n) return;
       const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(n));
-      if (found && !selectedMonsters.has(found.name)) {
-        selectedMonsters.add(found.name);
+      if (found) {
         results.appendChild(createCard(found));
       }
     });
@@ -200,8 +198,7 @@ function autocomplete(input, suggestionsBox, isMulti) {
         m.base_stars === 6 &&
         m.is_awakened === true &&
         m.name &&
-        m.name.toLowerCase().includes(lastWord) &&
-        !selectedMonsters.has(m.name)
+        m.name.toLowerCase().includes(lastWord)
       )
       .slice(0, SUGGESTION_LIMIT);
 
@@ -260,10 +257,12 @@ function initReset() {
 // =======================
 // Initialisation
 // =======================
-loadMonsters().then(() => {
-  initSearchBlock("search1");
-  initSearchBlock("search2");
-  initSearchBlock("search3");
-  initMultiSearch();
-  initReset();
+document.addEventListener('DOMContentLoaded', function() {
+  loadMonsters().then(() => {
+    initSearchBlock("search1");
+    initSearchBlock("search2");
+    initSearchBlock("search3");
+    initMultiSearch();
+    initReset();
+  });
 });
