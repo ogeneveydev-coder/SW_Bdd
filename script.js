@@ -24,8 +24,8 @@ function searchMonster() {
         return;
       }
 
-      // Construction de l'URL de l'image Swarfarm
-      const imgUrl = `https://swarfarm.com/static/images/monsters/${monster.fields.com2us_id}.png`;
+      // Construction de l'URL de l'image Swarfarm à partir du champ image_filename
+      const imgUrl = `https://swarfarm.com/static/images/monsters/${monster.fields.image_filename}`;
 
       showResult(`
         <h2>${monster.fields.name}</h2>
