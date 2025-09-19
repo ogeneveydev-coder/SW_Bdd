@@ -1,9 +1,0 @@
-{
-  "name": "Monster Search",
-  "short_name": "Monsters",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#1e1e2f",
-  "theme_color": "#000000",
-  "icons": []
-}
