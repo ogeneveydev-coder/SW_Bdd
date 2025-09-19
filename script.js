@@ -21,10 +21,10 @@ async function loadMonsters() {
     const res = await fetch('bestiary_data.json');
     const raw = await res.json();
 
-    // ✅ extraction des champs "fields"
+    // âœ… extraction des champs "fields"
     monsters = raw.map(m => m.fields);
 
-    console.log(`✅ Monster Search chargé avec ${monsters.length} monstres.`);
+    console.log(`âœ… Monster Search chargÃ© avec ${monsters.length} monstres.`);
 
     const total = { hp:0, atk:0, def:0, spd:0 };
     const min = { hp:Infinity, atk:Infinity, def:Infinity, spd:Infinity };
@@ -67,7 +67,7 @@ async function loadMonsters() {
     };
 
     statsRange = { min, max };
-    console.log("Moyennes calculées (6* éveillés) :", averages);
+    console.log("Moyennes calculÃ©es (6* Ã©veillÃ©s) :", averages);
     console.log("Bornes min/max :", statsRange);
 
   } catch (err) {
@@ -105,8 +105,8 @@ function createCard(monster) {
     <h3>${monster.name}</h3>
     <p>
       ${elemIconUrl ? `<img class="icon" src="${elemIconUrl}" alt="${monster.element}">` : ""}
-      <span class="small">${monster.element || "–"}</span><br>
-      <span class="small">Archetype: ${monster.archetype || "–"}</span>
+      <span class="small">${monster.element || "â€""}</span><br>
+      <span class="small">Archetype: ${monster.archetype || "â€""}</span>
     </p>
     <div class="stat-grid">
       ${renderStat("HP", monster.max_lvl_hp, averages.hp, statsRange.min.hp, statsRange.max.hp)}
@@ -134,7 +134,7 @@ function initSearchBlock(id) {
     const found = monsters.find(m => m.base_stars === 6 && m.is_awakened === true && m.name && m.name.toLowerCase().includes(q));
     results.innerHTML = "";
 
-    // ✅ Reset des sélections pour permettre de relancer une recherche complète
+    // âœ… Reset des sÃ©lections pour permettre de relancer une recherche complÃ¨te
     selectedMonsters.clear();
 
     if (found) {
@@ -162,7 +162,7 @@ function initMultiSearch() {
     const names = input.value.trim().toLowerCase().split(/\s+/);
     results.innerHTML = "";
 
-    // ✅ Reset des sélections ici aussi
+    // âœ… Reset des sÃ©lections ici aussi
     selectedMonsters.clear();
 
     names.forEach(n => {
@@ -182,7 +182,7 @@ function initMultiSearch() {
 }
 
 // =======================
-// Autocomplétion
+// AutocomplÃ©tion
 // =======================
 function autocomplete(input, suggestionsBox, isMulti) {
   let currentIndex = -1;
