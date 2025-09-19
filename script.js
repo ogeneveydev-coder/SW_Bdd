@@ -1,3 +1,4 @@
+/* tada*/
 document.getElementById('searchBtn').addEventListener('click', searchMonster);
 
 document.getElementById('searchInput').addEventListener('keydown', function(e) {
