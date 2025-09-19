@@ -1,10 +1,10 @@
-const APP_VERSION = "5.0";
+const APP_VERSION = "5.1";
 document.getElementById("versionLabel").textContent = `HTML v${APP_VERSION}`;
 
-const CSS_VERSION = "5.0";
+const CSS_VERSION = "5.1";
 document.getElementById("cssVersionLabel").textContent = `CSS v${CSS_VERSION}`;
 
-const SCRIPT_VERSION = "5.0";
+const SCRIPT_VERSION = "5.1";
 document.getElementById("scriptVersionLabel").textContent = `JS v${SCRIPT_VERSION}`;
 
 let monsters = [];
