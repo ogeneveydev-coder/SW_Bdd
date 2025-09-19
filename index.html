@@ -8,7 +8,10 @@
 </head>
 <body>
   <h1>Recherche de Monstre (Summoners War)</h1>
-  <input type="text" id="searchInput" placeholder="Nom du monstre...">
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Nom du monstre..." autocomplete="off">
+    <div id="suggestions-container"></div> <!-- Conteneur pour les suggestions -->
+  </div>
   <button id="searchBtn">Search</button>
   <button id="resetBtn">Reset</button> <!-- Bouton ajouté -->
   <div id="result"></div>
