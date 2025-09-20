@@ -137,8 +137,9 @@ button:hover {
 }
 
 .jarvis-image-container img {
-  max-width: 90px;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Fait en sorte que l'image remplisse le cercle sans se déformer */
   filter: drop-shadow(0 0 5px var(--jarvis-blue));
 }
 
