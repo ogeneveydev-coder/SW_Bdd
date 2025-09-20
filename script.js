@@ -12,6 +12,14 @@ window.addEventListener('DOMContentLoaded', () => {
       console.error("Erreur lors du chargement des données du bestiaire.", err);
       showResult("Impossible de charger les données des monstres.");
     });
+
+  // Ajoute un écouteur de clic sur le conteneur de résultats pour gérer la rotation des cartes
+  document.getElementById('result').addEventListener('click', function(e) {
+    const card = e.target.closest('.jarvis-card');
+    if (card) {
+      card.classList.toggle('is-flipped');
+    }
+  });
 });
 
 document.getElementById('searchBtn').addEventListener('click', searchMonster);
@@ -48,18 +56,38 @@ function searchMonster() {
 
   // Construit une carte HTML pour chaque monstre trouvé
   const cardsHtml = foundMonsters.map(monster => {
-    const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${monster.fields.image_filename}`;
+    const { name, element, archetype, base_hp, base_attack, base_defense, speed, image_filename } = monster.fields;
+    const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
     return `
       <div class="jarvis-card">
-        <div class="jarvis-corner top-left"></div>
-        <div class="jarvis-corner top-right"></div>
-        <div class="jarvis-corner bottom-left"></div>
-        <div class="jarvis-corner bottom-right"></div>
-        <div class="jarvis-content">
-            <div class="jarvis-image-container">
-                <img src="${imgUrl}" alt="${monster.fields.name}">
+        <div class="jarvis-card-inner">
+          <!-- Face Avant -->
+          <div class="jarvis-card-front">
+            <div class="jarvis-corner top-left"></div>
+            <div class="jarvis-corner top-right"></div>
+            <div class="jarvis-corner bottom-left"></div>
+            <div class="jarvis-corner bottom-right"></div>
+            <div class="jarvis-content">
+                <div class="jarvis-image-container">
+                    <img src="${imgUrl}" alt="${name}">
+                </div>
+                <div class="jarvis-name">${name}</div>
             </div>
-            <div class="jarvis-name">${monster.fields.name}</div>
+          </div>
+          <!-- Face Arrière -->
+          <div class="jarvis-card-back">
+            <div class="jarvis-corner top-left"></div>
+            <div class="jarvis-corner top-right"></div>
+            <div class="jarvis-corner bottom-left"></div>
+            <div class="jarvis-corner bottom-right"></div>
+            <div class="jarvis-stats">
+                <div class="jarvis-name">${name}</div>
+                <p><span>Element:</span> ${element}</p>
+                <p><span>Archetype:</span> ${archetype}</p>
+                <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
+                <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
+            </div>
+          </div>
         </div>
       </div>
     `;
