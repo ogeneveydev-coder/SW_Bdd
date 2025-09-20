@@ -70,6 +70,8 @@ searchInput.addEventListener('input', () => {
   const query = searchInput.value;
   const words = query.split(' ');
   const currentWord = words[words.length - 1].trim().toLowerCase();
+  // Récupère les noms déjà tapés pour ne pas les suggérer à nouveau
+  const existingNames = new Set(words.slice(0, -1).map(w => w.trim().toLowerCase()));
 
   if (currentWord.length === 0) {
     clearSuggestions();
@@ -77,7 +79,11 @@ searchInput.addEventListener('input', () => {
   }
 
   const suggestions = allMonsters
-    .filter(m => m.fields.name.toLowerCase().startsWith(currentWord))
+    .filter(m => {
+      const monsterNameLower = m.fields.name.toLowerCase();
+      // Suggère seulement si le nom commence par le mot actuel ET n'est pas déjà dans la recherche
+      return monsterNameLower.startsWith(currentWord) && !existingNames.has(monsterNameLower);
+    })
     .slice(0, 5);
 
   if (suggestions.length > 0) {
