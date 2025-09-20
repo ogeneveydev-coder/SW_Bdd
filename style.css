@@ -1,97 +1,3 @@
-body {
-  font-family: Arial, sans-serif;
-  max-width: 600px;
-  margin: 40px auto;
-  padding: 20px;
-  background: #f8f8fa;
-  color: #222;
-}
-
-input, button {
-  padding: 8px 12px;
-  margin: 5px 0;
-  font-size: 1rem;
-}
-
-button {
-  background-color: #4e6cff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #3048b0;
-}
-
-#result {
-  margin-top: 30px;
-  padding: 20px;
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 0 12px #0001;
-}
-
-#result img {
-  max-width: 120px;
-  margin: 10px;
-  border-radius: 8px;
-  box-shadow: 0 0 5px #0002;
-}
-
-.results-container {
-  display: flex;
-  flex-wrap: wrap; /* Permet aux cartes de passer à la ligne si l'espace manque */
-  gap: 16px; /* Espace entre les cartes */
-  justify-content: center; /* Centre les cartes dans le conteneur */
-}
-
-.monster-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-  width: 150px; /* Largeur fixe pour chaque carte */
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  background-color: #f9f9f9;
-}
-
-.monster-card h2 {
-  margin-top: 0;
-  font-size: 1.1em;
-}
-
-.monster-card img {
-  max-width: 100px;
-  height: auto;
-}
-
-.search-container {
-  position: relative; /* Nécessaire pour positionner les suggestions */
-  display: inline-block; /* Pour que le conteneur ne prenne pas toute la largeur */
-}
-
-#suggestions-container {
-  position: absolute;
-  border: 1px solid #ddd;
-  border-top: none;
-  z-index: 99;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: white;
-}
-
-.suggestion-item {
-  padding: 10px;
-  cursor: pointer;
-}
-
-.suggestion-item:hover {
-  background-color: #e9e9e9;
-}
-
 /* --- Style Jarvis / Minority Report --- */
 
 /* Pour un effet optimal, ajoutez cette police à votre fichier HTML dans la balise <head> */
@@ -104,9 +10,73 @@ button:hover {
 :root {
   --jarvis-blue: #00b8ff;
   --jarvis-bg: rgba(0, 50, 100, 0.15);
+  --jarvis-bg-solid: #0a0a14;
 }
 
-/* Le conteneur principal pour les résultats */
+body {
+  font-family: 'Orbitron', sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: var(--jarvis-bg-solid);
+  color: white;
+  text-align: center; /* Centrer le contenu principal */
+}
+
+input, button {
+  padding: 8px 12px;
+  margin: 5px 0;
+  font-size: 1rem;
+  font-family: 'Orbitron', sans-serif;
+  background: var(--jarvis-bg);
+  border: 1px solid var(--jarvis-blue);
+  color: white;
+  box-shadow: 0 0 5px var(--jarvis-blue), inset 0 0 3px rgba(0, 184, 255, 0.5);
+  border-radius: 4px;
+}
+
+button {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--jarvis-blue);
+  color: var(--jarvis-bg-solid);
+  box-shadow: 0 0 20px var(--jarvis-blue);
+}
+
+#result {
+  margin-top: 30px;
+}
+
+.search-container {
+  position: relative; /* Nécessaire pour positionner les suggestions */
+  display: inline-block; /* Pour que le conteneur ne prenne pas toute la largeur */
+  text-align: left;
+}
+
+#suggestions-container {
+  position: absolute;
+  border: 1px solid #ddd;
+  border-top: none;
+  z-index: 99;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--jarvis-bg-solid);
+}
+
+.suggestion-item {
+  padding: 10px;
+  cursor: pointer;
+  color: var(--jarvis-blue);
+}
+
+.suggestion-item:hover {
+  background-color: var(--jarvis-bg);
+}
+
+/* --- Cartes de résultats --- */
 .results-container {
   display: flex;
   flex-wrap: wrap;
@@ -115,7 +85,6 @@ button:hover {
   padding: 20px;
 }
 
-/* La carte elle-même */
 .jarvis-card {
   position: relative;
   width: 200px;
@@ -125,7 +94,7 @@ button:hover {
   box-shadow: 0 0 15px var(--jarvis-blue), inset 0 0 10px rgba(0, 184, 255, 0.5);
   color: white;
   padding: 20px;
-  font-family: 'Orbitron', sans-serif; /* Police futuriste */
+  font-family: 'Orbitron', sans-serif;
   animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -134,7 +103,6 @@ button:hover {
   to { opacity: 1; transform: scale(1); }
 }
 
-/* Les équerres dans les coins */
 .jarvis-corner {
   position: absolute;
   width: 20px;
@@ -147,7 +115,6 @@ button:hover {
 .jarvis-corner.bottom-left { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
 .jarvis-corner.bottom-right { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
 
-/* Contenu à l'intérieur de la carte */
 .jarvis-content {
   display: flex;
   flex-direction: column;
