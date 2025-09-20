@@ -57,16 +57,13 @@ function searchMonster() {
   // Construit une carte HTML pour chaque monstre trouvé
   const cardsHtml = foundMonsters.map(monster => {
     const { name, element, archetype, base_hp, base_attack, base_defense, speed, image_filename } = monster.fields;
+    const statRings = createStatRingsSVG(monster.fields);
     const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
     return `
       <div class="jarvis-card">
         <div class="jarvis-card-inner">
           <!-- Face Avant -->
           <div class="jarvis-card-front">
-            <div class="jarvis-corner top-left"></div>
-            <div class="jarvis-corner top-right"></div>
-            <div class="jarvis-corner bottom-left"></div>
-            <div class="jarvis-corner bottom-right"></div>
             <div class="jarvis-content">
                 <div class="jarvis-image-container">
                     <img src="${imgUrl}" alt="${name}">
@@ -76,10 +73,6 @@ function searchMonster() {
           </div>
           <!-- Face Arrière -->
           <div class="jarvis-card-back">
-            <div class="jarvis-corner top-left"></div>
-            <div class="jarvis-corner top-right"></div>
-            <div class="jarvis-corner bottom-left"></div>
-            <div class="jarvis-corner bottom-right"></div>
             <div class="jarvis-stats">
                 <div class="jarvis-name">${name}</div>
                 <p><span>Element:</span> ${element}</p>
@@ -166,4 +159,33 @@ function resetSearch() {
 function strNoAccent(str) {
   // Sépare les caractères de base de leurs accents, puis supprime les accents
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function createStatRingsSVG(stats) {
+  const { base_hp, base_attack, base_defense, speed } = stats;
+
+  // Valeurs maximales de référence pour calculer les pourcentages
+  const MAX_STATS = { hp: 20000, atk: 1000, def: 1000, spd: 135 };
+
+  // Configuration de chaque anneau (rayon et classe CSS)
+  const STAT_CONFIG = [
+    { name: 'hp',  value: base_hp,      radius: 78, class: 'stat-hp' },
+    { name: 'atk', value: base_attack,  radius: 72, class: 'stat-atk' },
+    { name: 'def', value: base_defense, radius: 66, class: 'stat-def' },
+    { name: 'spd', value: speed,        radius: 60, class: 'stat-spd' }
+  ];
+
+  const rings = STAT_CONFIG.map(stat => {
+    const max = MAX_STATS[stat.name];
+    const percentage = Math.min(stat.value / max, 1); // Plafonne à 100%
+    const circumference = 2 * Math.PI * stat.radius;
+    const offset = circumference * (1 - percentage);
+
+    return `
+      <circle class="stat-ring-bg" cx="80" cy="80" r="${stat.radius}"></circle>
+      <circle class="stat-ring ${stat.class}" cx="80" cy="80" r="${stat.radius}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>
+    `;
+  }).join('');
+
+  return `<svg class="stat-rings" viewBox="0 0 160 160">${rings}</svg>`;
 }

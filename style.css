@@ -113,13 +113,18 @@ button:hover {
   -webkit-backface-visibility: hidden; /* Pour Safari */
   backface-visibility: hidden;
   background: var(--jarvis-bg);
-  border: 1px solid var(--jarvis-blue);
-  box-shadow: 0 0 15px var(--jarvis-blue), inset 0 0 10px rgba(0, 184, 255, 0.5);
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
+}
+
+.jarvis-card-front {
+  border: 1px solid var(--jarvis-blue);
+  box-shadow: 0 0 15px var(--jarvis-blue), inset 0 0 10px rgba(0, 184, 255, 0.5);
 }
 
 .jarvis-card-back {
@@ -143,22 +148,17 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 20px;
+  justify-content: space-between;
   height: 100%;
 }
 
 .jarvis-image-container {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 2px solid var(--jarvis-blue);
-  box-shadow: 0 0 20px var(--jarvis-blue);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  width: 160px;
+  height: 160px;
   overflow: hidden;
-  margin-bottom: 20px;
+  display: grid;
+  place-items: center;
 }
 
 .jarvis-image-container img {
@@ -166,6 +166,10 @@ button:hover {
   height: 100%;
   object-fit: cover; /* Fait en sorte que l'image remplisse le cercle sans se déformer */
   filter: drop-shadow(0 0 5px var(--jarvis-blue));
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  z-index: 2;
 }
 
 .jarvis-name {
@@ -193,4 +197,47 @@ button:hover {
 
 .jarvis-stats span {
   color: var(--jarvis-blue);
+}
+
+/* --- Styles pour les anneaux de stats --- */
+.stat-rings {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* Fait commencer les cercles en haut */
+  z-index: 1;
+}
+
+.stat-ring, .stat-ring-bg {
+  fill: transparent;
+  stroke-width: 5;
+}
+
+.stat-ring-bg {
+  stroke: rgba(0, 184, 255, 0.1);
+}
+
+.stat-ring {
+  transition: stroke-dashoffset 1s cubic-bezier(0.25, 1, 0.5, 1);
+  stroke-linecap: round;
+}
+
+/* Couleurs pour chaque stat */
+.stat-hp {
+  stroke: #4caf50; /* Vert */
+  filter: drop-shadow(0 0 3px #4caf50);
+}
+.stat-atk {
+  stroke: #f44336; /* Rouge */
+  filter: drop-shadow(0 0 3px #f44336);
+}
+.stat-def {
+  stroke: #2196f3; /* Bleu */
+  filter: drop-shadow(0 0 3px #2196f3);
+}
+.stat-spd {
+  stroke: #ffeb3b; /* Jaune */
+  filter: drop-shadow(0 0 3px #ffeb3b);
 }
