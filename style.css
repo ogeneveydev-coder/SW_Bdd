@@ -241,3 +241,45 @@ button:hover {
   stroke: #ffeb3b; /* Jaune */
   filter: drop-shadow(0 0 3px #ffeb3b);
 }
+
+/* --- Styles pour l'icône d'élément --- */
+.jarvis-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.element-icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  flex-shrink: 0; /* Empêche l'icône de rétrécir */
+}
+
+.element-icon.fire {
+  background-color: #f44336;
+  box-shadow: 0 0 8px #f44336;
+}
+
+.element-icon.water {
+  background-color: #2196f3;
+  box-shadow: 0 0 8px #2196f3;
+}
+
+.element-icon.wind {
+  background-color: #ffeb3b;
+  box-shadow: 0 0 8px #ffeb3b;
+}
+
+.element-icon.light {
+  background-color: #fffde7;
+  box-shadow: 0 0 8px #fffde7;
+}
+
+.element-icon.dark {
+  background-color: #4a148c;
+  box-shadow: 0 0 8px #4a148c;
+}

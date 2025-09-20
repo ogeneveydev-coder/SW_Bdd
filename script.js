@@ -73,7 +73,10 @@ function searchMonster() {
                     ${statRings}
                     <img src="${imgUrl}" alt="${name}">
                 </div>
-                <div class="jarvis-name">${name}</div>
+                <div class="jarvis-title-container">
+                  <div class="jarvis-name">${name}</div>
+                  <div class="element-icon ${element.toLowerCase()}"></div>
+                </div>
             </div>
           </div>
           <!-- Face Arrière -->
@@ -83,7 +86,10 @@ function searchMonster() {
             <div class="jarvis-corner bottom-left"></div>
             <div class="jarvis-corner bottom-right"></div>
             <div class="jarvis-stats">
-                <div class="jarvis-name">${name}</div>
+                <div class="jarvis-title-container">
+                  <div class="jarvis-name">${name}</div>
+                  <div class="element-icon ${element.toLowerCase()}"></div>
+                </div>
                 <p><span>Element:</span> ${element}</p>
                 <p><span>Archetype:</span> ${archetype}</p>
                 <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
