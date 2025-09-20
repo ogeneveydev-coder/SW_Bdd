@@ -64,8 +64,13 @@ function searchMonster() {
         <div class="jarvis-card-inner">
           <!-- Face Avant -->
           <div class="jarvis-card-front">
+            <div class="jarvis-corner top-left"></div>
+            <div class="jarvis-corner top-right"></div>
+            <div class="jarvis-corner bottom-left"></div>
+            <div class="jarvis-corner bottom-right"></div>
             <div class="jarvis-content">
                 <div class="jarvis-image-container">
+                    ${statRings}
                     <img src="${imgUrl}" alt="${name}">
                 </div>
                 <div class="jarvis-name">${name}</div>
@@ -73,6 +78,10 @@ function searchMonster() {
           </div>
           <!-- Face Arrière -->
           <div class="jarvis-card-back">
+            <div class="jarvis-corner top-left"></div>
+            <div class="jarvis-corner top-right"></div>
+            <div class="jarvis-corner bottom-left"></div>
+            <div class="jarvis-corner bottom-right"></div>
             <div class="jarvis-stats">
                 <div class="jarvis-name">${name}</div>
                 <p><span>Element:</span> ${element}</p>
