@@ -50,9 +50,17 @@ function searchMonster() {
   const cardsHtml = foundMonsters.map(monster => {
     const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${monster.fields.image_filename}`;
     return `
-      <div class="monster-card">
-        <h2>${monster.fields.name}</h2>
-        <img src="${imgUrl}" alt="${monster.fields.name}">
+      <div class="jarvis-card">
+        <div class="jarvis-corner top-left"></div>
+        <div class="jarvis-corner top-right"></div>
+        <div class="jarvis-corner bottom-left"></div>
+        <div class="jarvis-corner bottom-right"></div>
+        <div class="jarvis-content">
+            <div class="jarvis-image-container">
+                <img src="${imgUrl}" alt="${monster.fields.name}">
+            </div>
+            <div class="jarvis-name">${monster.fields.name}</div>
+        </div>
       </div>
     `;
   }).join('');

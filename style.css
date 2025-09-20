@@ -91,3 +91,95 @@ button:hover {
 .suggestion-item:hover {
   background-color: #e9e9e9;
 }
+
+/* --- Style Jarvis / Minority Report --- */
+
+/* Pour un effet optimal, ajoutez cette police à votre fichier HTML dans la balise <head> */
+/*
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+*/
+
+:root {
+  --jarvis-blue: #00b8ff;
+  --jarvis-bg: rgba(0, 50, 100, 0.15);
+}
+
+/* Le conteneur principal pour les résultats */
+.results-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* La carte elle-même */
+.jarvis-card {
+  position: relative;
+  width: 200px;
+  height: 250px;
+  background: var(--jarvis-bg);
+  border: 1px solid var(--jarvis-blue);
+  box-shadow: 0 0 15px var(--jarvis-blue), inset 0 0 10px rgba(0, 184, 255, 0.5);
+  color: white;
+  padding: 20px;
+  font-family: 'Orbitron', sans-serif; /* Police futuriste */
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Les équerres dans les coins */
+.jarvis-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--jarvis-blue);
+  border-style: solid;
+}
+.jarvis-corner.top-left { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+.jarvis-corner.top-right { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+.jarvis-corner.bottom-left { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+.jarvis-corner.bottom-right { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+/* Contenu à l'intérieur de la carte */
+.jarvis-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.jarvis-image-container {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid var(--jarvis-blue);
+  box-shadow: 0 0 20px var(--jarvis-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.jarvis-image-container img {
+  max-width: 90px;
+  height: auto;
+  filter: drop-shadow(0 0 5px var(--jarvis-blue));
+}
+
+.jarvis-name {
+  font-size: 1.2em;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-shadow: 0 0 5px var(--jarvis-blue), 0 0 10px white;
+  letter-spacing: 2px;
+  text-align: center;
+}
