@@ -34,11 +34,11 @@ function searchMonster() {
   }
 
   // Sépare les termes de recherche, nettoie et supprime les doublons
-  const searchTerms = [...new Set(query.split(' ').map(term => term.trim().toLowerCase()).filter(term => term))];
+  const searchTerms = [...new Set(query.split(' ').map(term => strNoAccent(term.trim().toLowerCase())).filter(term => term))];
 
   // Trouve tous les monstres correspondants aux termes de recherche
   const foundMonsters = searchTerms.map(term => {
-    return allMonsters.find(m => m.fields.name.toLowerCase() === term);
+    return allMonsters.find(m => strNoAccent(m.fields.name.toLowerCase()) === term);
   }).filter(Boolean); // Retire les résultats non trouvés (undefined)
 
   if (foundMonsters.length === 0) {
@@ -71,18 +71,19 @@ searchInput.addEventListener('input', () => {
   const words = query.split(' ');
   const currentWord = words[words.length - 1].trim().toLowerCase();
   // Récupère les noms déjà tapés pour ne pas les suggérer à nouveau
-  const existingNames = new Set(words.slice(0, -1).map(w => w.trim().toLowerCase()));
+  const existingNames = new Set(words.slice(0, -1).map(w => strNoAccent(w.trim().toLowerCase())));
 
   if (currentWord.length === 0) {
     clearSuggestions();
     return;
   }
+  const normalizedCurrentWord = strNoAccent(currentWord);
 
   const suggestions = allMonsters
     .filter(m => {
-      const monsterNameLower = m.fields.name.toLowerCase();
+      const monsterNameLower = strNoAccent(m.fields.name.toLowerCase());
       // Suggère seulement si le nom commence par le mot actuel ET n'est pas déjà dans la recherche
-      return monsterNameLower.startsWith(currentWord) && !existingNames.has(monsterNameLower);
+      return monsterNameLower.startsWith(normalizedCurrentWord) && !existingNames.has(monsterNameLower);
     })
     .slice(0, 5);
 
@@ -124,4 +125,9 @@ function resetSearch() {
   searchInput.value = '';
   showResult('');
   clearSuggestions();
+}
+
+function strNoAccent(str) {
+  // Sépare les caractères de base de leurs accents, puis supprime les accents
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
