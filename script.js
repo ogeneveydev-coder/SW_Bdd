@@ -1,10 +1,25 @@
-/* tada*/
+const SCRIPT_VERSION = "1.3";
+const STYLE_VERSION = "1.3";
+
 let allMonsters = []; // Stocker les monstres ici
 
 // Charger les données une seule fois au démarrage
 window.addEventListener('DOMContentLoaded', () => {
+  // --- Affiche les versions des fichiers ---
+  const versionContainer = document.createElement('div');
+  versionContainer.id = 'version-container';
+  versionContainer.innerHTML = `
+    <span>Script: v${SCRIPT_VERSION}</span>
+    <span>Style: v${STYLE_VERSION}</span>
+  `;
+  document.body.prepend(versionContainer);
+  // --- Fin de l'affichage des versions ---
+
   fetch('bestiary_data.json')
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return response.json();
+    })
     .then(data => {
       allMonsters = data.filter(obj => obj.model === "bestiary.monster");
     })
