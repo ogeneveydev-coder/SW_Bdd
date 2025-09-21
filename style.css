@@ -1,3 +1,5 @@
+/* Version: 1.2 */
+
 /* --- Style Jarvis / Minority Report --- */
 
 /* Pour un effet optimal, ajoutez cette police à votre fichier HTML dans la balise <head> */
@@ -219,7 +221,7 @@ button:hover {
 
 .stat-ring, .stat-ring-bg {
   fill: transparent;
-  stroke-width: 5;
+  stroke-width: 8; /* Anneaux plus épais */
 }
 
 .stat-ring-bg {
@@ -227,8 +229,8 @@ button:hover {
 }
 
 .stat-ring {
-  /* Transition de 1s sur la propriété stroke-dashoffset */
-  transition: stroke-dashoffset 1s cubic-bezier(0.25, 1, 0.5, 1);
+  /* Transition de 1.5s sur la propriété stroke-dashoffset pour un effet plus lent */
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1);
   stroke-linecap: round;
 }
 
@@ -236,22 +238,22 @@ button:hover {
 .stat-hp {
   stroke: #4caf50; /* Vert */
   filter: drop-shadow(0 0 3px #4caf50);
-  transition-delay: 0.3s; /* Démarre après 0.3s */
+  transition-delay: 0.3s;
 }
 .stat-atk {
   stroke: #f44336; /* Rouge */
   filter: drop-shadow(0 0 3px #f44336);
-  transition-delay: 0.4s;
+  transition-delay: 0.5s; /* Délais augmentés pour un meilleur effet de cascade */
 }
 .stat-def {
   stroke: #2196f3; /* Bleu */
   filter: drop-shadow(0 0 3px #2196f3);
-  transition-delay: 0.5s;
+  transition-delay: 0.7s;
 }
 .stat-spd {
   stroke: #ffeb3b; /* Jaune */
   filter: drop-shadow(0 0 3px #ffeb3b);
-  transition-delay: 0.6s;
+  transition-delay: 0.9s;
 }
 
 /* --- Styles pour l'icône d'élément --- */
