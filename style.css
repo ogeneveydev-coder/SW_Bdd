@@ -259,34 +259,35 @@ button:hover {
 }
 
 .element-icon {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  width: 18px; /* Taille augmentée pour une meilleure visibilité */
+  height: 18px;
   flex-shrink: 0; /* Empêche l'icône de rétrécir */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .element-icon.fire {
-  background-color: #f44336;
-  box-shadow: 0 0 8px #f44336;
+  background-image: url('icons/fire.png');
+  filter: drop-shadow(0 0 4px #f44336);
 }
 
 .element-icon.water {
-  background-color: #2196f3;
-  box-shadow: 0 0 8px #2196f3;
+  background-image: url('icons/water.png');
+  filter: drop-shadow(0 0 4px #2196f3);
 }
 
 .element-icon.wind {
-  background-color: #ffeb3b;
-  box-shadow: 0 0 8px #ffeb3b;
+  background-image: url('icons/wind.png');
+  filter: drop-shadow(0 0 4px #ffeb3b);
 }
 
 .element-icon.light {
-  background-color: #fffde7;
-  box-shadow: 0 0 8px #fffde7;
+  background-image: url('icons/light.png');
+  filter: drop-shadow(0 0 4px #fffde7);
 }
 
 .element-icon.dark {
-  background-color: #4a148c;
-  box-shadow: 0 0 8px #4a148c;
+  background-image: url('icons/dark.png');
+  filter: drop-shadow(0 0 4px #4a148c);
 }
