@@ -230,7 +230,6 @@ button:hover {
 
 .stat-ring {
   /* Transition de 1.5s sur la propriété stroke-dashoffset pour un effet plus lent */
-  transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1);
   stroke-linecap: round;
   /* On applique le filtre de base ici pour éviter les conflits */
   filter: drop-shadow(0 0 3px var(--glow-color, var(--jarvis-blue)));
@@ -240,22 +239,22 @@ button:hover {
 .stat-hp {
   --glow-color: #4caf50;
   stroke: var(--glow-color); /* Vert */
-  transition-delay: 0.3s;
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.3s;
 }
 .stat-atk {
   --glow-color: #f44336;
   stroke: var(--glow-color); /* Rouge */
-  transition-delay: 0.5s; /* Délais augmentés pour un meilleur effet de cascade */
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.5s;
 }
 .stat-def {
   --glow-color: #2196f3;
   stroke: var(--glow-color); /* Bleu */
-  transition-delay: 0.7s;
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.7s;
 }
 .stat-spd {
   --glow-color: #ffeb3b;
   stroke: var(--glow-color); /* Jaune */
-  transition-delay: 0.9s;
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.9s;
 }
 
 /* --- Styles pour l'icône d'élément --- */
