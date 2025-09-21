@@ -57,13 +57,16 @@ button:hover {
 
 #suggestions-container {
   position: absolute;
-  border: 1px solid #ddd;
+  border-left: 1px solid var(--jarvis-blue);
+  border-right: 1px solid var(--jarvis-blue);
+  border-bottom: 1px solid var(--jarvis-blue);
   border-top: none;
   z-index: 99;
   top: 100%;
   left: 0;
   right: 0;
   background-color: var(--jarvis-bg-solid);
+  display: none; /* Caché par défaut */
 }
 
 .suggestion-item {
