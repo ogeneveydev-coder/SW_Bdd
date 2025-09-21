@@ -232,27 +232,29 @@ button:hover {
   /* Transition de 1.5s sur la propriété stroke-dashoffset pour un effet plus lent */
   transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1);
   stroke-linecap: round;
+  /* On applique le filtre de base ici pour éviter les conflits */
+  filter: drop-shadow(0 0 3px var(--glow-color, var(--jarvis-blue)));
 }
 
 /* Couleurs et délais d'animation pour chaque stat */
 .stat-hp {
-  stroke: #4caf50; /* Vert */
-  filter: drop-shadow(0 0 3px #4caf50);
+  --glow-color: #4caf50;
+  stroke: var(--glow-color); /* Vert */
   transition-delay: 0.3s;
 }
 .stat-atk {
-  stroke: #f44336; /* Rouge */
-  filter: drop-shadow(0 0 3px #f44336);
+  --glow-color: #f44336;
+  stroke: var(--glow-color); /* Rouge */
   transition-delay: 0.5s; /* Délais augmentés pour un meilleur effet de cascade */
 }
 .stat-def {
-  stroke: #2196f3; /* Bleu */
-  filter: drop-shadow(0 0 3px #2196f3);
+  --glow-color: #2196f3;
+  stroke: var(--glow-color); /* Bleu */
   transition-delay: 0.7s;
 }
 .stat-spd {
-  stroke: #ffeb3b; /* Jaune */
-  filter: drop-shadow(0 0 3px #ffeb3b);
+  --glow-color: #ffeb3b;
+  stroke: var(--glow-color); /* Jaune */
   transition-delay: 0.9s;
 }
 
