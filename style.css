@@ -227,11 +227,8 @@ button:hover {
 }
 
 .stat-ring {
-  /* On décompose la transition pour plus de clarté et on ajoute un délai de base */
-  transition-property: stroke-dashoffset;
-  transition-duration: 1s;
-  transition-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
-  transition-delay: 0.3s; /* Délai avant que la première animation ne commence */
+  /* Transition de 1s sur la propriété stroke-dashoffset */
+  transition: stroke-dashoffset 1s cubic-bezier(0.25, 1, 0.5, 1);
   stroke-linecap: round;
 }
 
@@ -239,22 +236,22 @@ button:hover {
 .stat-hp {
   stroke: #4caf50; /* Vert */
   filter: drop-shadow(0 0 3px #4caf50);
-  transition-delay: 0.4s; /* Délai total = 0.3s (base) + 0.1s */
+  transition-delay: 0.3s; /* Démarre après 0.3s */
 }
 .stat-atk {
   stroke: #f44336; /* Rouge */
   filter: drop-shadow(0 0 3px #f44336);
-  transition-delay: 0.5s;
+  transition-delay: 0.4s;
 }
 .stat-def {
   stroke: #2196f3; /* Bleu */
   filter: drop-shadow(0 0 3px #2196f3);
-  transition-delay: 0.6s;
+  transition-delay: 0.5s;
 }
 .stat-spd {
   stroke: #ffeb3b; /* Jaune */
   filter: drop-shadow(0 0 3px #ffeb3b);
-  transition-delay: 0.7s;
+  transition-delay: 0.6s;
 }
 
 /* --- Styles pour l'icône d'élément --- */
