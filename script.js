@@ -20,6 +20,11 @@ window.addEventListener('DOMContentLoaded', () => {
       card.classList.toggle('is-flipped');
     }
   });
+
+  // Pour la démo, si aucun monstre n'est recherché, on affiche un exemple de comparaison
+  document.getElementById('searchBtn').addEventListener('click', () => {
+    if (!document.getElementById('searchInput').value.trim()) searchMonster();
+  });
 });
 
 document.getElementById('searchBtn').addEventListener('click', searchMonster);
@@ -55,51 +60,7 @@ function searchMonster() {
   }
 
   // Construit une carte HTML pour chaque monstre trouvé
-  const cardsHtml = foundMonsters.map(monster => {
-    const { name, element, archetype, base_hp, base_attack, base_defense, speed, image_filename } = monster.fields;
-    const statRings = createStatRingsSVG(monster.fields);
-    const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
-    return `
-      <div class="jarvis-card">
-        <div class="jarvis-card-inner">
-          <!-- Face Avant -->
-          <div class="jarvis-card-front">
-            <div class="jarvis-corner top-left"></div>
-            <div class="jarvis-corner top-right"></div>
-            <div class="jarvis-corner bottom-left"></div>
-            <div class="jarvis-corner bottom-right"></div>
-            <div class="jarvis-content">
-                <div class="jarvis-image-container">
-                    ${statRings}
-                    <img src="${imgUrl}" alt="${name}">
-                </div>
-                <div class="jarvis-title-container">
-                  <div class="jarvis-name">${name}</div>
-                  <div class="element-icon ${element.toLowerCase()}"></div>
-                </div>
-            </div>
-          </div>
-          <!-- Face Arrière -->
-          <div class="jarvis-card-back">
-            <div class="jarvis-corner top-left"></div>
-            <div class="jarvis-corner top-right"></div>
-            <div class="jarvis-corner bottom-left"></div>
-            <div class="jarvis-corner bottom-right"></div>
-            <div class="jarvis-stats">
-                <div class="jarvis-title-container">
-                  <div class="jarvis-name">${name}</div>
-                  <div class="element-icon ${element.toLowerCase()}"></div>
-                </div>
-                <p><span>Element:</span> ${element}</p>
-                <p><span>Archetype:</span> ${archetype}</p>
-                <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
-                <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
+  const cardsHtml = foundMonsters.map(createMonsterCardHTML).join('');
 
   // Affiche les cartes dans un conteneur
   showResult(`<div class="results-container">${cardsHtml}</div>`);
@@ -163,6 +124,15 @@ function clearSuggestions() {
 
 function showResult(html) {
   document.getElementById('result').innerHTML = html;
+  // Après avoir affiché le résultat, on anime les anneaux
+  const cards = document.querySelectorAll('.jarvis-card');
+  cards.forEach(card => {
+    // On s'assure que l'animation ne se redéclenche pas si on retourne la carte
+    if (!card.dataset.animated) {
+      animateStatRings(card);
+      card.dataset.animated = 'true';
+    }
+  });
 }
 
 function resetSearch() {
@@ -176,31 +146,91 @@ function strNoAccent(str) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
+/**
+ * Crée le HTML pour la carte d'un seul monstre.
+ */
+function createMonsterCardHTML(monster) {
+  const { name, element, archetype, base_hp, base_attack, base_defense, speed, image_filename } = monster.fields;
+  const statRings = createStatRingsSVG(monster.fields);
+  const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
+
+  return `
+    <div class="jarvis-card">
+      <div class="jarvis-card-inner">
+        <!-- Face Avant -->
+        <div class="jarvis-card-front">
+          <div class="jarvis-corner top-left"></div><div class="jarvis-corner top-right"></div><div class="jarvis-corner bottom-left"></div><div class="jarvis-corner bottom-right"></div>
+          <div class="jarvis-content">
+              <div class="jarvis-image-container">
+                  ${statRings}
+                  <img src="${imgUrl}" alt="${name}">
+              </div>
+              <div class="jarvis-title-container">
+                <div class="jarvis-name">${name}</div>
+                <div class="element-icon ${element.toLowerCase()}"></div>
+              </div>
+          </div>
+        </div>
+        <!-- Face Arrière -->
+        <div class="jarvis-card-back">
+          <div class="jarvis-corner top-left"></div><div class="jarvis-corner top-right"></div><div class="jarvis-corner bottom-left"></div><div class="jarvis-corner bottom-right"></div>
+          <div class="jarvis-stats">
+              <div class="jarvis-title-container">
+                <div class="jarvis-name">${name}</div>
+                <div class="element-icon ${element.toLowerCase()}"></div>
+              </div>
+              <p><span>Element:</span> ${element}</p>
+              <p><span>Archetype:</span> ${archetype}</p>
+              <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
+              <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Génère le SVG pour les anneaux de stats.
+ * @param {object} stats - L'objet monster.fields.
+ */
 function createStatRingsSVG(stats) {
   const { base_hp, base_attack, base_defense, speed } = stats;
+  const MAX_STATS = { hp: 45000, atk: 3000, def: 2000, spd: 135 };
+  const RADIUS_CONFIG = { hp: 75, atk: 65, def: 55, spd: 45 };
+  const STAT_KEYS = ['hp', 'atk', 'def', 'spd'];
 
-  // Valeurs maximales de référence pour calculer les pourcentages
-  const MAX_STATS = { hp: 20000, atk: 1000, def: 1000, spd: 135 };
+  let rings = '';
+  STAT_KEYS.forEach(key => {
+    const value = stats[`base_${key}`] || stats[key]; // Gère base_hp et speed
+    const radius = RADIUS_CONFIG[key];
+    const circumference = 2 * Math.PI * radius;
+    const max = MAX_STATS[key];
+    const statClass = `stat-${key}`;
+    const percent = Math.min(1, value / max);
 
-  // Configuration de chaque anneau (rayon et classe CSS)
-  const STAT_CONFIG = [
-    { name: 'hp',  value: base_hp,      radius: 78, class: 'stat-hp' },
-    { name: 'atk', value: base_attack,  radius: 72, class: 'stat-atk' },
-    { name: 'def', value: base_defense, radius: 66, class: 'stat-def' },
-    { name: 'spd', value: speed,        radius: 60, class: 'stat-spd' }
-  ];
+    // Fond de l'anneau
+    rings += `<circle class="stat-ring-bg" cx="80" cy="80" r="${radius}"></circle>`;
 
-  const rings = STAT_CONFIG.map(stat => {
-    const max = MAX_STATS[stat.name];
-    const percentage = Math.min(stat.value / max, 1); // Plafonne à 100%
-    const circumference = 2 * Math.PI * stat.radius;
-    const offset = circumference * (1 - percentage);
-
-    return `
-      <circle class="stat-ring-bg" cx="80" cy="80" r="${stat.radius}"></circle>
-      <circle class="stat-ring ${stat.class}" cx="80" cy="80" r="${stat.radius}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>
-    `;
-  }).join('');
+    // Anneau de stat
+    // On initialise l'anneau comme "vide" pour que l'animation puisse se déclencher
+    rings += `<circle class="stat-ring ${statClass}" cx="80" cy="80" r="${radius}" data-value="${percent}" stroke-dasharray="${circumference}" stroke-dashoffset="${circumference}"></circle>`;
+  });
 
   return `<svg class="stat-rings" viewBox="0 0 160 160">${rings}</svg>`;
+}
+
+/**
+ * Anime les anneaux de stats d'une carte.
+ */
+function animateStatRings(cardElement) {
+  setTimeout(() => {
+    // Animation des anneaux de moyenne
+    cardElement.querySelectorAll('.stat-ring').forEach(ring => {
+      const radius = parseFloat(ring.getAttribute('r'));
+      const circumference = 2 * Math.PI * radius;
+      const percentage = parseFloat(ring.dataset.value) || 0;
+      ring.style.strokeDashoffset = circumference * (1 - percentage);
+    });
+  }, 100); // Petit délai pour laisser le temps au DOM de se mettre à jour
 }
