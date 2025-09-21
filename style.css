@@ -66,7 +66,11 @@ button:hover {
   left: 0;
   right: 0;
   background-color: var(--jarvis-bg-solid);
-  display: none; /* Caché par défaut */
+}
+
+/* Masque le conteneur (et ses bordures) uniquement lorsqu'il est vide */
+#suggestions-container:empty {
+  display: none;
 }
 
 .suggestion-item {
