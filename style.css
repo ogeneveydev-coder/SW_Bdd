@@ -69,13 +69,16 @@ button:hover {
 
 #suggestions-container {
   position: absolute;
-  border: 1px solid #ddd;
-  border-top: none;
   z-index: 99;
   top: 100%;
   left: 0;
   right: 0;
   background-color: var(--jarvis-bg-solid);
+}
+/* Applique la bordure uniquement si le conteneur n'est pas vide */
+#suggestions-container:not(:empty) {
+  border: 1px solid var(--jarvis-blue);
+  border-top: none;
 }
 
 .suggestion-item {
