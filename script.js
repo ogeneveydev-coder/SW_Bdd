@@ -165,7 +165,7 @@ function strNoAccent(str) {
  * Crée le HTML pour la carte d'un seul monstre.
  */
 function createMonsterCardHTML(monster) {
-  const { name, element, archetype, base_hp, base_attack, base_defense, speed, image_filename } = monster.fields;
+  const { name, element, archetype, base_hp, base_attack, base_defense, speed, image_filename } = monster.fields;  
   const statRings = createStatRingsSVG(monster.fields);
   const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
 
