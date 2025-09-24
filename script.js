@@ -1,5 +1,13 @@
 /* tada*/
-const allMonsters = []; // Utiliser const pour les variables qui ne seront pas réassignées.
+
+// --- GESTION DES VERSIONS ---
+// Mettez à jour ces valeurs lorsque vous modifiez un fichier.
+const fileVersions = {
+  script: '2.0',
+  style: '2.0',
+  index: '2.1'
+};
+const allMonsters = [];
 
 // Centraliser les sélecteurs DOM pour la performance et la lisibilité
 const searchInput = document.getElementById('searchInput');
@@ -10,6 +18,8 @@ const resetBtn = document.getElementById('resetBtn');
 
 // Charger les données une seule fois au démarrage
 window.addEventListener('DOMContentLoaded', () => {
+  displayFileVersions(); // Affiche les versions au chargement
+
   fetch('bestiary_data.json')
     .then(response => response.json())
     .then(data => {
@@ -175,6 +185,17 @@ function resetSearch() {
 function strNoAccent(str) {
   // Sépare les caractères de base de leurs accents, puis supprime les accents
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function displayFileVersions() {
+  const versionContainer = document.getElementById('version-container');
+  if (versionContainer) {
+    versionContainer.innerHTML = `
+      index: v${fileVersions.index}<br>
+      style: v${fileVersions.style}<br>
+      script: v${fileVersions.script}
+    `;
+  }
 }
 
 function createStatRingsSVG(stats) {

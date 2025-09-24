@@ -22,6 +22,18 @@ body {
   text-align: center; /* Centrer le contenu principal */
 }
 
+/* --- Conteneur pour les versions de fichiers --- */
+#version-container {
+  position: fixed;
+  top: 10px;
+  right: 15px;
+  font-size: 0.7em;
+  color: var(--jarvis-blue);
+  opacity: 0.6;
+  z-index: 100;
+  text-align: right;
+}
+
 input, button {
   padding: 8px 12px;
   margin: 5px 0;
