@@ -1,243 +1,200 @@
-/* --- Style Jarvis / Minority Report --- */
+/* tada*/
+let allMonsters = []; // Stocker les monstres ici
 
-/* Pour un effet optimal, ajoutez cette police à votre fichier HTML dans la balise <head> */
-/*
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-*/
+// Charger les données une seule fois au démarrage
+window.addEventListener('DOMContentLoaded', () => {
+  fetch('bestiary_data.json')
+    .then(response => response.json())
+    .then(data => {
+      allMonsters = data.filter(obj => obj.model === "bestiary.monster");
+    })
+    .catch(err => {
+      console.error("Erreur lors du chargement des données du bestiaire.", err);
+      showResult("Impossible de charger les données des monstres.");
+    });
 
-:root {
-  --jarvis-blue: #00b8ff;
-  --jarvis-bg: rgba(0, 50, 100, 0.15);
-  --jarvis-bg-solid: #0a0a14;
-}
+  // Ajoute un écouteur de clic sur le conteneur de résultats pour gérer la rotation des cartes
+  document.getElementById('result').addEventListener('click', function(e) {
+    const card = e.target.closest('.jarvis-card');
+    if (card) {
+      card.classList.toggle('is-flipped');
+    }
+  });
+});
 
-body {
-  font-family: 'Orbitron', sans-serif;
-  margin: 0;
-  padding: 20px;
-  background: var(--jarvis-bg-solid);
-  color: white;
-  text-align: center; /* Centrer le contenu principal */
-}
+document.getElementById('searchBtn').addEventListener('click', searchMonster);
+document.getElementById('resetBtn').addEventListener('click', resetSearch);
 
-input, button {
-  padding: 8px 12px;
-  margin: 5px 0;
-  font-size: 1rem;
-  font-family: 'Orbitron', sans-serif;
-  background: var(--jarvis-bg);
-  border: 1px solid var(--jarvis-blue);
-  color: white;
-  box-shadow: 0 0 5px var(--jarvis-blue), inset 0 0 3px rgba(0, 184, 255, 0.5);
-  border-radius: 4px;
-}
+document.getElementById('searchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    clearSuggestions();
+    searchMonster();
+  } else if (e.key === 'Escape') {
+    resetSearch(); // Utilise resetSearch pour tout effacer
+  }
+});
 
-button {
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
+function searchMonster() {
+  const query = document.getElementById('searchInput').value.trim();
+  if (!query) {
+    showResult("Veuillez entrer le nom d'un ou plusieurs monstres.");
+    return;
+  }
 
-button:hover {
-  background-color: var(--jarvis-blue);
-  color: var(--jarvis-bg-solid);
-  box-shadow: 0 0 20px var(--jarvis-blue);
-}
+  // Sépare les termes de recherche, nettoie et supprime les doublons
+  const searchTerms = [...new Set(query.split(' ').map(term => strNoAccent(term.trim().toLowerCase())).filter(term => term))];
 
-#result {
-  margin-top: 30px;
-}
+  // Trouve tous les monstres correspondants aux termes de recherche
+  const foundMonsters = searchTerms.map(term => {
+    return allMonsters.find(m => strNoAccent(m.fields.name.toLowerCase()) === term);
+  }).filter(Boolean); // Retire les résultats non trouvés (undefined)
 
-.search-container {
-  position: relative; /* Nécessaire pour positionner les suggestions */
-  display: inline-block; /* Pour que le conteneur ne prenne pas toute la largeur */
-  text-align: left;
-}
+  if (foundMonsters.length === 0) {
+    showResult("Aucun des monstres recherchés n'a été trouvé.");
+    return;
+  }
 
-#suggestions-container {
-  position: absolute;
-  border: 1px solid #ddd;
-  border-top: none;
-  z-index: 99;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: var(--jarvis-bg-solid);
-}
+  // Construit une carte HTML pour chaque monstre trouvé
+  const cardsHtml = foundMonsters.map(monster => {
+    const { name, element, archetype, base_hp, base_attack, base_defense, speed, image_filename } = monster.fields;
+    const statRings = createStatRingsSVG(monster.fields);
+    const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
+    return `
+      <div class="jarvis-card">
+        <div class="jarvis-card-inner">
+          <!-- Face Avant -->
+          <div class="jarvis-card-front">
+            <div class="jarvis-corner top-left"></div>
+            <div class="jarvis-corner top-right"></div>
+            <div class="jarvis-corner bottom-left"></div>
+            <div class="jarvis-corner bottom-right"></div>
+            <div class="jarvis-content">
+                <div class="jarvis-image-container">
+                    ${statRings}
+                    <img src="${imgUrl}" alt="${name}">
+                </div>
+                <div class="jarvis-name">${name}</div>
+            </div>
+          </div>
+          <!-- Face Arrière -->
+          <div class="jarvis-card-back">
+            <div class="jarvis-corner top-left"></div>
+            <div class="jarvis-corner top-right"></div>
+            <div class="jarvis-corner bottom-left"></div>
+            <div class="jarvis-corner bottom-right"></div>
+            <div class="jarvis-stats">
+                <div class="jarvis-name">${name}</div>
+                <p><span>Element:</span> ${element}</p>
+                <p><span>Archetype:</span> ${archetype}</p>
+                <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
+                <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
 
-.suggestion-item {
-  padding: 10px;
-  cursor: pointer;
-  color: var(--jarvis-blue);
-}
-
-.suggestion-item:hover {
-  background-color: var(--jarvis-bg);
-}
-
-/* --- Cartes de résultats --- */
-.results-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  justify-content: center;
-  padding: 20px;
-}
-
-.jarvis-card {
-  position: relative;
-  background-color: transparent;
-  width: 200px;
-  height: 250px;
-  perspective: 1000px; /* Active la perspective 3D */
-  cursor: pointer;
-}
-
-.jarvis-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
+  // Affiche les cartes dans un conteneur
+  showResult(`<div class="results-container">${cardsHtml}</div>`);
 }
 
-.jarvis-card.is-flipped .jarvis-card-inner {
-  transform: rotateY(180deg);
+// --- Logique d'autocomplétion ---
+
+const searchInput = document.getElementById('searchInput');
+const suggestionsContainer = document.getElementById('suggestions-container');
+
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value;
+  const words = query.split(' ');
+  const currentWord = words[words.length - 1].trim().toLowerCase();
+  // Récupère les noms déjà tapés pour ne pas les suggérer à nouveau
+  const existingNames = new Set(words.slice(0, -1).map(w => strNoAccent(w.trim().toLowerCase())));
+
+  if (currentWord.length === 0) {
+    clearSuggestions();
+    return;
+  }
+  const normalizedCurrentWord = strNoAccent(currentWord);
+
+  const suggestions = allMonsters
+    .filter(m => {
+      const monsterNameLower = strNoAccent(m.fields.name.toLowerCase());
+      // Suggère seulement si le nom commence par le mot actuel ET n'est pas déjà dans la recherche
+      return monsterNameLower.startsWith(normalizedCurrentWord) && !existingNames.has(monsterNameLower);
+    })
+    .slice(0, 5);
+
+  if (suggestions.length > 0) {
+    suggestionsContainer.innerHTML = suggestions.map(s =>
+      `<div class="suggestion-item">${s.fields.name}</div>`
+    ).join('');
+
+    // Ajoute des écouteurs de clic sur les nouvelles suggestions
+    document.querySelectorAll('.suggestion-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const baseQuery = words.slice(0, -1).join(' ');
+        searchInput.value = (baseQuery ? baseQuery + ' ' : '') + item.textContent + ' ';
+        clearSuggestions();
+        searchInput.focus();
+      });
+    });
+  } else {
+    clearSuggestions();
+  }
+});
+
+// Cache les suggestions si on clique ailleurs
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.search-container')) {
+    clearSuggestions();
+  }
+});
+
+function clearSuggestions() {
+  suggestionsContainer.innerHTML = '';
 }
 
-.jarvis-card-front, .jarvis-card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden; /* Pour Safari */
-  backface-visibility: hidden;
-  background: var(--jarvis-bg);
-  padding: 20px;
-  box-sizing: border-box;
+function showResult(html) {
+  document.getElementById('result').innerHTML = html;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
+function resetSearch() {
+  searchInput.value = '';
+  showResult('');
+  clearSuggestions();
 }
 
-.jarvis-card-front {
-  border: 1px solid var(--jarvis-blue);
-  box-shadow: 0 0 15px var(--jarvis-blue), inset 0 0 10px rgba(0, 184, 255, 0.5);
+function strNoAccent(str) {
+  // Sépare les caractères de base de leurs accents, puis supprime les accents
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-.jarvis-card-back {
-  transform: rotateY(180deg);
-  padding: 10px;
-}
+function createStatRingsSVG(stats) {
+  const { base_hp, base_attack, base_defense, speed } = stats;
 
-.jarvis-corner {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-color: var(--jarvis-blue);
-  border-style: solid;
-}
-.jarvis-corner.top-left { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
-.jarvis-corner.top-right { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
-.jarvis-corner.bottom-left { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
-.jarvis-corner.bottom-right { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+  // Valeurs maximales de référence pour calculer les pourcentages
+  const MAX_STATS = { hp: 20000, atk: 1000, def: 1000, spd: 135 };
 
-.jarvis-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-}
+  // Configuration de chaque anneau (rayon et classe CSS)
+  const STAT_CONFIG = [
+    { name: 'hp',  value: base_hp,      radius: 78, class: 'stat-hp' },
+    { name: 'atk', value: base_attack,  radius: 72, class: 'stat-atk' },
+    { name: 'def', value: base_defense, radius: 66, class: 'stat-def' },
+    { name: 'spd', value: speed,        radius: 60, class: 'stat-spd' }
+  ];
 
-.jarvis-image-container {
-  position: relative;
-  width: 160px;
-  height: 160px;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-}
+  const rings = STAT_CONFIG.map(stat => {
+    const max = MAX_STATS[stat.name];
+    const percentage = Math.min(stat.value / max, 1); // Plafonne à 100%
+    const circumference = 2 * Math.PI * stat.radius;
+    const offset = circumference * (1 - percentage);
 
-.jarvis-image-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Fait en sorte que l'image remplisse le cercle sans se déformer */
-  filter: drop-shadow(0 0 5px var(--jarvis-blue));
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  z-index: 2;
-}
+    return `
+      <circle class="stat-ring-bg" cx="80" cy="80" r="${stat.radius}"></circle>
+      <circle class="stat-ring ${stat.class}" cx="80" cy="80" r="${stat.radius}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>
+    `;
+  }).join('');
 
-.jarvis-name {
-  font-size: 1.2em;
-  font-weight: 700;
-  text-transform: uppercase;
-  text-shadow: 0 0 5px var(--jarvis-blue), 0 0 10px white;
-  letter-spacing: 2px;
-  text-align: center;
-}
-
-.jarvis-stats {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100%;
-  text-align: left;
-  padding: 0 15px;
-}
-
-.jarvis-stats p {
-  font-size: 0.8em;
-  margin: 8px 0;
-}
-
-.jarvis-stats span {
-  color: var(--jarvis-blue);
-}
-
-/* --- Styles pour les anneaux de stats --- */
-.stat-rings {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transform: rotate(-90deg); /* Fait commencer les cercles en haut */
-  z-index: 1;
-}
-
-.stat-ring, .stat-ring-bg {
-  fill: transparent;
-  stroke-width: 5;
-}
-
-.stat-ring-bg {
-  stroke: rgba(0, 184, 255, 0.1);
-}
-
-.stat-ring {
-  transition: stroke-dashoffset 1s cubic-bezier(0.25, 1, 0.5, 1);
-  stroke-linecap: round;
-}
-
-/* Couleurs pour chaque stat */
-.stat-hp {
-  stroke: #4caf50; /* Vert */
-  filter: drop-shadow(0 0 3px #4caf50);
-}
-.stat-atk {
-  stroke: #f44336; /* Rouge */
-  filter: drop-shadow(0 0 3px #f44336);
-}
-.stat-def {
-  stroke: #2196f3; /* Bleu */
-  filter: drop-shadow(0 0 3px #2196f3);
-}
-.stat-spd {
-  stroke: #ffeb3b; /* Jaune */
-  filter: drop-shadow(0 0 3px #ffeb3b);
+  return `<svg class="stat-rings" viewBox="0 0 160 160">${rings}</svg>`;
 }
