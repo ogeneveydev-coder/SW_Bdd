@@ -139,7 +139,6 @@ button:hover {
 }
 
 .jarvis-card-front {
-  border: 1px solid var(--jarvis-blue);
   box-shadow: 0 0 15px var(--jarvis-blue), inset 0 0 10px rgba(0, 184, 255, 0.5);
 }
 
@@ -154,6 +153,7 @@ button:hover {
   height: 20px;
   border-color: var(--jarvis-blue);
   border-style: solid; /* Style commun pour tous les coins */
+  display: none; /* Cache les coins */
 }
 .jarvis-corner.top-left { 
   top: -2px; left: -2px; 
