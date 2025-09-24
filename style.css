@@ -91,6 +91,7 @@ button:hover {
   width: 200px;
   height: 250px;
   perspective: 1000px; /* Active la perspective 3D */
+  animation: fadeIn 0.5s ease-out; /* Ajout de l'animation d'apparition */
   cursor: pointer;
 }
 
@@ -137,12 +138,24 @@ button:hover {
   width: 20px;
   height: 20px;
   border-color: var(--jarvis-blue);
-  border-style: solid;
+  border-style: solid; /* Style commun pour tous les coins */
 }
-.jarvis-corner.top-left { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
-.jarvis-corner.top-right { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
-.jarvis-corner.bottom-left { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
-.jarvis-corner.bottom-right { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+.jarvis-corner.top-left { 
+  top: -2px; left: -2px; 
+  border-top-width: 2px; border-left-width: 2px; 
+}
+.jarvis-corner.top-right { 
+  top: -2px; right: -2px; 
+  border-top-width: 2px; border-right-width: 2px; 
+}
+.jarvis-corner.bottom-left { 
+  bottom: -2px; left: -2px; 
+  border-bottom-width: 2px; border-left-width: 2px; 
+}
+.jarvis-corner.bottom-right { 
+  bottom: -2px; right: -2px; 
+  border-bottom-width: 2px; border-right-width: 2px; 
+}
 
 .jarvis-content {
   display: flex;

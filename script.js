@@ -1,12 +1,19 @@
 /* tada*/
-let allMonsters = []; // Stocker les monstres ici
+const allMonsters = []; // Utiliser const pour les variables qui ne seront pas réassignées.
+
+// Centraliser les sélecteurs DOM pour la performance et la lisibilité
+const searchInput = document.getElementById('searchInput');
+const resultContainer = document.getElementById('result');
+const suggestionsContainer = document.getElementById('suggestions-container');
+const searchBtn = document.getElementById('searchBtn');
+const resetBtn = document.getElementById('resetBtn');
 
 // Charger les données une seule fois au démarrage
 window.addEventListener('DOMContentLoaded', () => {
   fetch('bestiary_data.json')
     .then(response => response.json())
     .then(data => {
-      allMonsters = data.filter(obj => obj.model === "bestiary.monster");
+      allMonsters.push(...data.filter(obj => obj.model === "bestiary.monster"));
     })
     .catch(err => {
       console.error("Erreur lors du chargement des données du bestiaire.", err);
@@ -14,7 +21,7 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
   // Ajoute un écouteur de clic sur le conteneur de résultats pour gérer la rotation des cartes
-  document.getElementById('result').addEventListener('click', function(e) {
+  resultContainer.addEventListener('click', function(e) {
     const card = e.target.closest('.jarvis-card');
     if (card) {
       card.classList.toggle('is-flipped');
@@ -22,10 +29,10 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-document.getElementById('searchBtn').addEventListener('click', searchMonster);
-document.getElementById('resetBtn').addEventListener('click', resetSearch);
+searchBtn.addEventListener('click', searchMonster);
+resetBtn.addEventListener('click', resetSearch);
 
-document.getElementById('searchInput').addEventListener('keydown', function(e) {
+searchInput.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     clearSuggestions();
     searchMonster();
@@ -35,7 +42,7 @@ document.getElementById('searchInput').addEventListener('keydown', function(e) {
 });
 
 function searchMonster() {
-  const query = document.getElementById('searchInput').value.trim();
+  const query = searchInput.value.trim();
   if (!query) {
     showResult("Veuillez entrer le nom d'un ou plusieurs monstres.");
     return;
@@ -101,10 +108,7 @@ function searchMonster() {
 
 // --- Logique d'autocomplétion ---
 
-const searchInput = document.getElementById('searchInput');
-const suggestionsContainer = document.getElementById('suggestions-container');
-
-searchInput.addEventListener('input', () => {
+searchInput.addEventListener('input', (e) => {
   const query = searchInput.value;
   const words = query.split(' ');
   const currentWord = words[words.length - 1].trim().toLowerCase();
@@ -129,16 +133,6 @@ searchInput.addEventListener('input', () => {
     suggestionsContainer.innerHTML = suggestions.map(s =>
       `<div class="suggestion-item">${s.fields.name}</div>`
     ).join('');
-
-    // Ajoute des écouteurs de clic sur les nouvelles suggestions
-    document.querySelectorAll('.suggestion-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const baseQuery = words.slice(0, -1).join(' ');
-        searchInput.value = (baseQuery ? baseQuery + ' ' : '') + item.textContent + ' ';
-        clearSuggestions();
-        searchInput.focus();
-      });
-    });
   } else {
     clearSuggestions();
   }
@@ -151,12 +145,25 @@ document.addEventListener('click', function(e) {
   }
 });
 
+// Utilisation de la délégation d'événements pour les suggestions
+suggestionsContainer.addEventListener('click', (e) => {
+  if (e.target.classList.contains('suggestion-item')) {
+    const words = searchInput.value.split(' ');
+    const baseQuery = words.slice(0, -1).join(' ');
+    searchInput.value = (baseQuery ? baseQuery + ' ' : '') + e.target.textContent + ' ';
+    clearSuggestions();
+    searchInput.focus();
+  }
+});
+
 function clearSuggestions() {
   suggestionsContainer.innerHTML = '';
 }
 
 function showResult(html) {
-  document.getElementById('result').innerHTML = html;
+  // Utiliser innerHTML est acceptable ici car le contenu provient de notre propre code
+  // et non d'une saisie utilisateur non filtrée.
+  resultContainer.innerHTML = html;
 }
 
 function resetSearch() {
