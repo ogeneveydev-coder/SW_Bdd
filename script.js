@@ -1,251 +1,243 @@
-const SCRIPT_VERSION = "1.3";
-const STYLE_VERSION = "1.3";
+/* --- Style Jarvis / Minority Report --- */
 
-let allMonsters = []; // Stocker les monstres ici
+/* Pour un effet optimal, ajoutez cette police à votre fichier HTML dans la balise <head> */
+/*
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+*/
 
-// Charger les données une seule fois au démarrage
-window.addEventListener('DOMContentLoaded', () => {
-  // --- Affiche les versions des fichiers ---
-  const versionContainer = document.createElement('div');
-  versionContainer.id = 'version-container';
-  versionContainer.innerHTML = `
-    <span>Script: v${SCRIPT_VERSION}</span>
-    <span>Style: v${STYLE_VERSION}</span>
-  `;
-  document.body.prepend(versionContainer);
-  // --- Fin de l'affichage des versions ---
-
-  fetch('bestiary_data.json')
-    .then(response => {
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      return response.json();
-    })
-    .then(data => {
-      allMonsters = data.filter(obj => obj.model === "bestiary.monster");
-    })
-    .catch(err => {
-      console.error("Erreur lors du chargement des données du bestiaire.", err);
-      showResult("Impossible de charger les données des monstres.");
-    });
-
-  // Ajoute un écouteur de clic sur le conteneur de résultats pour gérer la rotation des cartes
-  document.getElementById('result').addEventListener('click', function(e) {
-    const card = e.target.closest('.jarvis-card');
-    if (card) {
-      card.classList.toggle('is-flipped');
-    }
-  });
-
-  // Pour la démo, si aucun monstre n'est recherché, on affiche un exemple de comparaison
-  document.getElementById('searchBtn').addEventListener('click', () => {
-    if (!document.getElementById('searchInput').value.trim()) searchMonster();
-  });
-});
-
-document.getElementById('searchBtn').addEventListener('click', searchMonster);
-document.getElementById('resetBtn').addEventListener('click', resetSearch);
-
-document.getElementById('searchInput').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') {
-    clearSuggestions();
-    searchMonster();
-  } else if (e.key === 'Escape') {
-    resetSearch(); // Utilise resetSearch pour tout effacer
-  }
-});
-
-function searchMonster() {
-  const query = document.getElementById('searchInput').value.trim();
-  if (!query) {
-    showResult("Veuillez entrer le nom d'un ou plusieurs monstres.");
-    return;
-  }
-
-  // Sépare les termes de recherche, nettoie et supprime les doublons
-  const searchTerms = [...new Set(query.split(' ').map(term => strNoAccent(term.trim().toLowerCase())).filter(term => term))];
-
-  // Trouve tous les monstres correspondants aux termes de recherche
-  const foundMonsters = searchTerms.map(term => {
-    return allMonsters.find(m => strNoAccent(m.fields.name.toLowerCase()) === term);
-  }).filter(Boolean); // Retire les résultats non trouvés (undefined)
-
-  if (foundMonsters.length === 0) {
-    showResult("Aucun des monstres recherchés n'a été trouvé.");
-    return;
-  }
-
-  // Construit une carte HTML pour chaque monstre trouvé
-  const cardsHtml = foundMonsters.map(createMonsterCardHTML).join('');
-
-  // Affiche les cartes dans un conteneur
-  showResult(`<div class="results-container">${cardsHtml}</div>`);
+:root {
+  --jarvis-blue: #00b8ff;
+  --jarvis-bg: rgba(0, 50, 100, 0.15);
+  --jarvis-bg-solid: #0a0a14;
 }
 
-// --- Logique d'autocomplétion ---
-
-const searchInput = document.getElementById('searchInput');
-const suggestionsContainer = document.getElementById('suggestions-container');
-
-searchInput.addEventListener('input', () => {
-  const query = searchInput.value;
-  const words = query.split(' ');
-  const currentWord = words[words.length - 1].trim().toLowerCase();
-  // Récupère les noms déjà tapés pour ne pas les suggérer à nouveau
-  const existingNames = new Set(words.slice(0, -1).map(w => strNoAccent(w.trim().toLowerCase())));
-
-  if (currentWord.length === 0) {
-    clearSuggestions();
-    return;
-  }
-  const normalizedCurrentWord = strNoAccent(currentWord);
-
-  const suggestions = allMonsters
-    .filter(m => {
-      const monsterNameLower = strNoAccent(m.fields.name.toLowerCase());
-      // Suggère seulement si le nom commence par le mot actuel ET n'est pas déjà dans la recherche
-      return monsterNameLower.startsWith(normalizedCurrentWord) && !existingNames.has(monsterNameLower);
-    })
-    .slice(0, 5);
-
-  if (suggestions.length > 0) {
-    suggestionsContainer.innerHTML = suggestions.map(s =>
-      `<div class="suggestion-item">${s.fields.name}</div>`
-    ).join('');
-
-    // Ajoute des écouteurs de clic sur les nouvelles suggestions
-    document.querySelectorAll('.suggestion-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const baseQuery = words.slice(0, -1).join(' ');
-        searchInput.value = (baseQuery ? baseQuery + ' ' : '') + item.textContent + ' ';
-        clearSuggestions();
-        searchInput.focus();
-      });
-    });
-  } else {
-    clearSuggestions();
-  }
-});
-
-// Cache les suggestions si on clique ailleurs
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.search-container')) {
-    clearSuggestions();
-  }
-});
-
-function clearSuggestions() {
-  suggestionsContainer.innerHTML = '';
+body {
+  font-family: 'Orbitron', sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: var(--jarvis-bg-solid);
+  color: white;
+  text-align: center; /* Centrer le contenu principal */
 }
 
-function showResult(html) {
-  document.getElementById('result').innerHTML = html;
-  // Après avoir affiché le résultat, on anime les anneaux
-  const cards = document.querySelectorAll('.jarvis-card');
-  cards.forEach(card => {
-    // On s'assure que l'animation ne se redéclenche pas si on retourne la carte
-    if (!card.dataset.animated) {
-      animateStatRings(card);
-      card.dataset.animated = 'true';
-    }
-  });
+input, button {
+  padding: 8px 12px;
+  margin: 5px 0;
+  font-size: 1rem;
+  font-family: 'Orbitron', sans-serif;
+  background: var(--jarvis-bg);
+  border: 1px solid var(--jarvis-blue);
+  color: white;
+  box-shadow: 0 0 5px var(--jarvis-blue), inset 0 0 3px rgba(0, 184, 255, 0.5);
+  border-radius: 4px;
 }
 
-function resetSearch() {
-  searchInput.value = '';
-  showResult('');
-  clearSuggestions();
+button {
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-function strNoAccent(str) {
-  // Sépare les caractères de base de leurs accents, puis supprime les accents
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+button:hover {
+  background-color: var(--jarvis-blue);
+  color: var(--jarvis-bg-solid);
+  box-shadow: 0 0 20px var(--jarvis-blue);
 }
 
-/**
- * Crée le HTML pour la carte d'un seul monstre.
- */
-function createMonsterCardHTML(monster) {
-  const { name, element, archetype, base_hp, base_attack, base_defense, speed, image_filename } = monster.fields;  
-  const statRings = createStatRingsSVG(monster.fields);
-  const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
-
-  return `
-    <div class="jarvis-card">
-      <div class="jarvis-card-inner">
-        <!-- Face Avant -->
-        <div class="jarvis-card-front">
-          <div class="jarvis-corner top-left"></div><div class="jarvis-corner top-right"></div><div class="jarvis-corner bottom-left"></div><div class="jarvis-corner bottom-right"></div>
-          <div class="jarvis-content">
-              <div class="jarvis-image-container">
-                  ${statRings}
-                  <img src="${imgUrl}" alt="${name}">
-              </div>
-              <div class="jarvis-title-container">
-                <div class="jarvis-name">${name}</div>
-                <div class="element-icon ${element.toLowerCase()}"></div>
-              </div>
-          </div>
-        </div>
-        <!-- Face Arrière -->
-        <div class="jarvis-card-back">
-          <div class="jarvis-corner top-left"></div><div class="jarvis-corner top-right"></div><div class="jarvis-corner bottom-left"></div><div class="jarvis-corner bottom-right"></div>
-          <div class="jarvis-stats">
-              <div class="jarvis-title-container">
-                <div class="jarvis-name">${name}</div>
-                <div class="element-icon ${element.toLowerCase()}"></div>
-              </div>
-              <p><span>Element:</span> ${element}</p>
-              <p><span>Archetype:</span> ${archetype}</p>
-              <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
-              <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+#result {
+  margin-top: 30px;
 }
 
-/**
- * Génère le SVG pour les anneaux de stats.
- * @param {object} stats - L'objet monster.fields.
- */
-function createStatRingsSVG(stats) {
-  const { base_hp, base_attack, base_defense, speed } = stats;
-  const MAX_STATS = { hp: 45000, atk: 3000, def: 2000, spd: 135 };
-  const RADIUS_CONFIG = { hp: 75, atk: 65, def: 55, spd: 45 };
-  const STAT_KEYS = ['hp', 'atk', 'def', 'spd'];
-
-  let rings = '';
-  STAT_KEYS.forEach(key => {
-    const value = stats[`base_${key}`] || stats[key]; // Gère base_hp et speed
-    const radius = RADIUS_CONFIG[key];
-    const circumference = 2 * Math.PI * radius;
-    const max = MAX_STATS[key];
-    const statClass = `stat-${key}`;
-    const percent = Math.min(1, value / max);
-
-    // Fond de l'anneau
-    rings += `<circle class="stat-ring-bg" cx="80" cy="80" r="${radius}"></circle>`;
-
-    // Anneau de stat
-    // On initialise l'anneau comme "vide" pour que l'animation puisse se déclencher
-    rings += `<circle class="stat-ring ${statClass}" cx="80" cy="80" r="${radius}" data-value="${percent}" stroke-dasharray="${circumference}" stroke-dashoffset="${circumference}"></circle>`;
-  });
-
-  return `<svg class="stat-rings" viewBox="0 0 160 160">${rings}</svg>`;
+.search-container {
+  position: relative; /* Nécessaire pour positionner les suggestions */
+  display: inline-block; /* Pour que le conteneur ne prenne pas toute la largeur */
+  text-align: left;
 }
 
-/**
- * Anime les anneaux de stats d'une carte.
- */
-function animateStatRings(cardElement) {
-  setTimeout(() => {
-    // Animation des anneaux de moyenne
-    cardElement.querySelectorAll('.stat-ring').forEach(ring => {
-      const radius = parseFloat(ring.getAttribute('r'));
-      const circumference = 2 * Math.PI * radius;
-      const percentage = parseFloat(ring.dataset.value) || 0;
-      ring.style.strokeDashoffset = circumference * (1 - percentage);
-    });
-  }, 100); // Petit délai pour laisser le temps au DOM de se mettre à jour
+#suggestions-container {
+  position: absolute;
+  border: 1px solid #ddd;
+  border-top: none;
+  z-index: 99;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--jarvis-bg-solid);
+}
+
+.suggestion-item {
+  padding: 10px;
+  cursor: pointer;
+  color: var(--jarvis-blue);
+}
+
+.suggestion-item:hover {
+  background-color: var(--jarvis-bg);
+}
+
+/* --- Cartes de résultats --- */
+.results-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+  padding: 20px;
+}
+
+.jarvis-card {
+  position: relative;
+  background-color: transparent;
+  width: 200px;
+  height: 250px;
+  perspective: 1000px; /* Active la perspective 3D */
+  cursor: pointer;
+}
+
+.jarvis-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.jarvis-card.is-flipped .jarvis-card-inner {
+  transform: rotateY(180deg);
+}
+
+.jarvis-card-front, .jarvis-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Pour Safari */
+  backface-visibility: hidden;
+  background: var(--jarvis-bg);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.jarvis-card-front {
+  border: 1px solid var(--jarvis-blue);
+  box-shadow: 0 0 15px var(--jarvis-blue), inset 0 0 10px rgba(0, 184, 255, 0.5);
+}
+
+.jarvis-card-back {
+  transform: rotateY(180deg);
+  padding: 10px;
+}
+
+.jarvis-corner {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-color: var(--jarvis-blue);
+  border-style: solid;
+}
+.jarvis-corner.top-left { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+.jarvis-corner.top-right { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+.jarvis-corner.bottom-left { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+.jarvis-corner.bottom-right { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+.jarvis-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.jarvis-image-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.jarvis-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Fait en sorte que l'image remplisse le cercle sans se déformer */
+  filter: drop-shadow(0 0 5px var(--jarvis-blue));
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.jarvis-name {
+  font-size: 1.2em;
+  font-weight: 700;
+  text-transform: uppercase;
+  text-shadow: 0 0 5px var(--jarvis-blue), 0 0 10px white;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+.jarvis-stats {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  text-align: left;
+  padding: 0 15px;
+}
+
+.jarvis-stats p {
+  font-size: 0.8em;
+  margin: 8px 0;
+}
+
+.jarvis-stats span {
+  color: var(--jarvis-blue);
+}
+
+/* --- Styles pour les anneaux de stats --- */
+.stat-rings {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* Fait commencer les cercles en haut */
+  z-index: 1;
+}
+
+.stat-ring, .stat-ring-bg {
+  fill: transparent;
+  stroke-width: 5;
+}
+
+.stat-ring-bg {
+  stroke: rgba(0, 184, 255, 0.1);
+}
+
+.stat-ring {
+  transition: stroke-dashoffset 1s cubic-bezier(0.25, 1, 0.5, 1);
+  stroke-linecap: round;
+}
+
+/* Couleurs pour chaque stat */
+.stat-hp {
+  stroke: #4caf50; /* Vert */
+  filter: drop-shadow(0 0 3px #4caf50);
+}
+.stat-atk {
+  stroke: #f44336; /* Rouge */
+  filter: drop-shadow(0 0 3px #f44336);
+}
+.stat-def {
+  stroke: #2196f3; /* Bleu */
+  filter: drop-shadow(0 0 3px #2196f3);
+}
+.stat-spd {
+  stroke: #ffeb3b; /* Jaune */
+  filter: drop-shadow(0 0 3px #ffeb3b);
 }
