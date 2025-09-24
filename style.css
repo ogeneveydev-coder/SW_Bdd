@@ -1,5 +1,3 @@
-/* Version: 1.3 */
-
 /* --- Style Jarvis / Minority Report --- */
 
 /* Pour un effet optimal, ajoutez cette police à votre fichier HTML dans la balise <head> */
@@ -59,20 +57,13 @@ button:hover {
 
 #suggestions-container {
   position: absolute;
-  border-left: 1px solid var(--jarvis-blue);
-  border-right: 1px solid var(--jarvis-blue);
-  border-bottom: 1px solid var(--jarvis-blue);
+  border: 1px solid #ddd;
   border-top: none;
   z-index: 99;
   top: 100%;
   left: 0;
   right: 0;
   background-color: var(--jarvis-bg-solid);
-}
-
-/* Masque le conteneur (et ses bordures) uniquement lorsqu'il est vide */
-#suggestions-container:empty {
-  display: none;
 }
 
 .suggestion-item {
@@ -221,7 +212,7 @@ button:hover {
 
 .stat-ring, .stat-ring-bg {
   fill: transparent;
-  stroke-width: 8; /* Anneaux plus épais */
+  stroke-width: 5;
 }
 
 .stat-ring-bg {
@@ -229,89 +220,24 @@ button:hover {
 }
 
 .stat-ring {
-  /* Transition de 1.5s sur la propriété stroke-dashoffset pour un effet plus lent */
+  transition: stroke-dashoffset 1s cubic-bezier(0.25, 1, 0.5, 1);
   stroke-linecap: round;
-  /* On applique le filtre de base ici pour éviter les conflits */
-  filter: drop-shadow(0 0 3px var(--glow-color, var(--jarvis-blue)));
 }
 
-/* Couleurs et délais d'animation pour chaque stat */
+/* Couleurs pour chaque stat */
 .stat-hp {
-  --glow-color: #4caf50;
-  stroke: var(--glow-color); /* Vert */
-  transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.3s;
+  stroke: #4caf50; /* Vert */
+  filter: drop-shadow(0 0 3px #4caf50);
 }
 .stat-atk {
-  --glow-color: #f44336;
-  stroke: var(--glow-color); /* Rouge */
-  transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.5s;
+  stroke: #f44336; /* Rouge */
+  filter: drop-shadow(0 0 3px #f44336);
 }
 .stat-def {
-  --glow-color: #2196f3;
-  stroke: var(--glow-color); /* Bleu */
-  transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.7s;
+  stroke: #2196f3; /* Bleu */
+  filter: drop-shadow(0 0 3px #2196f3);
 }
 .stat-spd {
-  --glow-color: #ffeb3b;
-  stroke: var(--glow-color); /* Jaune */
-  transition: stroke-dashoffset 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.9s;
-}
-
-/* --- Styles pour l'icône d'élément --- */
-.jarvis-title-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-}
-
-.element-icon {
-  width: 18px; /* Taille augmentée pour une meilleure visibilité */
-  height: 18px;
-  flex-shrink: 0; /* Empêche l'icône de rétrécir */
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.element-icon.fire {
-  background-image: url('icons/fire.png');
-  filter: drop-shadow(0 0 4px #f44336);
-}
-
-.element-icon.water {
-  background-image: url('icons/water.png');
-  filter: drop-shadow(0 0 4px #2196f3);
-}
-
-.element-icon.wind {
-  background-image: url('icons/wind.png');
-  filter: drop-shadow(0 0 4px #ffeb3b);
-}
-
-.element-icon.light {
-  background-image: url('icons/light.png');
-  filter: drop-shadow(0 0 4px #fffde7);
-}
-
-.element-icon.dark {
-  background-image: url('icons/dark.png');
-  filter: drop-shadow(0 0 4px #4a148c);
-}
-
-/* --- Affichage de la version --- */
-#version-container {
-  position: fixed; /* Reste visible même en scrollant */
-  top: 10px;
-  right: 15px;
-  font-size: 0.7em;
-  color: var(--jarvis-blue);
-  opacity: 0.6;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  z-index: 1000; /* Pour être au-dessus de tout */
-  text-shadow: 0 0 3px var(--jarvis-blue);
+  stroke: #ffeb3b; /* Jaune */
+  filter: drop-shadow(0 0 3px #ffeb3b);
 }
