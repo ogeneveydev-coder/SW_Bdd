@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.2',
+  script: '2.3',
   style: '2.3',
   index: '2.1'
 };
@@ -118,7 +118,10 @@ function searchMonster() {
   // Déclenche l'animation des anneaux après que le DOM a été mis à jour
   // setTimeout avec 0ms force le navigateur à attendre le prochain "tick" de rendu
   setTimeout(() => {
-    document.querySelectorAll('.stat-ring').forEach(ring => {
+    const rings = document.querySelectorAll('.stat-ring');
+    rings.forEach(ring => {
+      // Forcer un "reflow" en lisant une propriété de layout. C'est ce qui garantit que l'animation démarre.
+      void ring.offsetWidth; 
       ring.classList.add('animate-ring');
     });
   }, 0);
