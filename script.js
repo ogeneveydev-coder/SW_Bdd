@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.0',
-  style: '2.1',
+  script: '2.1',
+  style: '2.2',
   index: '2.1'
 };
 const allMonsters = [];
@@ -216,11 +216,15 @@ function createStatRingsSVG(stats) {
     const max = MAX_STATS[stat.name];
     const percentage = Math.min(stat.value / max, 1); // Plafonne à 100%
     const circumference = 2 * Math.PI * stat.radius;
-    const offset = circumference * (1 - percentage);
 
     return `
       <circle class="stat-ring-bg" cx="80" cy="80" r="${stat.radius}"></circle>
-      <circle class="stat-ring ${stat.class}" cx="80" cy="80" r="${stat.radius}" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"></circle>
+      <circle 
+        class="stat-ring ${stat.class}" 
+        cx="80" cy="80" 
+        r="${stat.radius}" 
+        style="--circumference: ${circumference}; --stat-percentage: ${percentage};">
+      </circle>
     `;
   }).join('');
 

@@ -248,8 +248,16 @@ button:hover {
 }
 
 .stat-ring {
-  transition: stroke-dashoffset 1s cubic-bezier(0.25, 1, 0.5, 1);
+  /* La variable --circumference sera définie en JS */
+  stroke-dasharray: var(--circumference); 
+  /* L'animation va de "vide" (offset = circumference) à "plein" (offset = circumference * (1 - percentage)) */
+  animation: fill-ring 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   stroke-linecap: round;
+}
+
+@keyframes fill-ring {
+  from { stroke-dashoffset: var(--circumference); }
+  to { stroke-dashoffset: calc(var(--circumference) * (1 - var(--stat-percentage))); }
 }
 
 /* Couleurs pour chaque stat */
