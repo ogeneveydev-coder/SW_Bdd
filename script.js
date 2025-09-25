@@ -3,12 +3,15 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.7',
+  script: '2.8',
   style: '2.7',
   index: '2.1'
 };
 const allMonsters = [];
 let globalMonsterStats = {}; // Stockera les stats min/avg/max de tous les monstres
+
+// Valeurs maximales de référence pour calculer les pourcentages des anneaux
+const MAX_STATS = { hp: 20000, atk: 1000, def: 1000, spd: 135 };
 
 // Centraliser les sélecteurs DOM pour la performance et la lisibilité
 const searchInput = document.getElementById('searchInput');
@@ -270,9 +273,6 @@ function createStatMarkers(stat) {
 
 function createStatRingsSVG(stats) {
   const { base_hp, base_attack, base_defense, speed } = stats;
-
-  // Valeurs maximales de référence pour calculer les pourcentages
-  const MAX_STATS = { hp: 20000, atk: 1000, def: 1000, spd: 135 };
 
   // Configuration de chaque anneau (rayon et classe CSS)
   const STAT_CONFIG = [
