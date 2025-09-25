@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.6',
-  style: '2.6',
+  script: '2.7',
+  style: '2.7',
   index: '2.1'
 };
 const allMonsters = [];
@@ -244,6 +244,30 @@ function displayFileVersions() {
   }
 }
 
+function createStatMarkers(stat) {
+  const { name, radius } = stat;
+  const max = MAX_STATS[name];
+  const globalStat = globalMonsterStats[name];
+  let markersHtml = '';
+
+  const markerConfigs = [
+    { value: globalStat.min, class: 'stat-marker-min' },
+    { value: globalStat.avg, class: 'stat-marker-avg' },
+    { value: globalStat.max, class: 'stat-marker-max' }
+  ];
+
+  markerConfigs.forEach(marker => {
+    const percentage = marker.value / max;
+    // L'angle est calculé en radians. -Math.PI / 2 pour compenser la rotation de -90deg du SVG parent.
+    const angle = (percentage * 2 * Math.PI) - (Math.PI / 2);
+    const cx = 80 + radius * Math.cos(angle);
+    const cy = 80 + radius * Math.sin(angle);
+    markersHtml += `<circle class="stat-marker ${marker.class}" cx="${cx}" cy="${cy}" r="2"></circle>`;
+  });
+
+  return markersHtml;
+}
+
 function createStatRingsSVG(stats) {
   const { base_hp, base_attack, base_defense, speed } = stats;
 
@@ -263,6 +287,7 @@ function createStatRingsSVG(stats) {
     const percentage = Math.min(stat.value / max, 1); // Plafonne à 100%
     const circumference = 2 * Math.PI * stat.radius;
     const finalOffset = circumference * (1 - percentage);
+    const markers = createStatMarkers(stat);
 
     return `
       <circle class="stat-ring-bg" cx="80" cy="80" r="${stat.radius}"></circle>
@@ -273,6 +298,7 @@ function createStatRingsSVG(stats) {
         style="--circumference: ${circumference};"
         data-final-offset="${finalOffset}">
       </circle>
+      ${markers}
     `;
   }).join('');
 

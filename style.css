@@ -290,3 +290,20 @@ button:hover {
   stroke: #ffeb3b; /* Jaune */
   filter: drop-shadow(0 0 3px #ffeb3b);
 }
+
+/* --- Styles pour les marqueurs de stats sur les anneaux --- */
+.stat-marker {
+  fill: white;
+  stroke: black;
+  stroke-width: 0.5;
+}
+
+.stat-marker-min {
+  fill: #ff5252; /* Rouge pour le min */
+}
+.stat-marker-avg {
+  fill: #ffffff; /* Blanc pour la moyenne */
+}
+.stat-marker-max {
+  fill: #69f0ae; /* Vert pour le max */
+}
