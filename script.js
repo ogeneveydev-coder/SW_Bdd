@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.1',
+  script: '2.2',
   style: '2.2',
   index: '2.1'
 };
@@ -114,6 +114,14 @@ function searchMonster() {
 
   // Affiche les cartes dans un conteneur
   showResult(`<div class="results-container">${cardsHtml}</div>`);
+
+  // Déclenche l'animation des anneaux après que le DOM a été mis à jour
+  // setTimeout avec 0ms force le navigateur à attendre le prochain "tick" de rendu
+  setTimeout(() => {
+    document.querySelectorAll('.stat-ring').forEach(ring => {
+      ring.classList.add('animate-ring');
+    });
+  }, 0);
 }
 
 // --- Logique d'autocomplétion ---
@@ -220,7 +228,7 @@ function createStatRingsSVG(stats) {
     return `
       <circle class="stat-ring-bg" cx="80" cy="80" r="${stat.radius}"></circle>
       <circle 
-        class="stat-ring ${stat.class}" 
+        class="stat-ring ${stat.class}"
         cx="80" cy="80" 
         r="${stat.radius}" 
         style="--circumference: ${circumference}; --stat-percentage: ${percentage};">

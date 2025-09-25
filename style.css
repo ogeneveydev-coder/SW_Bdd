@@ -249,10 +249,14 @@ button:hover {
 
 .stat-ring {
   /* La variable --circumference sera définie en JS */
-  stroke-dasharray: var(--circumference); 
-  /* L'animation va de "vide" (offset = circumference) à "plein" (offset = circumference * (1 - percentage)) */
-  animation: fill-ring 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  stroke-dasharray: var(--circumference);
+  /* L'état de départ est "vide" (offset = circonférence) */
+  stroke-dashoffset: var(--circumference);
   stroke-linecap: round;
+}
+
+.animate-ring {
+  animation: fill-ring 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 @keyframes fill-ring {
