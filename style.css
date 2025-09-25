@@ -256,7 +256,7 @@ button:hover {
 }
 
 .animate-ring {
-  animation: fill-ring 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: fill-ring 2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 @keyframes fill-ring {
