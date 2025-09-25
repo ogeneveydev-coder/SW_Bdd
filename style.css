@@ -227,6 +227,22 @@ button:hover {
   color: var(--jarvis-blue);
 }
 
+/* --- Styles pour les stats comparatives --- */
+.comparative-stats {
+  border-top: 1px solid rgba(0, 184, 255, 0.3);
+  margin-top: 15px;
+  padding-top: 10px;
+  font-size: 0.7em;
+}
+
+.comparative-stats p {
+  margin: 5px 0;
+  color: #ccc; /* Couleur un peu moins vive pour les valeurs min/max */
+}
+.comparative-stats span {
+  color: var(--jarvis-blue); /* La valeur moyenne ressort */
+}
+
 /* --- Styles pour les anneaux de stats --- */
 .stat-rings {
   position: absolute;

@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.4',
-  style: '2.4',
+  script: '2.5',
+  style: '2.5',
   index: '2.1'
 };
 const allMonsters = [];
@@ -23,7 +23,11 @@ window.addEventListener('DOMContentLoaded', () => {
   fetch('bestiary_data.json')
     .then(response => response.json())
     .then(data => {
-      allMonsters.push(...data.filter(obj => obj.model === "bestiary.monster"));
+      // Filtre pour ne garder que les monstres 2 à 6 étoiles
+      const filteredMonsters = data.filter(obj => 
+        obj.model === "bestiary.monster" && obj.fields.natural_stars >= 2
+      );
+      allMonsters.push(...filteredMonsters);
     })
     .catch(err => {
       console.error("Erreur lors du chargement des données du bestiaire.", err);
@@ -71,6 +75,32 @@ function searchMonster() {
     return;
   }
 
+  // Si plus d'un monstre est trouvé, calcule les stats comparatives
+  let comparativeStatsHtml = '';
+  if (foundMonsters.length > 1) {
+    const stats = {
+      hp:  foundMonsters.map(m => m.fields.base_hp),
+      atk: foundMonsters.map(m => m.fields.base_attack),
+      def: foundMonsters.map(m => m.fields.base_defense),
+      spd: foundMonsters.map(m => m.fields.speed),
+    };
+
+    const calc = (arr) => ({
+      min: Math.min(...arr),
+      max: Math.max(...arr),
+      avg: Math.round(arr.reduce((a, b) => a + b, 0) / arr.length),
+    });
+
+    comparativeStatsHtml = `
+      <div class="comparative-stats">
+        <p><span>HP:</span> ${calc(stats.hp).min} / <span>${calc(stats.hp).avg}</span> / ${calc(stats.hp).max}</p>
+        <p><span>ATK:</span> ${calc(stats.atk).min} / <span>${calc(stats.atk).avg}</span> / ${calc(stats.atk).max}</p>
+        <p><span>DEF:</span> ${calc(stats.def).min} / <span>${calc(stats.def).avg}</span> / ${calc(stats.def).max}</p>
+        <p><span>SPD:</span> ${calc(stats.spd).min} / <span>${calc(stats.spd).avg}</span> / ${calc(stats.spd).max}</p>
+      </div>
+    `;
+  }
+
   // Construit une carte HTML pour chaque monstre trouvé
   const cardsHtml = foundMonsters.map(monster => {
     const { name, element, archetype, base_hp, base_attack, base_defense, speed, image_filename } = monster.fields;
@@ -105,6 +135,7 @@ function searchMonster() {
                 <p><span>Archetype:</span> ${archetype}</p>
                 <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
                 <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
+                ${comparativeStatsHtml}
             </div>
           </div>
         </div>
