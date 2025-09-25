@@ -253,15 +253,8 @@ button:hover {
   /* L'état de départ est "vide" (offset = circonférence) */
   stroke-dashoffset: var(--circumference);
   stroke-linecap: round;
-}
-
-.animate-ring {
-  animation: fill-ring 2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-
-@keyframes fill-ring {
-  from { stroke-dashoffset: var(--circumference); }
-  to { stroke-dashoffset: calc(var(--circumference) * (1 - var(--stat-percentage))); }
+  /* L'animation se fera via une transition sur la propriété stroke-dashoffset */
+  transition: stroke-dashoffset 2s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* Couleurs pour chaque stat */

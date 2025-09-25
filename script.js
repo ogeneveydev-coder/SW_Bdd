@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.3',
-  style: '2.3',
+  script: '2.4',
+  style: '2.4',
   index: '2.1'
 };
 const allMonsters = [];
@@ -117,14 +117,12 @@ function searchMonster() {
 
   // Déclenche l'animation des anneaux après que le DOM a été mis à jour
   // setTimeout avec 0ms force le navigateur à attendre le prochain "tick" de rendu
-  setTimeout(() => {
-    const rings = document.querySelectorAll('.stat-ring');
-    rings.forEach(ring => {
-      // Forcer un "reflow" en lisant une propriété de layout. C'est ce qui garantit que l'animation démarre.
-      void ring.offsetWidth; 
-      ring.classList.add('animate-ring');
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.stat-ring').forEach(ring => {
+      const finalOffset = ring.dataset.finalOffset;
+      ring.style.strokeDashoffset = finalOffset;
     });
-  }, 0);
+  });
 }
 
 // --- Logique d'autocomplétion ---
@@ -227,6 +225,7 @@ function createStatRingsSVG(stats) {
     const max = MAX_STATS[stat.name];
     const percentage = Math.min(stat.value / max, 1); // Plafonne à 100%
     const circumference = 2 * Math.PI * stat.radius;
+    const finalOffset = circumference * (1 - percentage);
 
     return `
       <circle class="stat-ring-bg" cx="80" cy="80" r="${stat.radius}"></circle>
@@ -234,7 +233,8 @@ function createStatRingsSVG(stats) {
         class="stat-ring ${stat.class}"
         cx="80" cy="80" 
         r="${stat.radius}" 
-        style="--circumference: ${circumference}; --stat-percentage: ${percentage};">
+        style="--circumference: ${circumference};"
+        data-final-offset="${finalOffset}">
       </circle>
     `;
   }).join('');
