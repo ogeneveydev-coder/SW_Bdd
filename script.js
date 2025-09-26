@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.17',
+  script: '2.18',
   style: '2.14', // Pas de changement de style
   index: '2.1'
 };
@@ -329,6 +329,14 @@ function createRadarChart(monsterStats) {
   const radius = 50;
   const center = { x: width / 2, y: height / 2 + 5 };
 
+  // Objet pour mapper les noms de stats courts aux noms de champs réels dans les données
+  const statFieldMap = {
+    hp: 'base_hp',
+    atk: 'base_attack',
+    def: 'base_defense',
+    spd: 'speed'
+  };
+
   // Fonction pour calculer les coordonnées d'un point sur le radar
   const getPoint = (value, statName, angleIndex) => {
     const percentage = value / MAX_STATS[statName];
@@ -342,7 +350,8 @@ function createRadarChart(monsterStats) {
   // Détermine si le monstre est globalement au-dessus ou en-dessous de la moyenne
   let score = 0;
   statsOrder.forEach(stat => {
-    const monsterValue = monsterStats[`base_${stat}`] || monsterStats[stat];
+    const fieldName = statFieldMap[stat];
+    const monsterValue = monsterStats[fieldName];
     const avgValue = globalMonsterStats[stat].avg;
     // Calcule l'écart en pourcentage par rapport à la moyenne et l'ajoute au score.
     // Cela donne un score beaucoup plus nuancé qu'un simple +1/-1.
@@ -371,7 +380,8 @@ function createRadarChart(monsterStats) {
   // Générer les polygones
   const createPolygon = (statSource, className, style = '') => {
     const points = statsOrder.map((stat, i) => {
-      const value = (statSource === 'monster') ? monsterStats[`base_${stat}`] || monsterStats[stat] : statSource[stat].avg || statSource[stat];
+      const fieldName = statFieldMap[stat];
+      const value = (statSource === 'monster') ? monsterStats[fieldName] : statSource[stat].avg || statSource[stat];
       const point = getPoint(value, stat, i);
       return `${point.x},${point.y}`;
     }).join(' ');
