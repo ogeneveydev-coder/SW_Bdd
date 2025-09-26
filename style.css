@@ -302,7 +302,9 @@ button:hover {
   fill: #ff5252; /* Rouge pour le min */
 }
 .stat-marker-avg {
-  fill: #ffffff; /* Blanc pour la moyenne */
+  /* Style pour la ligne de la moyenne */
+  stroke: #ffffff;
+  stroke-width: 1.5;
 }
 .stat-marker-max {
   fill: #69f0ae; /* Vert pour le max */

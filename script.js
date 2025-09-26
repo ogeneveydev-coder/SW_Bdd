@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.9',
-  style: '2.7',
+  script: '2.10',
+  style: '2.8',
   index: '2.1'
 };
 const allMonsters = [];
@@ -262,11 +262,23 @@ function createStatMarkers(stat) {
 
   markerConfigs.forEach(marker => {
     const percentage = marker.value / max;
-    // L'angle est calculé en radians. -Math.PI / 2 pour compenser la rotation de -90deg du SVG parent.
     const angle = (percentage * 2 * Math.PI) - (Math.PI / 2);
-    const cx = 80 + radius * Math.cos(angle);
-    const cy = 80 + radius * Math.sin(angle);
-    markersHtml += `<circle class="stat-marker ${marker.class}" cx="${cx}" cy="${cy}" r="2"></circle>`;
+
+    if (marker.class === 'stat-marker-avg') {
+      // Dessine une ligne radiale pour la moyenne
+      const innerRadius = radius - 4;
+      const outerRadius = radius + 4;
+      const x1 = 80 + innerRadius * Math.cos(angle);
+      const y1 = 80 + innerRadius * Math.sin(angle);
+      const x2 = 80 + outerRadius * Math.cos(angle);
+      const y2 = 80 + outerRadius * Math.sin(angle);
+      markersHtml += `<line class="stat-marker ${marker.class}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"></line>`;
+    } else {
+      // Dessine un cercle pour le min et le max
+      const cx = 80 + radius * Math.cos(angle);
+      const cy = 80 + radius * Math.sin(angle);
+      markersHtml += `<circle class="stat-marker ${marker.class}" cx="${cx}" cy="${cy}" r="2"></circle>`;
+    }
   });
 
   return markersHtml;
