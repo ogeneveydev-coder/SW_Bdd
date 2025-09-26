@@ -348,7 +348,7 @@ function createRadialBarChart(monsterStats) {
   const center = { x: width / 2, y: height / 2 + 5 };
   const radius = 65;
   const anglePerStat = 360 / numStats;
-  const arcPadding = 2; // Espace en degrés entre les parts
+  const arcPadding = 2; // Espace en degrés entre les parts de tarte
 
   // Objet pour mapper les noms de stats courts aux noms de champs réels dans les données
   const statFieldMap = {
@@ -369,6 +369,7 @@ function createRadialBarChart(monsterStats) {
     const start = polarToCartesian(x, y, radius, startAngle);
     const end = polarToCartesian(x, y, radius, endAngle);
     const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+    // M(center) L(start of arc) A(arc) Z(close path to center)
     return `M ${x},${y} L ${start.x},${start.y} A ${radius},${radius} 0 ${largeArcFlag} 1 ${end.x},${end.y} Z`;
   };
 
@@ -400,7 +401,7 @@ function createRadialBarChart(monsterStats) {
     chartHtml += `<path class="avg-marker" d="${describeSector(center.x, center.y, avgRadius, startAngle, endAngle)}"></path>`;
 
     // Label de la stat
-    const labelPoint = polarToCartesian(center.x, center.y, radius + 10, startAngle + (anglePerStat / 2));
+    const labelPoint = polarToCartesian(center.x, center.y, radius + 12, startAngle + (anglePerStat / 2));
     chartHtml += `<text class="label" x="${labelPoint.x}" y="${labelPoint.y}" text-anchor="middle" dominant-baseline="middle">${labels[i]}</text>`;
   });
 

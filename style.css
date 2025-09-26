@@ -348,6 +348,7 @@ button:hover {
   fill: var(--jarvis-blue);
   font-size: 9px;
   font-family: 'Orbitron', sans-serif;
+  pointer-events: none; /* Empêche le texte de bloquer les clics */
 }
 
 .radial-chart-container .avg-marker {
