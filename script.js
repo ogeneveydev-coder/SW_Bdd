@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.8',
+  script: '2.9',
   style: '2.7',
   index: '2.1'
 };
@@ -28,8 +28,9 @@ window.addEventListener('DOMContentLoaded', () => {
     .then(response => response.json())
     .then(data => {
       // Filtre pour ne garder que les monstres 2 à 6 étoiles
-      const filteredMonsters = data.filter(obj => 
-        obj.model === "bestiary.monster" && obj.fields.natural_stars >= 2
+      const filteredMonsters = data.filter(obj =>
+        obj.model === "bestiary.monster" &&
+        obj.fields.natural_stars >= 2 && obj.fields.is_awakened
       );
       allMonsters.push(...filteredMonsters);
 
