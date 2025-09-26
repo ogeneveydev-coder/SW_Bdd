@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.20',
-  style: '2.15',
+  script: '2.21',
+  style: '2.16',
   index: '2.1'
 };
 const allMonsters = [];
@@ -129,8 +129,8 @@ function searchMonster() {
   // Construit une carte HTML pour chaque monstre trouvé
   const cardsHtml = foundMonsters.map(monster => {
     const { name, element, archetype, base_hp, base_attack, base_defense, speed, crit_rate, crit_damage, resistance, accuracy, image_filename } = monster.fields;
-    const statRings = createStatRingsSVG(monster.fields);
-    const radarChart = createRadarChart(monster.fields);
+    const statRings = createStatRingsSVG(monster.fields); // Les anneaux sont conservés
+    const barChart = createBarChart(monster.fields); // Nouvelle fonction pour le graphique
     const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
     return `
       <div class="jarvis-card">
@@ -146,7 +146,7 @@ function searchMonster() {
                     ${statRings}
                     <img src="${imgUrl}" alt="${name}">
                 </div>
-                ${radarChart}
+                ${barChart}
                 <div class="jarvis-name" style="margin-top: 5px;">${name}</div>
             </div>
           </div>
@@ -337,93 +337,62 @@ function createStatRingsSVG(stats) {
   return `<svg class="stat-rings" viewBox="0 0 160 160">${rings}</svg>`;
 }
 
-function createRadarChart(monsterStats) {
+function createBarChart(monsterStats) {
   const statsOrder = ['hp', 'atk', 'def', 'spd', 'cr', 'cd', 'res', 'acc'];
   const labels = ['HP', 'ATK', 'DEF', 'SPD', 'CR', 'CD', 'RES', 'ACC'];
-  const numAxes = statsOrder.length;
-  const width = 180;
-  const height = 140; // Légère augmentation de la hauteur
-  const radius = 55; // Augmentation du rayon pour un graphique plus grand
-  const center = { x: width / 2, y: height / 2 + 10 };
+  const numStats = statsOrder.length;
+
+  // Dimensions du SVG et des barres
+  const svgWidth = 180;
+  const svgHeight = 100;
+  const barWidth = 15;
+  const barSpacing = 5;
+  const chartWidth = numStats * (barWidth + barSpacing) - barSpacing;
+  const startX = (svgWidth - chartWidth) / 2;
+  const maxBarHeight = 60;
+  const labelYOffset = 20;
 
   // Objet pour mapper les noms de stats courts aux noms de champs réels dans les données
   const statFieldMap = {
-    hp: 'base_hp',
-    atk: 'base_attack',
-    def: 'base_defense',
-    spd: 'speed',
-    cr: 'crit_rate',
-    cd: 'crit_damage',
-    res: 'resistance',
-    acc: 'accuracy'
+    hp: 'base_hp', atk: 'base_attack', def: 'base_defense', spd: 'speed',
+    cr: 'crit_rate', cd: 'crit_damage', res: 'resistance', acc: 'accuracy'
   };
 
-  // Fonction pour calculer les coordonnées d'un point sur le radar
-  const getPoint = (value, statName, angleIndex) => {
-    const percentage = value / MAX_STATS[statName];
-    const angle = (angleIndex / numAxes) * 2 * Math.PI - (Math.PI / 2); // Commence en haut
-    return {
-      x: center.x + radius * percentage * Math.cos(angle),
-      y: center.y + radius * percentage * Math.sin(angle)
-    };
-  };
+  let barsHtml = '';
+  statsOrder.forEach((stat, i) => {
+    const monsterValue = monsterStats[statFieldMap[stat]];
+    const avgValue = globalMonsterStats[stat].avg;
+    const maxValue = MAX_STATS[stat];
 
-  // Générer les polygones
-  const createPolygon = (statSource, className) => {
-    const points = statsOrder.map((stat, i) => {
-      const fieldName = statFieldMap[stat];
-      const value = (statSource === 'monster') ? monsterStats[fieldName] : statSource[stat].avg || statSource[stat];
-      const point = getPoint(value, stat, i);
-      return `${point.x},${point.y}`;
-    }).join(' ');
-    return `<polygon class="${className}" points="${points}" />`;
-  };
+    const monsterPercentage = monsterValue / maxValue;
+    const avgPercentage = avgValue / maxValue;
 
-  // Crée les polygones pour le fond et la moyenne
-  const maxPoly = createPolygon(Object.fromEntries(Object.keys(MAX_STATS).map(k => [k, MAX_STATS[k]])), 'max-poly');
-  const avgPoly = createPolygon(globalMonsterStats, 'avg-poly');
+    const monsterBarHeight = monsterPercentage * maxBarHeight;
+    const avgLineY = svgHeight - labelYOffset - (avgPercentage * maxBarHeight);
 
-  // Crée un polygone (triangle) par stat, coloré individuellement
-  let statPolys = '';
-  const monsterPoints = statsOrder.map((stat, i) => getPoint(monsterStats[statFieldMap[stat]], stat, i));
+    const x = startX + i * (barWidth + barSpacing);
+    const y = svgHeight - labelYOffset - monsterBarHeight;
 
-  for (let i = 0; i < numAxes; i++) {
-    const currentStat = statsOrder[i];
-    const monsterValue = monsterStats[statFieldMap[currentStat]];
-    const avgValue = globalMonsterStats[currentStat].avg;
-
+    // Détermine la couleur de la barre
     const colorClass = monsterValue > avgValue ? 'stat-poly-above' : 'stat-poly-below';
 
-    const p1 = monsterPoints[i];
-    const p2 = monsterPoints[(i + 1) % numAxes]; // Point suivant (boucle)
-    const points = `${center.x},${center.y} ${p1.x},${p1.y} ${p2.x},${p2.y}`;
+    // Barre de fond (grise transparente)
+    barsHtml += `<rect x="${x}" y="${svgHeight - labelYOffset - maxBarHeight}" width="${barWidth}" height="${maxBarHeight}" fill="rgba(0, 184, 255, 0.1)"></rect>`;
+    
+    // Barre de la stat du monstre
+    barsHtml += `<rect class="${colorClass}" x="${x}" y="${y}" width="${barWidth}" height="${monsterBarHeight}"></rect>`;
+    
+    // Ligne de la moyenne
+    barsHtml += `<line class="avg-poly" x1="${x}" y1="${avgLineY}" x2="${x + barWidth}" y2="${avgLineY}"></line>`;
 
-    statPolys += `<polygon class="stat-poly-shape ${colorClass}" points="${points}" />`;
-  }
-
-  // Générer les axes et les labels
-  let axesHtml = '';
-  labels.forEach((label, i) => {
-    const angle = (i / numAxes) * 2 * Math.PI - (Math.PI / 2);
-    const endPoint = {
-      x: center.x + radius * Math.cos(angle),
-      y: center.y + radius * Math.sin(angle)
-    };
-    const labelPoint = {
-      x: center.x + (radius + 15) * Math.cos(angle),
-      y: center.y + (radius + 15) * Math.sin(angle)
-    };
-    axesHtml += `<line class="axis" x1="${center.x}" y1="${center.y}" x2="${endPoint.x}" y2="${endPoint.y}" />`;
-    axesHtml += `<text class="label" x="${labelPoint.x}" y="${labelPoint.y}" text-anchor="middle" dominant-baseline="middle">${label}</text>`;
+    // Label de la stat
+    barsHtml += `<text class="label" x="${x + barWidth / 2}" y="${svgHeight - 5}" text-anchor="middle">${labels[i]}</text>`;
   });
 
   return `
-    <div class="radar-chart-container">
-      <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}">
-        ${axesHtml}
-        ${maxPoly}
-        ${avgPoly}
-        ${statPolys}
+    <div class="bar-chart-container">
+      <svg width="100%" height="100%" viewBox="0 0 ${svgWidth} ${svgHeight}">
+        ${barsHtml}
       </svg>
     </div>
   `;
