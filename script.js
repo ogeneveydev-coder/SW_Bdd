@@ -114,17 +114,21 @@ function searchMonster() {
   // Génère le HTML pour les statistiques globales (min/avg/max)
   // Ce bloc sera maintenant toujours affiché.
   const comparativeStatsHtml = `
-    <div class="comparative-stats">
+    <div class="comparative-stats" style="font-size: 0.6em;">
       <p><span>HP:</span> ${globalMonsterStats.hp.min} / <span>${globalMonsterStats.hp.avg}</span> / ${globalMonsterStats.hp.max}</p>
       <p><span>ATK:</span> ${globalMonsterStats.atk.min} / <span>${globalMonsterStats.atk.avg}</span> / ${globalMonsterStats.atk.max}</p>
       <p><span>DEF:</span> ${globalMonsterStats.def.min} / <span>${globalMonsterStats.def.avg}</span> / ${globalMonsterStats.def.max}</p>
       <p><span>SPD:</span> ${globalMonsterStats.spd.min} / <span>${globalMonsterStats.spd.avg}</span> / ${globalMonsterStats.spd.max}</p>
+      <p><span>CR:</span> ${globalMonsterStats.cr.min}% / <span>${globalMonsterStats.cr.avg}%</span> / ${globalMonsterStats.cr.max}%</p>
+      <p><span>CD:</span> ${globalMonsterStats.cd.min}% / <span>${globalMonsterStats.cd.avg}%</span> / ${globalMonsterStats.cd.max}%</p>
+      <p><span>RES:</span> ${globalMonsterStats.res.min}% / <span>${globalMonsterStats.res.avg}%</span> / ${globalMonsterStats.res.max}%</p>
+      <p><span>ACC:</span> ${globalMonsterStats.acc.min}% / <span>${globalMonsterStats.acc.avg}%</span> / ${globalMonsterStats.acc.max}%</p>
     </div>
   `;
 
   // Construit une carte HTML pour chaque monstre trouvé
   const cardsHtml = foundMonsters.map(monster => {
-    const { name, element, archetype, base_hp, base_attack, base_defense, speed, image_filename } = monster.fields;
+    const { name, element, archetype, base_hp, base_attack, base_defense, speed, crit_rate, crit_damage, resistance, accuracy, image_filename } = monster.fields;
     const statRings = createStatRingsSVG(monster.fields);
     const radarChart = createRadarChart(monster.fields);
     const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
@@ -158,6 +162,8 @@ function searchMonster() {
                 <p><span>Archetype:</span> ${archetype}</p>
                 <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
                 <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
+                <p><span>CR:</span> ${crit_rate}% | <span>CD:</span> ${crit_damage}%</p>
+                <p><span>RES:</span> ${resistance}% | <span>ACC:</span> ${accuracy}%</p>
                 ${comparativeStatsHtml}
             </div>
           </div>
