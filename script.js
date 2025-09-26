@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.18',
+  script: '2.19',
   style: '2.14', // Pas de changement de style
   index: '2.1'
 };
@@ -347,51 +347,38 @@ function createRadarChart(monsterStats) {
     };
   };
 
-  // Détermine si le monstre est globalement au-dessus ou en-dessous de la moyenne
-  let score = 0;
-  statsOrder.forEach(stat => {
-    const fieldName = statFieldMap[stat];
-    const monsterValue = monsterStats[fieldName];
-    const avgValue = globalMonsterStats[stat].avg;
-    // Calcule l'écart en pourcentage par rapport à la moyenne et l'ajoute au score.
-    // Cela donne un score beaucoup plus nuancé qu'un simple +1/-1.
-    const deviation = (monsterValue - avgValue) / avgValue;
-    score += deviation;
-  });
-
-  // --- LIGNE DE DÉBOGAGE ---
-  // Nous allons afficher ce score sur la carte pour vérifier sa valeur.
-  const debugScoreHtml = `<text x="5" y="12" font-size="10" fill="white">Score: ${score.toFixed(2)}</text>`;
-  // -------------------------
-
-  // Définir les couleurs directement ici pour un contrôle maximal
-  let fillColor, strokeColor;
-  if (score > 0) {
-    fillColor = 'rgba(105, 240, 174, 0.7)'; // Vert vif
-    strokeColor = '#69f0ae';
-  } else if (score < 0) {
-    fillColor = 'rgba(123, 31, 162, 0.6)'; // Violet sombre
-    strokeColor = '#ab47bc';
-  } else {
-    fillColor = 'rgba(0, 184, 255, 0.4)'; // Bleu par défaut
-    strokeColor = 'var(--jarvis-blue)';
-  }
-
   // Générer les polygones
-  const createPolygon = (statSource, className, style = '') => {
+  const createPolygon = (statSource, className) => {
     const points = statsOrder.map((stat, i) => {
       const fieldName = statFieldMap[stat];
       const value = (statSource === 'monster') ? monsterStats[fieldName] : statSource[stat].avg || statSource[stat];
       const point = getPoint(value, stat, i);
       return `${point.x},${point.y}`;
     }).join(' ');
-    
-    return `<polygon class="${className}" points="${points}" style="${style}" />`;
+    return `<polygon class="${className}" points="${points}" />`;
   };
 
+  // Crée les polygones pour le fond et la moyenne
   const maxPoly = createPolygon(Object.fromEntries(Object.keys(MAX_STATS).map(k => [k, MAX_STATS[k]])), 'max-poly');
   const avgPoly = createPolygon(globalMonsterStats, 'avg-poly');
-  const statPoly = createPolygon('monster', 'stat-poly-shape', `fill: ${fillColor}; stroke: ${strokeColor};`);
+
+  // Crée un polygone (triangle) par stat, coloré individuellement
+  let statPolys = '';
+  const monsterPoints = statsOrder.map((stat, i) => getPoint(monsterStats[statFieldMap[stat]], stat, i));
+
+  for (let i = 0; i < numAxes; i++) {
+    const currentStat = statsOrder[i];
+    const monsterValue = monsterStats[statFieldMap[currentStat]];
+    const avgValue = globalMonsterStats[currentStat].avg;
+
+    const colorClass = monsterValue > avgValue ? 'stat-poly-above' : 'stat-poly-below';
+
+    const p1 = monsterPoints[i];
+    const p2 = monsterPoints[(i + 1) % numAxes]; // Point suivant (boucle)
+    const points = `${center.x},${center.y} ${p1.x},${p1.y} ${p2.x},${p2.y}`;
+
+    statPolys += `<polygon class="stat-poly-shape ${colorClass}" points="${points}" />`;
+  }
 
   // Générer les axes et les labels
   let axesHtml = '';
@@ -412,11 +399,10 @@ function createRadarChart(monsterStats) {
   return `
     <div class="radar-chart-container">
       <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}">
-        ${debugScoreHtml}
         ${axesHtml}
         ${maxPoly}
         ${avgPoly}
-        ${statPoly}
+        ${statPolys}
       </svg>
     </div>
   `;
