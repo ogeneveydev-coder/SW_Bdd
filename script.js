@@ -4,7 +4,7 @@
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
   script: '2.12',
-  style: '2.10',
+  style: '2.11',
   index: '2.1'
 };
 const allMonsters = [];

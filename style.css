@@ -363,11 +363,11 @@ button:hover {
   transition: fill 0.3s ease; /* Ajoute une transition douce au changement de couleur */
 }
 
-.radar-chart-container .stat-poly-above {
+.radar-chart-container .stat-poly.stat-poly-above {
   fill: rgba(128, 222, 234, 0.6); /* Cyan plus clair */
   stroke: #80deea;
 }
-.radar-chart-container .stat-poly-below {
+.radar-chart-container .stat-poly.stat-poly-below {
   fill: rgba(0, 115, 153, 0.6); /* Bleu plus foncé */
   stroke: #007399;
 }
