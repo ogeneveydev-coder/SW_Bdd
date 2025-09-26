@@ -370,10 +370,10 @@ button:hover {
 }
 
 .radar-chart-container .stat-poly-above {
-  fill: rgba(128, 222, 234, 0.6); /* Cyan plus clair */
-  stroke: #80deea;
+  fill: rgba(105, 240, 174, 0.7); /* Vert vif */
+  stroke: #69f0ae;
 }
 .radar-chart-container .stat-poly-below {
-  fill: rgba(0, 115, 153, 0.6); /* Bleu plus foncé */
-  stroke: #007399;
+  fill: rgba(123, 31, 162, 0.6); /* Violet sombre */
+  stroke: #ab47bc;
 }
