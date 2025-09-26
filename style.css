@@ -364,7 +364,7 @@ button:hover {
 }
 
 /* Couleur par défaut */
-.radar-chart-container .stat-poly {
+.radar-chart-container .stat-poly-default {
   fill: rgba(0, 184, 255, 0.4);
   stroke: var(--jarvis-blue);
 }

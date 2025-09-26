@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.13',
-  style: '2.12',
+  script: '2.14',
+  style: '2.13',
   index: '2.1'
 };
 const allMonsters = [];
@@ -347,7 +347,7 @@ function createRadarChart(monsterStats) {
     if (monsterValue > avgValue) score++;
     if (monsterValue < avgValue) score--;
   });
-  const performanceClass = score > 0 ? 'stat-poly-above' : (score < 0 ? 'stat-poly-below' : 'stat-poly');
+  const performanceClass = score > 0 ? 'stat-poly-above' : (score < 0 ? 'stat-poly-below' : 'stat-poly-default');
 
   // Générer les polygones
   const createPolygon = (statSource, className) => {
