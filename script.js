@@ -3,15 +3,18 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.19',
-  style: '2.14', // Pas de changement de style
+  script: '2.20',
+  style: '2.15',
   index: '2.1'
 };
 const allMonsters = [];
 let globalMonsterStats = {}; // Stockera les stats min/avg/max de tous les monstres
 
 // Valeurs maximales de référence pour calculer les pourcentages des anneaux
-const MAX_STATS = { hp: 20000, atk: 1000, def: 1000, spd: 135 };
+const MAX_STATS = { 
+  hp: 20000, atk: 1000, def: 1000, spd: 135,
+  cr: 100, cd: 100, res: 100, acc: 100
+};
 
 // Centraliser les sélecteurs DOM pour la performance et la lisibilité
 const searchInput = document.getElementById('searchInput');
@@ -40,6 +43,10 @@ window.addEventListener('DOMContentLoaded', () => {
         atk: allMonsters.map(m => m.fields.base_attack),
         def: allMonsters.map(m => m.fields.base_defense),
         spd: allMonsters.map(m => m.fields.speed),
+        cr:  allMonsters.map(m => m.fields.crit_rate),
+        cd:  allMonsters.map(m => m.fields.crit_damage),
+        res: allMonsters.map(m => m.fields.resistance),
+        acc: allMonsters.map(m => m.fields.accuracy),
       };
       const calc = (arr) => ({
         min: Math.min(...arr),
@@ -51,6 +58,10 @@ window.addEventListener('DOMContentLoaded', () => {
         atk: calc(stats.atk),
         def: calc(stats.def),
         spd: calc(stats.spd),
+        cr:  calc(stats.cr),
+        cd:  calc(stats.cd),
+        res: calc(stats.res),
+        acc: calc(stats.acc),
       };
 
     })
@@ -321,20 +332,24 @@ function createStatRingsSVG(stats) {
 }
 
 function createRadarChart(monsterStats) {
-  const statsOrder = ['hp', 'atk', 'def', 'spd'];
-  const labels = ['HP', 'ATK', 'DEF', 'SPD'];
+  const statsOrder = ['hp', 'atk', 'def', 'spd', 'cr', 'cd', 'res', 'acc'];
+  const labels = ['HP', 'ATK', 'DEF', 'SPD', 'CR', 'CD', 'RES', 'ACC'];
   const numAxes = statsOrder.length;
   const width = 180;
-  const height = 130;
-  const radius = 50;
-  const center = { x: width / 2, y: height / 2 + 5 };
+  const height = 140; // Légère augmentation de la hauteur
+  const radius = 55; // Augmentation du rayon pour un graphique plus grand
+  const center = { x: width / 2, y: height / 2 + 10 };
 
   // Objet pour mapper les noms de stats courts aux noms de champs réels dans les données
   const statFieldMap = {
     hp: 'base_hp',
     atk: 'base_attack',
     def: 'base_defense',
-    spd: 'speed'
+    spd: 'speed',
+    cr: 'crit_rate',
+    cd: 'crit_damage',
+    res: 'resistance',
+    acc: 'accuracy'
   };
 
   // Fonction pour calculer les coordonnées d'un point sur le radar
