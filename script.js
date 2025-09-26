@@ -344,8 +344,10 @@ function createRadarChart(monsterStats) {
   statsOrder.forEach(stat => {
     const monsterValue = monsterStats[`base_${stat}`] || monsterStats[stat];
     const avgValue = globalMonsterStats[stat].avg;
-    if (monsterValue > avgValue) score++;
-    if (monsterValue < avgValue) score--;
+    // Calcule l'écart en pourcentage par rapport à la moyenne et l'ajoute au score.
+    // Cela donne un score beaucoup plus nuancé qu'un simple +1/-1.
+    const deviation = (monsterValue - avgValue) / avgValue;
+    score += deviation;
   });
 
   // Définir les couleurs directement ici pour un contrôle maximal
