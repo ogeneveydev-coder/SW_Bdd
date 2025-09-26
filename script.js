@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.12',
-  style: '2.11',
+  script: '2.13',
+  style: '2.12',
   index: '2.1'
 };
 const allMonsters = [];
@@ -347,7 +347,7 @@ function createRadarChart(monsterStats) {
     if (monsterValue > avgValue) score++;
     if (monsterValue < avgValue) score--;
   });
-  const performanceClass = score > 0 ? 'stat-poly-above' : (score < 0 ? 'stat-poly-below' : '');
+  const performanceClass = score > 0 ? 'stat-poly-above' : (score < 0 ? 'stat-poly-below' : 'stat-poly');
 
   // Générer les polygones
   const createPolygon = (statSource, className) => {
@@ -356,14 +356,13 @@ function createRadarChart(monsterStats) {
       const point = getPoint(value, stat, i);
       return `${point.x},${point.y}`;
     }).join(' ');
-    // Ajoute la classe de performance uniquement pour le polygone du monstre
-    const finalClassName = className === 'stat-poly' ? `${className} ${performanceClass}` : className;
-    return `<polygon class="${finalClassName}" points="${points}" />`;
+    
+    return `<polygon class="${className}" points="${points}" />`;
   };
 
   const maxPoly = createPolygon(Object.fromEntries(Object.keys(MAX_STATS).map(k => [k, MAX_STATS[k]])), 'max-poly');
   const avgPoly = createPolygon(globalMonsterStats, 'avg-poly');
-  const statPoly = createPolygon('monster', 'stat-poly');
+  const statPoly = createPolygon('monster', `stat-poly-shape ${performanceClass}`);
 
   // Générer les axes et les labels
   let axesHtml = '';
