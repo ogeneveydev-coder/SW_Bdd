@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.15',
+  script: '2.16',
   style: '2.14', // Pas de changement de style
   index: '2.1'
 };
@@ -350,6 +350,11 @@ function createRadarChart(monsterStats) {
     score += deviation;
   });
 
+  // --- LIGNE DE DÉBOGAGE ---
+  // Nous allons afficher ce score sur la carte pour vérifier sa valeur.
+  const debugScoreHtml = `<div style="position: absolute; top: 5px; left: 5px; font-size: 10px; color: white; background: black; padding: 2px; z-index: 100;">Score: ${score.toFixed(2)}</div>`;
+  // -------------------------
+
   // Définir les couleurs directement ici pour un contrôle maximal
   let fillColor, strokeColor;
   if (score > 0) {
@@ -397,6 +402,7 @@ function createRadarChart(monsterStats) {
   return `
     <div class="radar-chart-container">
       <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}">
+        ${debugScoreHtml}
         ${axesHtml}
         ${maxPoly}
         ${avgPoly}
