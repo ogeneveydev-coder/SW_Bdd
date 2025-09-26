@@ -4,7 +4,7 @@
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
   script: '2.23',
-  style: '2.22',
+  style: '2.23',
   index: '2.1'
 };
 const allMonsters = [];
@@ -347,9 +347,8 @@ function createRadialBarChart(monsterStats) {
   const height = 150;
   const center = { x: width / 2, y: height / 2 + 5 };
   const radius = 65;
-  const arcWidth = 8;
   const anglePerStat = 360 / numStats;
-  const arcPadding = 4; // Espace en degrés entre les arcs
+  const arcPadding = 2; // Espace en degrés entre les parts
 
   // Objet pour mapper les noms de stats courts aux noms de champs réels dans les données
   const statFieldMap = {
@@ -357,7 +356,6 @@ function createRadialBarChart(monsterStats) {
     cr: 'crit_rate', cd: 'crit_damage', res: 'resistance', acc: 'accuracy'
   };
 
-  // Fonctions utilitaires pour dessiner les arcs
   const polarToCartesian = (centerX, centerY, radius, angleInDegrees) => {
     const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
     return {
@@ -366,18 +364,18 @@ function createRadialBarChart(monsterStats) {
     };
   };
 
-  const describeArc = (x, y, radius, startAngle, endAngle) => {
-    const start = polarToCartesian(x, y, radius, endAngle);
-    const end = polarToCartesian(x, y, radius, startAngle);
+  // Fonction pour dessiner une part de camembert (secteur)
+  const describeSector = (x, y, radius, startAngle, endAngle) => {
+    const start = polarToCartesian(x, y, radius, startAngle);
+    const end = polarToCartesian(x, y, radius, endAngle);
     const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
-    return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${end.x} ${end.y}`;
+    return `M ${x},${y} L ${start.x},${start.y} A ${radius},${radius} 0 ${largeArcFlag} 1 ${end.x},${end.y} Z`;
   };
 
   let chartHtml = '';
   statsOrder.forEach((stat, i) => {
     const startAngle = i * anglePerStat;
-    const endAngle = startAngle + anglePerStat - arcPadding;
-    const arcAngle = endAngle - startAngle;
+    const endAngle = startAngle + anglePerStat - arcPadding; // Applique l'espacement
 
     const monsterValue = monsterStats[statFieldMap[stat]];
     const avgValue = globalMonsterStats[stat].avg;
@@ -385,26 +383,24 @@ function createRadialBarChart(monsterStats) {
 
     const monsterPercentage = monsterValue / maxValue;
     const avgPercentage = avgValue / maxValue;
+    
+    const monsterRadius = monsterPercentage * radius;
+    const avgRadius = avgPercentage * radius;
 
     // Détermine la couleur de l'arc
     const colorClass = monsterValue > avgValue ? 'stat-poly-above' : 'stat-poly-below';
 
-    // Arc de fond
-    chartHtml += `<path class="radial-bar-bg" d="${describeArc(center.x, center.y, radius, startAngle, endAngle)}" stroke-width="${arcWidth}"></path>`;
+    // Part de fond (représente 100%)
+    chartHtml += `<path class="radial-bar-bg" d="${describeSector(center.x, center.y, radius, startAngle, endAngle)}"></path>`;
     
-    // Arc de la stat du monstre
-    const monsterArcEndAngle = startAngle + (arcAngle * monsterPercentage);
-    chartHtml += `<path class="${colorClass}" d="${describeArc(center.x, center.y, radius, startAngle, monsterArcEndAngle)}" stroke-width="${arcWidth}"></path>`;
+    // Part de la stat du monstre
+    chartHtml += `<path class="${colorClass}" d="${describeSector(center.x, center.y, monsterRadius, startAngle, endAngle)}"></path>`;
 
     // Marqueur de la moyenne
-    const avgAngle = startAngle + (arcAngle * avgPercentage);
-    const avgPoint1 = polarToCartesian(center.x, center.y, radius - arcWidth / 2 - 2, avgAngle);
-    const avgPoint2 = polarToCartesian(center.x, center.y, radius + arcWidth / 2 + 2, avgAngle);
-    chartHtml += `<line class="avg-marker" x1="${avgPoint1.x}" y1="${avgPoint1.y}" x2="${avgPoint2.x}" y2="${avgPoint2.y}"></line>`;
+    chartHtml += `<path class="avg-marker" d="${describeSector(center.x, center.y, avgRadius, startAngle, endAngle)}"></path>`;
 
     // Label de la stat
-    const labelAngle = startAngle + arcAngle / 2;
-    const labelPoint = polarToCartesian(center.x, center.y, radius + arcWidth, labelAngle);
+    const labelPoint = polarToCartesian(center.x, center.y, radius + 10, startAngle + (anglePerStat / 2));
     chartHtml += `<text class="label" x="${labelPoint.x}" y="${labelPoint.y}" text-anchor="middle" dominant-baseline="middle">${labels[i]}</text>`;
   });
 
