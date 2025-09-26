@@ -9,8 +9,8 @@
 
 :root {
   --jarvis-blue: #00b8ff;
-  --jarvis-bg: rgba(0, 50, 100, 0.15);
-  --jarvis-bg-solid: #0a0a14;
+  --jarvis-bg: rgba(0, 90, 150, 0.2); /* Fond de carte légèrement plus visible */
+  --jarvis-bg-solid: #18202c; /* Fond de page un peu plus clair */
 }
 
 body {
@@ -343,7 +343,7 @@ button:hover {
 }
 
 .radial-chart-container .radial-bar-bg {
-  stroke: rgba(0, 184, 255, 0.1);
+  stroke: rgba(0, 184, 255, 0.25); /* Fond des arcs rendu plus visible */
 }
 
 .radial-chart-container .label {
