@@ -351,10 +351,23 @@ button:hover {
   fill: rgba(0, 184, 255, 0.05);
 }
 .radar-chart-container .avg-poly {
-  fill: rgba(255, 255, 255, 0.15);
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-width: 1;
+  stroke-dasharray: 2, 3; /* Crée l'effet de pointillés */
 }
 .radar-chart-container .stat-poly {
   fill: rgba(0, 184, 255, 0.4);
   stroke: var(--jarvis-blue);
   stroke-width: 1;
+  transition: fill 0.3s ease; /* Ajoute une transition douce au changement de couleur */
+}
+
+.radar-chart-container .stat-poly-above {
+  fill: rgba(128, 222, 234, 0.6); /* Cyan plus clair */
+  stroke: #80deea;
+}
+.radar-chart-container .stat-poly-below {
+  fill: rgba(0, 115, 153, 0.6); /* Bleu plus foncé */
+  stroke: #007399;
 }
