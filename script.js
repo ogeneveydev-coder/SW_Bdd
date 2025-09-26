@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.14',
-  style: '2.14',
+  script: '2.15',
+  style: '2.14', // Pas de changement de style
   index: '2.1'
 };
 const allMonsters = [];
@@ -347,22 +347,34 @@ function createRadarChart(monsterStats) {
     if (monsterValue > avgValue) score++;
     if (monsterValue < avgValue) score--;
   });
-  const performanceClass = score > 0 ? 'stat-poly-above' : (score < 0 ? 'stat-poly-below' : 'stat-poly-default');
+
+  // Définir les couleurs directement ici pour un contrôle maximal
+  let fillColor, strokeColor;
+  if (score > 0) {
+    fillColor = 'rgba(105, 240, 174, 0.7)'; // Vert vif
+    strokeColor = '#69f0ae';
+  } else if (score < 0) {
+    fillColor = 'rgba(123, 31, 162, 0.6)'; // Violet sombre
+    strokeColor = '#ab47bc';
+  } else {
+    fillColor = 'rgba(0, 184, 255, 0.4)'; // Bleu par défaut
+    strokeColor = 'var(--jarvis-blue)';
+  }
 
   // Générer les polygones
-  const createPolygon = (statSource, className) => {
+  const createPolygon = (statSource, className, style = '') => {
     const points = statsOrder.map((stat, i) => {
       const value = (statSource === 'monster') ? monsterStats[`base_${stat}`] || monsterStats[stat] : statSource[stat].avg || statSource[stat];
       const point = getPoint(value, stat, i);
       return `${point.x},${point.y}`;
     }).join(' ');
     
-    return `<polygon class="${className}" points="${points}" />`;
+    return `<polygon class="${className}" points="${points}" style="${style}" />`;
   };
 
   const maxPoly = createPolygon(Object.fromEntries(Object.keys(MAX_STATS).map(k => [k, MAX_STATS[k]])), 'max-poly');
   const avgPoly = createPolygon(globalMonsterStats, 'avg-poly');
-  const statPoly = createPolygon('monster', `stat-poly-shape ${performanceClass}`);
+  const statPoly = createPolygon('monster', 'stat-poly-shape', `fill: ${fillColor}; stroke: ${strokeColor};`);
 
   // Générer les axes et les labels
   let axesHtml = '';
