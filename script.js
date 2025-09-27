@@ -262,29 +262,19 @@ function populateFullBestiary() {
   const tabsContainer = document.querySelector('.element-tabs');
   if (!container || !tabsContainer) return;
 
-  // Crée la liste des monstres
-  const monsterListHtml = allMonsters
-    .filter(m => m.fields.is_awakened) // On filtre ici pour n'afficher que les monstres éveillés
-    .sort((a, b) => a.fields.name.localeCompare(b.fields.name))
-    .map(monster => {
-      const { name, element, image_filename } = monster.fields;
-      const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
-      // On ajoute le nom dans un data-attribute pour le récupérer au clic
-      return `<div class="monster-grid-item" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
-    }).join('');
+  // Fonction pour générer et afficher la grille pour un élément donné
+  const displayGridForElement = (element) => {
+    const filteredMonsters = allMonsters
+      .filter(m => m.fields.is_awakened && m.fields.element === element)
+      .sort((a, b) => a.fields.name.localeCompare(b.fields.name));
 
-  container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
+    const monsterListHtml = filteredMonsters.map(monster => {
+        const { name, element, image_filename } = monster.fields;
+        const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
+        return `<div class="monster-grid-item" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
+      }).join('');
 
-  // Fonction pour filtrer l'affichage de la grille
-  const filterGrid = (element) => {
-    const allItems = container.querySelectorAll('.monster-grid-item');
-    allItems.forEach(item => {
-      if (item.dataset.element === element) {
-        item.style.display = '';
-      } else {
-        item.style.display = 'none';
-      }
-    });
+    container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
   };
 
   // Ajoute la logique de clic sur les onglets
@@ -296,14 +286,12 @@ function populateFullBestiary() {
       tabsContainer.querySelector('.active').classList.remove('active');
       e.target.classList.add('active');
 
-      filterGrid(selectedElement);
+      displayGridForElement(selectedElement);
     }
   });
 
-  // Affiche les monstres du premier onglet ("Feu") par défaut.
-  // On utilise requestAnimationFrame pour s'assurer que le DOM est prêt avant de filtrer.
-  requestAnimationFrame(() => filterGrid('Fire'));
-
+  // Affiche la grille pour le premier onglet ("Fire") par défaut
+  displayGridForElement('Fire');
 
   // Ajoute la logique de clic sur un monstre de la liste
   container.addEventListener('click', (e) => {
