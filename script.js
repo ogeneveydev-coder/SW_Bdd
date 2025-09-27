@@ -388,14 +388,11 @@ function createRadialBarChart(monsterStats) {
     const monsterRadius = monsterPercentage * radius;
     const avgRadius = avgPercentage * radius;
 
-    // Détermine la couleur de l'arc
-    const colorClass = monsterValue > avgValue ? 'stat-poly-above' : 'stat-poly-below';
-
     // Part de fond (représente 100%)
     chartHtml += `<path class="radial-bar-bg" d="${describeSector(center.x, center.y, radius, startAngle, endAngle)}"></path>`;
     
     // Part de la stat du monstre
-    chartHtml += `<path class="${colorClass}" d="${describeSector(center.x, center.y, monsterRadius, startAngle, endAngle)}"></path>`;
+    chartHtml += `<path fill="url(#statGradient)" d="${describeSector(center.x, center.y, monsterRadius, startAngle, endAngle)}"></path>`;
 
     // Marqueur de la moyenne
     chartHtml += `<path class="avg-marker" d="${describeSector(center.x, center.y, avgRadius, startAngle, endAngle)}"></path>`;
@@ -408,6 +405,13 @@ function createRadialBarChart(monsterStats) {
   return `
     <div class="radial-chart-container">
       <svg width="100%" height="100%" viewBox="0 0 ${width} ${height}">
+        <defs>
+          <radialGradient id="statGradient" cx="${center.x}" cy="${center.y}" r="${radius}" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#f44336" /> <!-- Rouge au centre -->
+            <stop offset="50%" stop-color="#ffeb3b" /> <!-- Jaune au milieu -->
+            <stop offset="100%" stop-color="#4caf50" /> <!-- Vert à l'extérieur -->
+          </radialGradient>
+        </defs>
         ${chartHtml}
       </svg>
     </div>
