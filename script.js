@@ -5,7 +5,7 @@
 const fileVersions = {
   script: '2.27',
   style: '2.26',
-  index: '2.4'
+  index: '2.5'
 };
 const allMonsters = [];
 let globalMonsterStats = {}; // Stockera les stats min/avg/max de tous les monstres
