@@ -290,7 +290,7 @@ function populateFullBestiary() {
       const allItems = container.querySelectorAll('.monster-grid-item');
       allItems.forEach(item => {
         if (selectedElement === 'all' || item.dataset.element === selectedElement) {
-          item.style.display = 'block';
+          item.style.display = ''; // On retire le style pour laisser la grille CSS gérer l'affichage
         } else {
           item.style.display = 'none';
         }
