@@ -30,12 +30,9 @@ window.addEventListener('DOMContentLoaded', () => {
   fetch('bestiary_data.json')
     .then(response => response.json())
     .then(data => {
-      // Filtre pour ne garder que les monstres 2 à 6 étoiles
-      const filteredMonsters = data.filter(obj =>
-        obj.model === "bestiary.monster" &&
-        obj.fields.natural_stars >= 2 && obj.fields.is_awakened
-      );
-      allMonsters.push(...filteredMonsters);
+      // Garde tous les monstres 2-6 étoiles, éveillés ou non
+      const allRelevantMonsters = data.filter(obj => obj.model === "bestiary.monster" && obj.fields.natural_stars >= 2);
+      allMonsters.push(...allRelevantMonsters);
 
       // Pré-calcule les statistiques globales sur tous les monstres filtrés
       const stats = {
@@ -267,7 +264,8 @@ function populateFullBestiary() {
 
   // Crée la liste des monstres
   const monsterListHtml = allMonsters
-    .sort((a, b) => a.fields.name.localeCompare(b.fields.name)) // Trie par ordre alphabétique
+    .filter(m => m.fields.is_awakened) // On filtre ici pour n'afficher que les monstres éveillés
+    .sort((a, b) => a.fields.name.localeCompare(b.fields.name))
     .map(monster => {
       const { name, element, image_filename } = monster.fields;
       const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
