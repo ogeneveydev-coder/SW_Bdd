@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.23',
-  style: '2.24',
+  script: '2.24',
+  style: '2.25',
   index: '2.1'
 };
 const allMonsters = [];
@@ -63,6 +63,9 @@ window.addEventListener('DOMContentLoaded', () => {
         res: calc(stats.res),
         acc: calc(stats.acc),
       };
+
+      // Une fois les données chargées, on génère le bestiaire complet
+      populateFullBestiary();
 
     })
     .catch(err => {
@@ -255,6 +258,54 @@ function displayFileVersions() {
       script: v${fileVersions.script}
     `;
   }
+}
+
+function populateFullBestiary() {
+  const container = document.getElementById('monster-list-container');
+  const tabsContainer = document.querySelector('.element-tabs');
+  if (!container || !tabsContainer) return;
+
+  // Crée la liste des monstres
+  const monsterListHtml = allMonsters
+    .sort((a, b) => a.fields.name.localeCompare(b.fields.name)) // Trie par ordre alphabétique
+    .map(monster => {
+      const { name, element } = monster.fields;
+      return `<div class="monster-list-item" data-element="${element}">${name}</div>`;
+    }).join('');
+
+  container.innerHTML = `<div class="monster-list">${monsterListHtml}</div>`;
+
+  // Ajoute la logique de clic sur les onglets
+  tabsContainer.addEventListener('click', (e) => {
+    if (e.target.matches('.element-tab')) {
+      const selectedElement = e.target.dataset.element;
+
+      // Met à jour la classe 'active' sur les onglets
+      tabsContainer.querySelector('.active').classList.remove('active');
+      e.target.classList.add('active');
+
+      // Filtre les monstres
+      const allItems = container.querySelectorAll('.monster-list-item');
+      allItems.forEach(item => {
+        if (selectedElement === 'all' || item.dataset.element === selectedElement) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+  });
+
+  // Ajoute la logique de clic sur un monstre de la liste
+  container.addEventListener('click', (e) => {
+    if (e.target.matches('.monster-list-item')) {
+      const monsterName = e.target.textContent;
+      searchInput.value = monsterName;
+      searchMonster();
+      // Fait défiler la page vers le haut pour voir le résultat
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
 }
 
 function createRadialBarChart(monsterStats) {

@@ -289,3 +289,62 @@ button:hover {
   stroke: #ffffff;
   stroke-width: 1;
 }
+
+/* --- Styles pour le Bestiaire Complet --- */
+#full-bestiary-container {
+  margin-top: 50px;
+  padding: 20px;
+  background: rgba(0, 20, 40, 0.5); /* Fond un peu plus sombre */
+  border: 1px solid var(--jarvis-blue);
+  box-shadow: 0 0 15px var(--jarvis-blue), inset 0 0 10px rgba(0, 184, 255, 0.5);
+  border-radius: 4px;
+  text-align: center;
+}
+
+#full-bestiary-container h2 {
+  font-size: 1.5em;
+  text-shadow: 0 0 5px var(--jarvis-blue), 0 0 10px white;
+  letter-spacing: 2px;
+  margin-bottom: 25px;
+}
+
+.element-tabs {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.element-tab {
+  opacity: 0.7;
+}
+
+.element-tab.active {
+  opacity: 1;
+  background-color: var(--jarvis-blue);
+  color: var(--jarvis-bg-solid);
+  box-shadow: 0 0 20px var(--jarvis-blue);
+}
+
+#monster-list-container {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px; /* Espace pour la barre de défilement */
+}
+
+.monster-list-item {
+  padding: 8px 15px;
+  margin: 2px 0;
+  background: rgba(0, 184, 255, 0.05);
+  border-left: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.monster-list-item:hover {
+  background: var(--jarvis-bg);
+  border-left-color: var(--jarvis-blue);
+  color: var(--jarvis-blue);
+}
