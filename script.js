@@ -35,18 +35,18 @@ window.addEventListener('DOMContentLoaded', () => {
         obj.model === "bestiary.monster" && 
         obj.fields.natural_stars >= 2 && 
         obj.fields.is_awakened);
-      allMonsters.push(allRelevantMonsters); // On garde la structure [ [monstres] ] pour le moment
+      allMonsters.push(...allRelevantMonsters); // Correction: On remplit allMonsters comme un tableau plat
 
       // Pré-calcule les statistiques globales sur tous les monstres filtrés
       const stats = {
-        hp:  allMonsters[0].map(m => m.fields.base_hp),
-        atk: allMonsters[0].map(m => m.fields.base_attack),
-        def: allMonsters[0].map(m => m.fields.base_defense),
-        spd: allMonsters[0].map(m => m.fields.speed),
-        cr:  allMonsters[0].map(m => m.fields.crit_rate),
-        cd:  allMonsters[0].map(m => m.fields.crit_damage),
-        res: allMonsters[0].map(m => m.fields.resistance),
-        acc: allMonsters[0].map(m => m.fields.accuracy),
+        hp:  allMonsters.map(m => m.fields.base_hp),
+        atk: allMonsters.map(m => m.fields.base_attack),
+        def: allMonsters.map(m => m.fields.base_defense),
+        spd: allMonsters.map(m => m.fields.speed),
+        cr:  allMonsters.map(m => m.fields.crit_rate),
+        cd:  allMonsters.map(m => m.fields.crit_damage),
+        res: allMonsters.map(m => m.fields.resistance),
+        acc: allMonsters.map(m => m.fields.accuracy),
       };
       const calc = (arr) => ({
         min: Math.min(...arr),
@@ -270,9 +270,9 @@ function populateFullBestiary() {
     let monstersToDisplay;
     if (element === 'all') {
       // Si "tous", on prend toute la liste (déjà filtrée pour les éveillés)
-      monstersToDisplay = allMonsters[0];
+      monstersToDisplay = allMonsters;
     } else {
-      monstersToDisplay = allMonsters[0].filter(m => m.fields.element === element);
+      monstersToDisplay = allMonsters.filter(m => m.fields.element === element);
     }
     const filteredMonsters = monstersToDisplay.sort((a, b) => a.fields.name.localeCompare(b.fields.name));
 
