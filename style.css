@@ -330,21 +330,33 @@ button:hover {
 #monster-list-container {
   max-height: 400px;
   overflow-y: auto;
-  padding-right: 10px; /* Espace pour la barre de défilement */
+  padding: 10px;
 }
 
-.monster-list-item {
-  padding: 8px 15px;
-  margin: 2px 0;
-  background: rgba(0, 184, 255, 0.05);
-  border-left: 3px solid transparent;
+.monster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 15px;
+}
+
+.monster-grid-item {
+  background: rgba(0, 184, 255, 0.1);
+  border: 1px solid transparent;
+  border-radius: 50%;
   cursor: pointer;
   transition: all 0.2s ease;
-  text-align: left;
+  aspect-ratio: 1 / 1; /* Assure que les items sont carrés pour faire des cercles parfaits */
 }
 
-.monster-list-item:hover {
-  background: var(--jarvis-bg);
-  border-left-color: var(--jarvis-blue);
-  color: var(--jarvis-blue);
+.monster-grid-item:hover {
+  border-color: var(--jarvis-blue);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px var(--jarvis-blue);
+}
+
+.monster-grid-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }

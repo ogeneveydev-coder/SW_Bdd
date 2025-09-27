@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.24',
-  style: '2.25',
+  script: '2.25',
+  style: '2.26',
   index: '2.1'
 };
 const allMonsters = [];
@@ -269,11 +269,13 @@ function populateFullBestiary() {
   const monsterListHtml = allMonsters
     .sort((a, b) => a.fields.name.localeCompare(b.fields.name)) // Trie par ordre alphabétique
     .map(monster => {
-      const { name, element } = monster.fields;
-      return `<div class="monster-list-item" data-element="${element}">${name}</div>`;
+      const { name, element, image_filename } = monster.fields;
+      const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
+      // On ajoute le nom dans un data-attribute pour le récupérer au clic
+      return `<div class="monster-grid-item" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
     }).join('');
 
-  container.innerHTML = `<div class="monster-list">${monsterListHtml}</div>`;
+  container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
 
   // Ajoute la logique de clic sur les onglets
   tabsContainer.addEventListener('click', (e) => {
@@ -285,7 +287,7 @@ function populateFullBestiary() {
       e.target.classList.add('active');
 
       // Filtre les monstres
-      const allItems = container.querySelectorAll('.monster-list-item');
+      const allItems = container.querySelectorAll('.monster-grid-item');
       allItems.forEach(item => {
         if (selectedElement === 'all' || item.dataset.element === selectedElement) {
           item.style.display = 'block';
@@ -298,8 +300,9 @@ function populateFullBestiary() {
 
   // Ajoute la logique de clic sur un monstre de la liste
   container.addEventListener('click', (e) => {
-    if (e.target.matches('.monster-list-item')) {
-      const monsterName = e.target.textContent;
+    const gridItem = e.target.closest('.monster-grid-item');
+    if (gridItem) {
+      const monsterName = gridItem.dataset.name;
       searchInput.value = monsterName;
       searchMonster();
       // Fait défiler la page vers le haut pour voir le résultat
