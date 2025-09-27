@@ -267,6 +267,15 @@ function populateFullBestiary() {
 
   // Fonction pour générer et afficher la grille pour un élément donné
   const displayGridForElement = (element) => {
+    // --- DEBOGAGE ---
+    console.log(`Tentative de filtrage pour l'élément : "${element}"`);
+    if (allMonsters.length > 0) {
+      // Affiche les différents types d'éléments trouvés dans la base de données
+      const uniqueElements = [...new Set(allMonsters.map(m => m.fields.element))];
+      console.log('Éléments uniques disponibles dans la base :', uniqueElements);
+    }
+    // --- FIN DEBOGAGE ---
+
     let monstersToDisplay;
     if (element === 'all') {
       // Si "tous", on prend toute la liste (déjà filtrée pour les éveillés)
