@@ -373,6 +373,14 @@ function createRadialBarChart(monsterStats) {
     return `M ${x},${y} L ${start.x},${start.y} A ${radius},${radius} 0 ${largeArcFlag} 1 ${end.x},${end.y} Z`;
   };
 
+  // Fonction pour dessiner un arc de cercle
+  const describeArc = (x, y, radius, startAngle, endAngle) => {
+    const start = polarToCartesian(x, y, radius, startAngle);
+    const end = polarToCartesian(x, y, radius, endAngle);
+    const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+    return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${end.x} ${end.y}`;
+  };
+
   let chartHtml = '';
   statsOrder.forEach((stat, i) => {
     const startAngle = i * anglePerStat;
@@ -395,7 +403,7 @@ function createRadialBarChart(monsterStats) {
     chartHtml += `<path fill="url(#statGradient)" d="${describeSector(center.x, center.y, monsterRadius, startAngle, endAngle)}"></path>`;
 
     // Marqueur de la moyenne
-    chartHtml += `<path class="avg-marker" d="${describeSector(center.x, center.y, avgRadius, startAngle, endAngle)}"></path>`;
+    chartHtml += `<path class="avg-marker" d="${describeArc(center.x, center.y, avgRadius, startAngle, endAngle)}"></path>`;
 
     // Label de la stat
     const labelPoint = polarToCartesian(center.x, center.y, radius + 12, startAngle + (anglePerStat / 2));
