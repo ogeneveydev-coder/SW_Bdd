@@ -30,8 +30,11 @@ window.addEventListener('DOMContentLoaded', () => {
   fetch('bestiary_data.json')
     .then(response => response.json())
     .then(data => {
-      // Garde tous les monstres 2-6 étoiles, éveillés ou non
-      const allRelevantMonsters = data.filter(obj => obj.model === "bestiary.monster" && obj.fields.natural_stars >= 2);
+      // On ne garde que les monstres qui nous intéressent : 2-6 étoiles ET éveillés.
+      const allRelevantMonsters = data.filter(obj => 
+        obj.model === "bestiary.monster" && 
+        obj.fields.natural_stars >= 2 && 
+        obj.fields.is_awakened);
       allMonsters.push(...allRelevantMonsters);
 
       // Pré-calcule les statistiques globales sur tous les monstres filtrés
@@ -265,7 +268,7 @@ function populateFullBestiary() {
   // Fonction pour générer et afficher la grille pour un élément donné
   const displayGridForElement = (element) => {
     const filteredMonsters = allMonsters
-      .filter(m => m.fields.is_awakened && m.fields.element === element)
+      .filter(m => m.fields.element === element) // Le filtre is_awakened n'est plus nécessaire ici
       .sort((a, b) => a.fields.name.localeCompare(b.fields.name));
 
     const monsterListHtml = filteredMonsters.map(monster => {
