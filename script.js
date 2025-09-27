@@ -129,7 +129,6 @@ function searchMonster() {
   // Construit une carte HTML pour chaque monstre trouvé
   const cardsHtml = foundMonsters.map(monster => {
     const { name, element, archetype, base_hp, base_attack, base_defense, speed, crit_rate, crit_damage, resistance, accuracy, image_filename } = monster.fields;
-    const statRings = createStatRingsSVG(monster.fields);
     const radialChart = createRadialBarChart(monster.fields);
     const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
     return `
@@ -143,7 +142,6 @@ function searchMonster() {
             <div class="jarvis-corner bottom-right"></div>
             <div class="jarvis-content">
                 <div class="jarvis-image-container">
-                    ${statRings}
                     <img src="${imgUrl}" alt="${name}">
                 </div>
                 ${radialChart}
@@ -175,14 +173,6 @@ function searchMonster() {
   // Affiche les cartes dans un conteneur
   showResult(`<div class="results-container">${cardsHtml}</div>`);
 
-  // Déclenche l'animation des anneaux après que le DOM a été mis à jour
-  // setTimeout avec 0ms force le navigateur à attendre le prochain "tick" de rendu
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.stat-ring').forEach(ring => {
-      const finalOffset = ring.dataset.finalOffset;
-      ring.style.strokeDashoffset = finalOffset;
-    });
-  });
 }
 
 // --- Logique d'autocomplétion ---
@@ -265,76 +255,6 @@ function displayFileVersions() {
       script: v${fileVersions.script}
     `;
   }
-}
-
-function createStatMarkers(stat) {
-  const { name, radius } = stat;
-  const max = MAX_STATS[name];
-  const globalStat = globalMonsterStats[name];
-  let markersHtml = '';
-
-  const markerConfigs = [
-    { value: globalStat.min, class: 'stat-marker-min' },
-    { value: globalStat.avg, class: 'stat-marker-avg' },
-    { value: globalStat.max, class: 'stat-marker-max' }
-  ];
-
-  markerConfigs.forEach(marker => {
-    const percentage = marker.value / max;
-    const angle = (percentage * 2 * Math.PI) - (Math.PI / 2);
-
-    if (marker.class === 'stat-marker-avg') {
-      // Dessine une ligne radiale pour la moyenne
-      const innerRadius = radius - 4;
-      const outerRadius = radius + 4;
-      const x1 = 80 + innerRadius * Math.cos(angle);
-      const y1 = 80 + innerRadius * Math.sin(angle);
-      const x2 = 80 + outerRadius * Math.cos(angle);
-      const y2 = 80 + outerRadius * Math.sin(angle);
-      markersHtml += `<line class="stat-marker ${marker.class}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"></line>`;
-    } else {
-      // Dessine un cercle pour le min et le max
-      const cx = 80 + radius * Math.cos(angle);
-      const cy = 80 + radius * Math.sin(angle);
-      markersHtml += `<circle class="stat-marker ${marker.class}" cx="${cx}" cy="${cy}" r="2"></circle>`;
-    }
-  });
-
-  return markersHtml;
-}
-
-function createStatRingsSVG(stats) {
-  const { base_hp, base_attack, base_defense, speed } = stats;
-
-  // Configuration de chaque anneau (rayon et classe CSS)
-  const STAT_CONFIG = [
-    { name: 'hp',  value: base_hp,      radius: 78, class: 'stat-hp' },
-    { name: 'atk', value: base_attack,  radius: 72, class: 'stat-atk' },
-    { name: 'def', value: base_defense, radius: 66, class: 'stat-def' },
-    { name: 'spd', value: speed,        radius: 60, class: 'stat-spd' }
-  ];
-
-  const rings = STAT_CONFIG.map(stat => {
-    const max = MAX_STATS[stat.name];
-    const percentage = Math.min(stat.value / max, 1); // Plafonne à 100%
-    const circumference = 2 * Math.PI * stat.radius;
-    const finalOffset = circumference * (1 - percentage);
-    const markers = createStatMarkers(stat);
-
-    return `
-      <circle class="stat-ring-bg" cx="80" cy="80" r="${stat.radius}"></circle>
-      <circle 
-        class="stat-ring ${stat.class}"
-        cx="80" cy="80" 
-        r="${stat.radius}" 
-        style="--circumference: ${circumference};"
-        data-final-offset="${finalOffset}">
-      </circle>
-      ${markers}
-    `;
-  }).join('');
-
-  return `<svg class="stat-rings" viewBox="0 0 160 160">${rings}</svg>`;
 }
 
 function createRadialBarChart(monsterStats) {
