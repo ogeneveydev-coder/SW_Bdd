@@ -300,8 +300,10 @@ function populateFullBestiary() {
     }
   });
 
-  // Affiche les monstres du premier onglet ("Feu") par défaut
-  filterGrid('Feu');
+  // Affiche les monstres du premier onglet ("Feu") par défaut.
+  // On utilise requestAnimationFrame pour s'assurer que le DOM est prêt avant de filtrer.
+  requestAnimationFrame(() => filterGrid('Feu'));
+
 
   // Ajoute la logique de clic sur un monstre de la liste
   container.addEventListener('click', (e) => {
