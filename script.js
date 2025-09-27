@@ -3,9 +3,9 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.26',
+  script: '2.27',
   style: '2.26',
-  index: '2.3'
+  index: '2.4'
 };
 const allMonsters = [];
 let globalMonsterStats = {}; // Stockera les stats min/avg/max de tous les monstres
@@ -267,15 +267,6 @@ function populateFullBestiary() {
 
   // Fonction pour générer et afficher la grille pour un élément donné
   const displayGridForElement = (element) => {
-    // --- DEBOGAGE ---
-    console.log(`Tentative de filtrage pour l'élément : "${element}"`);
-    if (allMonsters.length > 0) {
-      // Affiche les différents types d'éléments trouvés dans la base de données
-      const uniqueElements = [...new Set(allMonsters.map(m => m.fields.element))];
-      console.log('Éléments uniques disponibles dans la base :', uniqueElements);
-    }
-    // --- FIN DEBOGAGE ---
-
     let monstersToDisplay;
     if (element === 'all') {
       // Si "tous", on prend toute la liste (déjà filtrée pour les éveillés)
