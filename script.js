@@ -275,6 +275,18 @@ function populateFullBestiary() {
 
   container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
 
+  // Fonction pour filtrer l'affichage de la grille
+  const filterGrid = (element) => {
+    const allItems = container.querySelectorAll('.monster-grid-item');
+    allItems.forEach(item => {
+      if (item.dataset.element === element) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  };
+
   // Ajoute la logique de clic sur les onglets
   tabsContainer.addEventListener('click', (e) => {
     if (e.target.matches('.element-tab')) {
@@ -284,17 +296,12 @@ function populateFullBestiary() {
       tabsContainer.querySelector('.active').classList.remove('active');
       e.target.classList.add('active');
 
-      // Filtre les monstres
-      const allItems = container.querySelectorAll('.monster-grid-item');
-      allItems.forEach(item => {
-        if (selectedElement === 'all' || item.dataset.element === selectedElement) {
-          item.style.display = ''; // On retire le style pour laisser la grille CSS gérer l'affichage
-        } else {
-          item.style.display = 'none';
-        }
-      });
+      filterGrid(selectedElement);
     }
   });
+
+  // Affiche les monstres du premier onglet ("Feu") par défaut
+  filterGrid('Feu');
 
   // Ajoute la logique de clic sur un monstre de la liste
   container.addEventListener('click', (e) => {
