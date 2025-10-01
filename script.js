@@ -3,9 +3,9 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.27',
+  script: '2.28',
   style: '2.26',
-  index: '2.5'
+  index: '2.6'
 };
 const allMonsters = [];
 let globalMonsterStats = {}; // Stockera les stats min/avg/max de tous les monstres
@@ -267,13 +267,7 @@ function populateFullBestiary() {
 
   // Fonction pour générer et afficher la grille pour un élément donné
   const displayGridForElement = (element) => {
-    let monstersToDisplay;
-    if (element === 'all') {
-      // Si "tous", on prend toute la liste (déjà filtrée pour les éveillés)
-      monstersToDisplay = allMonsters;
-    } else {
-      monstersToDisplay = allMonsters.filter(m => m.fields.element === element);
-    }
+    const monstersToDisplay = allMonsters.filter(m => m.fields.element === element);
     const filteredMonsters = monstersToDisplay.sort((a, b) => a.fields.name.localeCompare(b.fields.name));
 
     const monsterListHtml = filteredMonsters.map(monster => {
@@ -298,8 +292,8 @@ function populateFullBestiary() {
     }
   });
 
-  // Affiche la grille pour "Tous" les monstres par défaut
-  displayGridForElement('all');
+  // Affiche la grille pour le premier onglet ("fire") par défaut
+  displayGridForElement('fire');
 
   // Ajoute la logique de clic sur un monstre de la liste
   container.addEventListener('click', (e) => {
