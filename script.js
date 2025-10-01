@@ -102,6 +102,7 @@ resetBtn.addEventListener('click', resetSearch);
 
 searchInput.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
+    e.preventDefault(); // Empêche le rechargement de la page
     clearSuggestions();
     searchMonster();
   } else if (e.key === 'Escape') {
@@ -125,22 +126,21 @@ function searchMonster() {
   searchTerms.forEach(term => {
     allMonsters.forEach(monster => {
       const monsterName = strNoAccent(monster.fields.name.toLowerCase());
-
       // Si le terme de recherche correspond exactement au nom d'un monstre
       if (monsterName === term) {
-        let monsterToShow = monster;
+      let monsterToShow = monster;
 
-        // Si le monstre trouvé n'est pas éveillé, on récupère sa version éveillée
-        if (!monster.fields.is_awakened && monster.fields.awakens_to) {
-          const awakenedVersion = allMonsters.find(m => m.pk === monster.fields.awakens_to);
-          if (awakenedVersion) monsterToShow = awakenedVersion;
-        }
+      // Si le monstre trouvé n'est pas éveillé, on récupère sa version éveillée
+      if (!monster.fields.is_awakened && monster.fields.awakens_to) {
+        const awakenedVersion = allMonsters.find(m => m.pk === monster.fields.awakens_to);
+        if (awakenedVersion) monsterToShow = awakenedVersion;
+      }
 
-        // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
-        if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
-          foundMonsters.push(monsterToShow);
-          foundAwakenedPks.add(monsterToShow.pk);
-        }
+      // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
+      if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
+        foundMonsters.push(monsterToShow);
+        foundAwakenedPks.add(monsterToShow.pk);
+      }
       }
     });
   });
