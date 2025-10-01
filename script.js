@@ -7,7 +7,8 @@ const fileVersions = {
   style: '2.26',
   index: '2.7'
 };
-const allMonsters = [];
+const allMonsters = []; // Contiendra TOUS les monstres (éveillés et non-éveillés) pour la recherche
+let awakenedMonsters = []; // Ne contiendra que les monstres éveillés pour l'affichage
 let myMonsters = []; // Stockera les monstres du joueur
 let ownedMonsterIds = new Set(); // Stockera les IDs des monstres possédés pour une recherche rapide
 let globalMonsterStats = {}; // Stockera les stats min/avg/max de tous les monstres
@@ -38,12 +39,12 @@ window.addEventListener('DOMContentLoaded', () => {
     })
   ])
     .then(([bestiaryData, myBestiaryData]) => {
-      // On ne garde que les monstres qui nous intéressent : 2-6 étoiles ET éveillés.
-      const allRelevantMonsters = bestiaryData.filter(obj => 
-        obj.model === "bestiary.monster" && 
-        obj.fields.natural_stars >= 2 && 
-        obj.fields.is_awakened);
-      allMonsters.push(...allRelevantMonsters); // Correction: On remplit allMonsters comme un tableau plat
+      // 1. On charge TOUS les monstres 2-6 étoiles dans allMonsters pour la recherche
+      const allRelevantMonsters = bestiaryData.filter(obj => obj.model === "bestiary.monster" && obj.fields.natural_stars >= 2);
+      allMonsters.push(...allRelevantMonsters);
+
+      // 2. On ne garde que les monstres ÉVEILLÉS dans awakenedMonsters pour l'affichage des grilles
+      awakenedMonsters = allMonsters.filter(m => m.fields.is_awakened);
 
       if (myBestiaryData && myBestiaryData.unit_list) {
         myMonsters = myBestiaryData.unit_list;
@@ -52,14 +53,14 @@ window.addEventListener('DOMContentLoaded', () => {
 
       // Pré-calcule les statistiques globales sur tous les monstres filtrés
       const stats = {
-        hp:  allMonsters.map(m => m.fields.base_hp),
-        atk: allMonsters.map(m => m.fields.base_attack),
-        def: allMonsters.map(m => m.fields.base_defense),
-        spd: allMonsters.map(m => m.fields.speed),
-        cr:  allMonsters.map(m => m.fields.crit_rate),
-        cd:  allMonsters.map(m => m.fields.crit_damage),
-        res: allMonsters.map(m => m.fields.resistance),
-        acc: allMonsters.map(m => m.fields.accuracy),
+        hp:  awakenedMonsters.map(m => m.fields.base_hp),
+        atk: awakenedMonsters.map(m => m.fields.base_attack),
+        def: awakenedMonsters.map(m => m.fields.base_defense),
+        spd: awakenedMonsters.map(m => m.fields.speed),
+        cr:  awakenedMonsters.map(m => m.fields.crit_rate),
+        cd:  awakenedMonsters.map(m => m.fields.crit_damage),
+        res: awakenedMonsters.map(m => m.fields.resistance),
+        acc: awakenedMonsters.map(m => m.fields.accuracy),
       };
       const calc = (arr) => ({
         min: Math.min(...arr),
@@ -120,7 +121,13 @@ function searchMonster() {
 
   // Trouve tous les monstres correspondants aux termes de recherche
   const foundMonsters = searchTerms.map(term => {
-    return allMonsters.find(m => strNoAccent(m.fields.name.toLowerCase()) === term);
+    let monster = allMonsters.find(m => strNoAccent(m.fields.name.toLowerCase()) === term);
+    // Si le monstre trouvé n'est pas éveillé, on cherche sa version éveillée pour l'afficher
+    if (monster && !monster.fields.is_awakened) {
+      const awakenedVersion = allMonsters.find(m => m.pk === monster.fields.awakens_to);
+      if (awakenedVersion) monster = awakenedVersion;
+    }
+    return monster;
   }).filter(Boolean); // Retire les résultats non trouvés (undefined)
 
   if (foundMonsters.length === 0) {
@@ -286,7 +293,7 @@ function initializeBestiaryViews() {
 
   // Fonction pour générer et afficher la grille pour un élément donné
   const displayGridForElement = (element) => {
-    const monstersToDisplay = allMonsters.filter(m => m.fields.element === element);
+    const monstersToDisplay = awakenedMonsters.filter(m => m.fields.element === element);
     // Tri par identifiant (pk = Primary Key) au lieu du nom
     const filteredMonsters = monstersToDisplay.sort((a, b) => a.pk - b.pk);
 
@@ -381,7 +388,7 @@ function populateMyBestiary() {
 
   // On ne veut que les ID uniques pour ne pas afficher les doublons
   const myMonsterMasterIds = [...new Set(myMonsters.map(m => m.unit_master_id))];
-  const myMonstersToDisplay = allMonsters.filter(m => myMonsterMasterIds.includes(m.fields.com2us_id));
+  const myMonstersToDisplay = awakenedMonsters.filter(m => myMonsterMasterIds.includes(m.fields.com2us_id));
 
   // Tri par identifiant (pk)
   const sortedMonsters = myMonstersToDisplay.sort((a, b) => a.pk - b.pk);
