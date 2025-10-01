@@ -3,11 +3,12 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.29',
+  script: '2.30',
   style: '2.26',
-  index: '2.6'
+  index: '2.7'
 };
 const allMonsters = [];
+let myMonsters = []; // Stockera les monstres du joueur
 let globalMonsterStats = {}; // Stockera les stats min/avg/max de tous les monstres
 
 // Valeurs maximales de référence pour calculer les pourcentages des anneaux
@@ -27,15 +28,25 @@ const resetBtn = document.getElementById('resetBtn');
 window.addEventListener('DOMContentLoaded', () => {
   displayFileVersions(); // Affiche les versions au chargement
 
-  fetch('bestiary_data.json')
-    .then(response => response.json())
-    .then(data => {
+  // Utilisation de Promise.all pour charger les deux fichiers en parallèle
+  Promise.all([
+    fetch('bestiary_data.json').then(res => res.json()),
+    fetch('my_bestiary.json').then(res => res.json()).catch(err => {
+      console.warn("Fichier my_bestiary.json non trouvé ou invalide. La section 'Mes Monstres' sera vide.", err);
+      return null; // Retourne null si le fichier n'existe pas pour ne pas bloquer le reste
+    })
+  ])
+    .then(([bestiaryData, myBestiaryData]) => {
       // On ne garde que les monstres qui nous intéressent : 2-6 étoiles ET éveillés.
-      const allRelevantMonsters = data.filter(obj => 
+      const allRelevantMonsters = bestiaryData.filter(obj => 
         obj.model === "bestiary.monster" && 
         obj.fields.natural_stars >= 2 && 
         obj.fields.is_awakened);
       allMonsters.push(...allRelevantMonsters); // Correction: On remplit allMonsters comme un tableau plat
+
+      if (myBestiaryData && myBestiaryData.unit_list) {
+        myMonsters = myBestiaryData.unit_list;
+      }
 
       // Pré-calcule les statistiques globales sur tous les monstres filtrés
       const stats = {
@@ -65,13 +76,14 @@ window.addEventListener('DOMContentLoaded', () => {
       };
 
       // Une fois les données chargées, on génère le bestiaire complet
-      populateFullBestiary();
+      initializeBestiaryViews();
 
     })
     .catch(err => {
       console.error("Erreur lors du chargement des données du bestiaire.", err);
       showResult("Impossible de charger les données des monstres.");
     });
+
 
   // Ajoute un écouteur de clic sur le conteneur de résultats pour gérer la rotation des cartes
   resultContainer.addEventListener('click', function(e) {
@@ -260,7 +272,12 @@ function displayFileVersions() {
   }
 }
 
-function populateFullBestiary() {
+/**
+ * Initialise les deux vues du bestiaire (complet et personnel)
+ * et la logique de navigation par onglets.
+ */
+function initializeBestiaryViews() {
+  // --- BESTIAIRE COMPLET ---
   const container = document.getElementById('monster-list-container');
   const tabsContainer = document.querySelector('.element-tabs');
   if (!container || !tabsContainer) return;
@@ -307,6 +324,70 @@ function populateFullBestiary() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
+
+  // --- MES MONSTRES ---
+  const myContainer = document.getElementById('my-monster-list-container');
+  if (myContainer) {
+    populateMyBestiary();
+
+    // Ajoute la logique de clic sur un monstre de la liste personnelle
+    myContainer.addEventListener('click', (e) => {
+      const gridItem = e.target.closest('.monster-grid-item');
+      if (gridItem) {
+        const monsterName = gridItem.dataset.name;
+        searchInput.value = monsterName;
+        searchMonster();
+        // Fait défiler la page vers le haut pour voir le résultat
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  }
+
+  // --- GESTION DES ONGLETS PRINCIPAUX ---
+  const mainTabsContainer = document.querySelector('.main-tabs');
+  const viewContainers = document.querySelectorAll('.view-container');
+
+  mainTabsContainer.addEventListener('click', (e) => {
+    if (e.target.matches('.main-tab')) {
+      const selectedView = e.target.dataset.view;
+
+      // Met à jour la classe 'active' sur les onglets principaux
+      mainTabsContainer.querySelector('.active').classList.remove('active');
+      e.target.classList.add('active');
+
+      // Affiche le bon conteneur de vue
+      viewContainers.forEach(vc => {
+        if (vc.id === `${selectedView}-container`) {
+          vc.classList.add('active');
+        } else {
+          vc.classList.remove('active');
+        }
+      });
+    }
+  });
+}
+
+function populateMyBestiary() {
+  const container = document.getElementById('my-monster-list-container');
+  if (!container || myMonsters.length === 0) {
+    container.innerHTML = "<p>Aucun monstre trouvé dans 'my_bestiary.json'.</p>";
+    return;
+  }
+
+  // On ne veut que les ID uniques pour ne pas afficher les doublons
+  const myMonsterMasterIds = [...new Set(myMonsters.map(m => m.unit_master_id))];
+  const myMonstersToDisplay = allMonsters.filter(m => myMonsterMasterIds.includes(m.fields.com2us_id));
+
+  // Tri par identifiant (pk)
+  const sortedMonsters = myMonstersToDisplay.sort((a, b) => a.pk - b.pk);
+
+  const monsterListHtml = sortedMonsters.map(monster => {
+    const { name, element, image_filename } = monster.fields;
+    const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
+    return `<div class="monster-grid-item" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
+  }).join('');
+
+  container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
 }
 
 function createRadialBarChart(monsterStats) {

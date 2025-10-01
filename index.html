@@ -20,20 +20,35 @@
   <button id="searchBtn">Search</button>
   <button id="resetBtn">Reset</button> <!-- Bouton ajouté -->
   <div id="result"></div>
-  <!-- Section pour la liste complète des monstres -->
-<div id="full-bestiary-container">
-  <h2>Bestiaire Complet</h2>
-  <div class="element-tabs">
-    <button class="element-tab active" data-element="fire">Fire</button>
-    <button class="element-tab" data-element="water">Water</button>
-    <button class="element-tab" data-element="wind">Wind</button>
-    <button class="element-tab" data-element="light">Light</button>
-    <button class="element-tab" data-element="dark">Dark</button>
+
+  <!-- Onglets principaux pour basculer entre les vues -->
+  <div class="main-tabs">
+    <button class="main-tab active" data-view="full-bestiary">Bestiaire Complet</button>
+    <button class="main-tab" data-view="my-bestiary">Mes Monstres</button>
   </div>
-  <div id="monster-list-container">
-    <!-- La liste des monstres sera injectée ici par JavaScript -->
+
+  <!-- Conteneur pour le Bestiaire Complet -->
+  <div id="full-bestiary-container" class="view-container active">
+    <h2>Bestiaire Complet</h2>
+    <div class="element-tabs">
+      <button class="element-tab active" data-element="fire">Fire</button>
+      <button class="element-tab" data-element="water">Water</button>
+      <button class="element-tab" data-element="wind">Wind</button>
+      <button class="element-tab" data-element="light">Light</button>
+      <button class="element-tab" data-element="dark">Dark</button>
+    </div>
+    <div id="monster-list-container">
+      <!-- La liste des monstres sera injectée ici par JavaScript -->
+    </div>
   </div>
-</div>
+
+  <!-- Conteneur pour Mes Monstres -->
+  <div id="my-bestiary-container" class="view-container">
+    <h2>Mes Monstres</h2>
+    <div id="my-monster-list-container">
+      <!-- La liste de vos monstres sera injectée ici -->
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
