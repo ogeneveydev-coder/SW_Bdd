@@ -110,34 +110,44 @@ searchInput.addEventListener('keydown', function(e) {
 });
 
 function searchMonster() {
-  let query = searchInput.value.trim();
+  const query = searchInput.value.trim();
   if (!query) {
     showResult("Veuillez entrer le nom d'un ou plusieurs monstres.");
     return;
   }
 
-  let normalizedQuery = strNoAccent(query.toLowerCase());
+  const normalizedQuery = strNoAccent(query.toLowerCase());
+  const searchTerms = normalizedQuery.split(/\s+/).filter(Boolean); // Sépare la recherche en mots
   const foundMonsters = [];
-  const foundAwakenedPks = new Set(); // Pour éviter les doublons (ex: recherche "carmella ardella")
+  const foundAwakenedPks = new Set();
 
-  // On trie les monstres par longueur de nom décroissante pour trouver "Paul Phoenix" avant "Paul"
-  const sortedMonstersForSearch = [...allMonsters].sort((a, b) => b.fields.name.length - a.fields.name.length);
+  // Fonction pour trouver un monstre et l'ajouter aux résultats
+  const findAndAddMonster = (monsterName) => {
+    // Cherche une correspondance exacte avec le nom fourni
+    const found = allMonsters.filter(m => strNoAccent(m.fields.name.toLowerCase()) === monsterName);
+    
+    found.forEach(monster => {
+        let monsterToShow = monster;
+        // Si le monstre trouvé n'est pas éveillé, on prend sa version éveillée
+        if (!monster.fields.is_awakened && monster.fields.awakens_to) {
+            const awakenedVersion = allMonsters.find(m => m.pk === monster.fields.awakens_to);
+            if (awakenedVersion) monsterToShow = awakenedVersion;
+        }
 
-  sortedMonstersForSearch.forEach(monster => {
-    const monsterName = strNoAccent(monster.fields.name.toLowerCase());
-    if (normalizedQuery.includes(monsterName)) {
-      let monsterToShow = monster;
-      // Si le monstre trouvé n'est pas éveillé, on prend sa version éveillée
-      if (!monster.fields.is_awakened) {
-        const awakenedVersion = allMonsters.find(m => m.pk === monster.fields.awakens_to);
-        if (awakenedVersion) monsterToShow = awakenedVersion;
-      }
+        // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
+        if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
+            foundMonsters.push(monsterToShow);
+            foundAwakenedPks.add(monsterToShow.pk);
+        }
+    });
+  };
 
-      // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
-      if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
-        foundMonsters.push(monsterToShow);
-        foundAwakenedPks.add(monsterToShow.pk);
-      }
+  // 1. Cherche les correspondances pour la requête entière (ex: "Paul Phoenix")
+  findAndAddMonster(normalizedQuery);
+  // 2. Cherche les correspondances pour chaque mot individuel
+  searchTerms.forEach(term => {
+    if (term !== normalizedQuery) { // Évite de rechercher deux fois si la requête n'a qu'un mot
+      findAndAddMonster(term);
     }
   });
 
