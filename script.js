@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.28',
+  script: '2.29',
   style: '2.26',
   index: '2.6'
 };
@@ -268,7 +268,8 @@ function populateFullBestiary() {
   // Fonction pour générer et afficher la grille pour un élément donné
   const displayGridForElement = (element) => {
     const monstersToDisplay = allMonsters.filter(m => m.fields.element === element);
-    const filteredMonsters = monstersToDisplay.sort((a, b) => a.fields.name.localeCompare(b.fields.name));
+    // Tri par identifiant (pk = Primary Key) au lieu du nom
+    const filteredMonsters = monstersToDisplay.sort((a, b) => a.pk - b.pk);
 
     const monsterListHtml = filteredMonsters.map(monster => {
         const { name, element, image_filename } = monster.fields;
