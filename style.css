@@ -361,6 +361,13 @@ button:hover {
   border-radius: 50%;
 }
 
+/* Style pour les monstres non possédés dans le bestiaire complet */
+.monster-grid-item.not-owned img {
+  filter: grayscale(100%);
+  opacity: 0.6;
+  transition: filter 0.3s, opacity 0.3s;
+}
+
 /* --- Styles pour les onglets principaux et les vues --- */
 .main-tabs {
   text-align: center;

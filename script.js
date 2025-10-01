@@ -9,6 +9,7 @@ const fileVersions = {
 };
 const allMonsters = [];
 let myMonsters = []; // Stockera les monstres du joueur
+let ownedMonsterIds = new Set(); // Stockera les IDs des monstres possédés pour une recherche rapide
 let globalMonsterStats = {}; // Stockera les stats min/avg/max de tous les monstres
 
 // Valeurs maximales de référence pour calculer les pourcentages des anneaux
@@ -46,6 +47,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
       if (myBestiaryData && myBestiaryData.unit_list) {
         myMonsters = myBestiaryData.unit_list;
+        ownedMonsterIds = new Set(myMonsters.map(m => m.unit_master_id));
       }
 
       // Pré-calcule les statistiques globales sur tous les monstres filtrés
@@ -289,9 +291,12 @@ function initializeBestiaryViews() {
     const filteredMonsters = monstersToDisplay.sort((a, b) => a.pk - b.pk);
 
     const monsterListHtml = filteredMonsters.map(monster => {
-        const { name, element, image_filename } = monster.fields;
+        const { name, element, image_filename, com2us_id } = monster.fields;
         const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
-        return `<div class="monster-grid-item" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
+        // Vérifie si le monstre est possédé et ajoute une classe si ce n'est pas le cas
+        const isOwned = ownedMonsterIds.has(com2us_id);
+        const ownedClass = isOwned ? '' : 'not-owned';
+        return `<div class="monster-grid-item ${ownedClass}" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
       }).join('');
 
     container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
