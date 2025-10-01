@@ -116,38 +116,29 @@ function searchMonster() {
     return;
   }
 
-  const normalizedQuery = strNoAccent(query.toLowerCase());
-  const searchTerms = normalizedQuery.split(/\s+/).filter(Boolean); // Sépare la recherche en mots
+  const normalizedQuery = ` ${strNoAccent(query.toLowerCase())} `; // Ajoute des espaces pour une correspondance exacte
   const foundMonsters = [];
   const foundAwakenedPks = new Set();
 
-  // Fonction pour trouver un monstre et l'ajouter aux résultats
-  const findAndAddMonster = (monsterName) => {
-    // Cherche une correspondance exacte avec le nom fourni
-    const found = allMonsters.filter(m => strNoAccent(m.fields.name.toLowerCase()) === monsterName);
-    
-    found.forEach(monster => {
-        let monsterToShow = monster;
-        // Si le monstre trouvé n'est pas éveillé, on prend sa version éveillée
-        if (!monster.fields.is_awakened && monster.fields.awakens_to) {
-            const awakenedVersion = allMonsters.find(m => m.pk === monster.fields.awakens_to);
-            if (awakenedVersion) monsterToShow = awakenedVersion;
-        }
+  // On parcourt tous les monstres (éveillés et non-éveillés)
+  allMonsters.forEach(monster => {
+    const monsterName = ` ${strNoAccent(monster.fields.name.toLowerCase())} `;
 
-        // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
-        if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
-            foundMonsters.push(monsterToShow);
-            foundAwakenedPks.add(monsterToShow.pk);
-        }
-    });
-  };
+    // Si le nom du monstre est trouvé dans la recherche
+    if (normalizedQuery.includes(monsterName)) {
+      let monsterToShow = monster;
 
-  // 1. Cherche les correspondances pour la requête entière (ex: "Paul Phoenix")
-  findAndAddMonster(normalizedQuery);
-  // 2. Cherche les correspondances pour chaque mot individuel
-  searchTerms.forEach(term => {
-    if (term !== normalizedQuery) { // Évite de rechercher deux fois si la requête n'a qu'un mot
-      findAndAddMonster(term);
+      // Si le monstre trouvé n'est pas éveillé, on récupère sa version éveillée
+      if (!monster.fields.is_awakened && monster.fields.awakens_to) {
+        const awakenedVersion = allMonsters.find(m => m.pk === monster.fields.awakens_to);
+        if (awakenedVersion) monsterToShow = awakenedVersion;
+      }
+
+      // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
+      if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
+        foundMonsters.push(monsterToShow);
+        foundAwakenedPks.add(monsterToShow.pk);
+      }
     }
   });
 
