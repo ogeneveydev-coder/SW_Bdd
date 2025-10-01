@@ -335,8 +335,8 @@ button:hover {
 
 .monster-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); /* Taille réduite */
+  gap: 10px; /* Espacement réduit */
 }
 
 .monster-grid-item {
