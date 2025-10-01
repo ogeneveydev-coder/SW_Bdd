@@ -137,8 +137,6 @@ function searchMonster() {
       if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
         foundMonsters.push(monsterToShow);
         foundAwakenedPks.add(monsterToShow.pk);
-        // On retire le nom trouvé de la query pour ne pas le chercher à nouveau
-        normalizedQuery = normalizedQuery.replace(monsterName, '');
       }
     }
   });
