@@ -231,7 +231,7 @@ function createMonsterCard(monsterData, unitData = null) {
   return `
     <div class="jarvis-card">
       <div class="jarvis-card-inner">
-        <!-- Tiroir Gauche (Runes) -->
+        <!-- Tiroir Gauche (Runes) - Doit être DANS la structure flex pour être positionné -->
         <div class="jarvis-card-front jarvis-card-runes">
           <div class="jarvis-corner top-left"></div>
           <div class="jarvis-corner top-right"></div>
@@ -240,7 +240,7 @@ function createMonsterCard(monsterData, unitData = null) {
           ${runeSetsHtml}
         </div>
         <!-- Face Avant -->
-        <div class="jarvis-card-front">
+        <div class="jarvis-card-front" style="left: 0;">
           <div class="jarvis-corner top-left"></div>
           <div class="jarvis-corner top-right"></div>
           <div class="jarvis-corner bottom-left"></div>
@@ -254,7 +254,7 @@ function createMonsterCard(monsterData, unitData = null) {
           </div>
         </div>
         <!-- Tiroir Droit (Stats) -->
-        <div class="jarvis-card-back">
+        <div class="jarvis-card-back" style="left: 200px;">
           <div class="jarvis-corner top-left"></div>
           <div class="jarvis-corner top-right"></div>
           <div class="jarvis-corner bottom-left"></div>
@@ -598,7 +598,7 @@ function getRuneSets(runes) {
     const counts = {};
     Object.values(runes).forEach(rune => {
         const setId = rune.set_id;
-        counts[setId] = (counts[setId] || 0) + 1;
+        if (setId) counts[setId] = (counts[setId] || 0) + 1;
     });
 
     const activeSets = [];

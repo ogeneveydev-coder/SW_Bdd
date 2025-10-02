@@ -121,13 +121,14 @@ button:hover {
   transition: left 0.5s ease-in-out; /* Animation de la position */
 }
 
-.jarvis-card-front, .jarvis-card-back {
+.jarvis-card-front, .jarvis-card-back, .jarvis-card-runes {
   width: 200px; /* Largeur fixe pour chaque face */
   height: 100%;
   background: var(--jarvis-bg);
   padding: 20px;
   box-sizing: border-box;
   flex-shrink: 0; /* Empêche les faces de se réduire */
+  position: absolute; /* Positionnement absolu pour superposer */
 }
 
 .jarvis-card.is-stats-open {
@@ -144,7 +145,14 @@ button:hover {
 }
 
 .jarvis-card-runes {
-  order: -1; /* Place ce tiroir avant la face avant dans le flexbox */
+  left: -200px; /* Positionné à gauche, initialement caché */
+}
+
+.jarvis-card-front {
+  left: 0; /* La face avant est au centre */
+}
+.jarvis-card-back {
+  left: 200px; /* Positionné à droite, initialement caché */
 }
 
 @keyframes fadeIn {
@@ -158,7 +166,6 @@ button:hover {
 
 .jarvis-card-back {
   padding: 10px;
-  overflow-y: auto; /* Ajoute une barre de défilement si le contenu dépasse */
   border-left: 1px solid var(--jarvis-blue);
 }
 
