@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded', () => {
       const allRelevantMonsters = bestiaryData.filter(obj => obj.model === "bestiary.monster" && obj.fields.natural_stars >= 2);
       allMonsters.push(...allRelevantMonsters);
 
-      // 2. On ne garde que les monstres ÉVEILLÉS dans awakenedMonsters pour l'affichage des grilles
+      // 2. On ne garde que les monstres ÉVEILLÉS dans awakenedMonsters pour l'affichage des grilles et la recherche de type
       awakenedMonsters = allMonsters.filter(m => m.fields.is_awakened);
 
       if (myBestiaryData && myBestiaryData.unit_list) {
