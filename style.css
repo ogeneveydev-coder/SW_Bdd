@@ -105,17 +105,20 @@ button:hover {
   background-color: transparent;
   width: 200px;
   height: 360px; /* Augmentation de la hauteur pour le graphique radar */
+  left: 0; /* Position initiale pour l'animation du tiroir gauche */
   animation: fadeIn 0.5s ease-out; /* Ajout de l'animation d'apparition */
   cursor: pointer;
   overflow: hidden; /* ESSENTIEL : Cache la partie qui dépasse (le tiroir) */
-  transition: width 0.5s ease-in-out; /* Animation de la largeur */
+  transition: width 0.5s ease-in-out, left 0.5s ease-in-out; /* Animation de la largeur et de la position */
 }
 
 .jarvis-card-inner {
   position: absolute;
   width: 100%;
   height: 100%;
+  left: 0; /* Position initiale pour l'animation du tiroir gauche */
   display: flex; /* Aligne les faces avant et arrière */
+  transition: left 0.5s ease-in-out; /* Animation de la position */
 }
 
 .jarvis-card-front, .jarvis-card-back {
@@ -127,8 +130,21 @@ button:hover {
   flex-shrink: 0; /* Empêche les faces de se réduire */
 }
 
-.jarvis-card.is-open {
+.jarvis-card.is-stats-open {
   width: 400px; /* Largeur totale quand le tiroir est ouvert */
+}
+
+.jarvis-card.is-runes-open {
+  width: 400px; /* Largeur totale quand le tiroir gauche est ouvert */
+  left: -200px; /* Décale la carte vers la gauche pour révéler le tiroir */
+}
+
+.jarvis-card.is-runes-open .jarvis-card-inner {
+  left: 200px; /* Décale le contenu interne pour que la face avant reste visible */
+}
+
+.jarvis-card-runes {
+  order: -1; /* Place ce tiroir avant la face avant dans le flexbox */
 }
 
 @keyframes fadeIn {
@@ -142,6 +158,7 @@ button:hover {
 
 .jarvis-card-back {
   padding: 10px;
+  overflow-y: auto; /* Ajoute une barre de défilement si le contenu dépasse */
   border-left: 1px solid var(--jarvis-blue);
 }
 
@@ -264,6 +281,24 @@ button:hover {
   color: #4caf50; /* Vert pour les stats bonus */
   font-weight: bold;
   margin-left: 8px;
+}
+
+/* --- Styles pour le tiroir des sets de runes --- */
+.rune-sets-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 15px;
+  cursor: pointer; /* Indique que la zone est cliquable */
+}
+
+.rune-set-item {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: var(--jarvis-blue);
+  text-shadow: 0 0 5px var(--jarvis-blue);
 }
 
 /* --- Styles pour les stats des runes --- */
