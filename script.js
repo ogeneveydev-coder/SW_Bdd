@@ -53,9 +53,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
       // Pré-calcule les statistiques globales sur tous les monstres filtrés
       const stats = {
-        hp:  awakenedMonsters.map(m => m.fields.base_hp),
-        atk: awakenedMonsters.map(m => m.fields.base_attack),
-        def: awakenedMonsters.map(m => m.fields.base_defense),
+        hp:  awakenedMonsters.map(m => m.fields.max_lvl_hp),
+        atk: awakenedMonsters.map(m => m.fields.max_lvl_attack),
+        def: awakenedMonsters.map(m => m.fields.max_lvl_defense),
         spd: awakenedMonsters.map(m => m.fields.speed),
         cr:  awakenedMonsters.map(m => m.fields.crit_rate),
         cd:  awakenedMonsters.map(m => m.fields.crit_damage),
