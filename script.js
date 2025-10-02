@@ -212,14 +212,14 @@ function createMonsterCard(monsterData, unitData = null) {
       <div class="rune-stats">
         <p class="rune-stats-title">Stats Moyennes (Tous les monstres)</p>
         <div class="rune-stats-grid">
-          <p><span>HP:</span> ${globalMonsterStats.hp.avg}</p>
-          <p><span>ATK:</span> ${globalMonsterStats.atk.avg}</p>
-          <p><span>DEF:</span> ${globalMonsterStats.def.avg}</p>
-          <p><span>SPD:</span> ${globalMonsterStats.spd.avg}</p>
-          <p><span>CR:</span> ${globalMonsterStats.cr.avg}%</p>
-          <p><span>CD:</span> ${globalMonsterStats.cd.avg}%</p>
-          <p><span>RES:</span> ${globalMonsterStats.res.avg}%</p>
-          <p><span>ACC:</span> ${globalMonsterStats.acc.avg}%</p>
+          <p><span>HP:</span> ${globalMonsterStats.hp.avg}</p> <!-- Utilisation des stats globales pré-calculées -->
+          <p><span>ATK:</span> ${globalMonsterStats.atk.avg}</p> <!-- Utilisation des stats globales pré-calculées -->
+          <p><span>DEF:</span> ${globalMonsterStats.def.avg}</p> <!-- Utilisation des stats globales pré-calculées -->
+          <p><span>SPD:</span> ${globalMonsterStats.spd.avg}</p> <!-- Utilisation des stats globales pré-calculées -->
+          <p><span>CR:</span> ${globalMonsterStats.cr.avg}%</p> <!-- Utilisation des stats globales pré-calculées -->
+          <p><span>CD:</span> ${globalMonsterStats.cd.avg}%</p> <!-- Utilisation des stats globales pré-calculées -->
+          <p><span>RES:</span> ${globalMonsterStats.res.avg}%</p> <!-- Utilisation des stats globales pré-calculées -->
+          <p><span>ACC:</span> ${globalMonsterStats.acc.avg}%</p> <!-- Utilisation des stats globales pré-calculées -->
         </div>
       </div>
     `;
