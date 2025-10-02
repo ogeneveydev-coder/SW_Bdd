@@ -231,7 +231,7 @@ function createMonsterCard(monsterData, unitData = null) {
   return `
     <div class="jarvis-card">
       <div class="jarvis-card-inner">
-        <!-- Tiroir Gauche (Runes) - Doit être DANS la structure flex pour être positionné -->
+        <!-- Tiroir Gauche (Runes) -->
         <div class="jarvis-card-front jarvis-card-runes">
           <div class="jarvis-corner top-left"></div>
           <div class="jarvis-corner top-right"></div>
@@ -240,7 +240,7 @@ function createMonsterCard(monsterData, unitData = null) {
           ${runeSetsHtml}
         </div>
         <!-- Face Avant -->
-        <div class="jarvis-card-front" style="left: 0;">
+        <div class="jarvis-card-front">
           <div class="jarvis-corner top-left"></div>
           <div class="jarvis-corner top-right"></div>
           <div class="jarvis-corner bottom-left"></div>
@@ -254,7 +254,7 @@ function createMonsterCard(monsterData, unitData = null) {
           </div>
         </div>
         <!-- Tiroir Droit (Stats) -->
-        <div class="jarvis-card-back" style="left: 200px;">
+        <div class="jarvis-card-back">
           <div class="jarvis-corner top-left"></div>
           <div class="jarvis-corner top-right"></div>
           <div class="jarvis-corner bottom-left"></div>
@@ -505,13 +505,20 @@ function showMonsterInModal(cardHtml) {
       const card = e.target.closest('.jarvis-card');
       if (!card) return;
 
-      // Si on clique sur le tiroir des runes, on ouvre/ferme le tiroir gauche
+      const isRunesOpen = card.classList.contains('is-runes-open');
+      const isStatsOpen = card.classList.contains('is-stats-open');
+
+      // Si on clique sur la zone des sets de runes
       if (e.target.closest('.rune-sets-container')) {
-        card.classList.toggle('is-runes-open');
-        card.classList.remove('is-stats-open'); // Ferme l'autre tiroir
-      } else { // Sinon, on ouvre/ferme le tiroir droit (stats)
-        card.classList.toggle('is-stats-open');
-        card.classList.remove('is-runes-open'); // Ferme l'autre tiroir
+        card.classList.remove('is-stats-open');
+        card.classList.toggle('is-runes-open'); // Ouvre/ferme le tiroir gauche
+      } 
+      // Si on clique sur la face avant (et qu'aucun tiroir n'est ouvert)
+      else if (e.target.closest('.jarvis-card-front') && !isRunesOpen && !isStatsOpen) {
+        card.classList.toggle('is-stats-open'); // Ouvre/ferme le tiroir droit
+      } else { // Si on clique ailleurs (ou sur un tiroir ouvert), on ferme tout
+        card.classList.remove('is-runes-open');
+        card.classList.remove('is-stats-open');
       }
     });
   }

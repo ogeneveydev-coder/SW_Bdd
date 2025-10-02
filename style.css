@@ -116,13 +116,12 @@ button:hover {
   position: absolute;
   width: 100%;
   height: 100%;
-  left: 0; /* Position initiale pour l'animation du tiroir gauche */
-  display: flex; /* Aligne les faces avant et arrière */
+  left: -200px; /* Positionne la face avant au centre du conteneur de 600px */
   transition: left 0.5s ease-in-out; /* Animation de la position */
 }
 
 .jarvis-card-front, .jarvis-card-back, .jarvis-card-runes {
-  width: 200px; /* Largeur fixe pour chaque face */
+  width: 200px;
   height: 100%;
   background: var(--jarvis-bg);
   padding: 20px;
@@ -131,28 +130,23 @@ button:hover {
   position: absolute; /* Positionnement absolu pour superposer */
 }
 
-.jarvis-card.is-stats-open {
-  width: 400px; /* Largeur totale quand le tiroir est ouvert */
-}
-
-.jarvis-card.is-runes-open {
-  width: 400px; /* Largeur totale quand le tiroir gauche est ouvert */
-  left: -200px; /* Décale la carte vers la gauche pour révéler le tiroir */
+.jarvis-card.is-stats-open .jarvis-card-inner {
+  left: -400px; /* Décale vers la gauche pour montrer le tiroir de droite */
 }
 
 .jarvis-card.is-runes-open .jarvis-card-inner {
-  left: 200px; /* Décale le contenu interne pour que la face avant reste visible */
+  left: 0; /* Décale vers la droite pour montrer le tiroir de gauche */
 }
 
 .jarvis-card-runes {
-  left: -200px; /* Positionné à gauche, initialement caché */
+  left: 0; /* Panneau de gauche */
 }
 
 .jarvis-card-front {
-  left: 0; /* La face avant est au centre */
+  left: 200px; /* Panneau du milieu */
 }
 .jarvis-card-back {
-  left: 200px; /* Positionné à droite, initialement caché */
+  left: 400px; /* Panneau de droite */
 }
 
 @keyframes fadeIn {
