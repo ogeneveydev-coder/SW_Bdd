@@ -105,48 +105,35 @@ button:hover {
   background-color: transparent;
   width: 200px;
   height: 360px; /* Augmentation de la hauteur pour le graphique radar */
-  left: 0; /* Position initiale pour l'animation du tiroir gauche */
   animation: fadeIn 0.5s ease-out; /* Ajout de l'animation d'apparition */
   cursor: pointer;
   overflow: hidden; /* ESSENTIEL : Cache la partie qui dépasse (le tiroir) */
-  transition: width 0.5s ease-in-out, left 0.5s ease-in-out; /* Animation de la largeur et de la position */
 }
 
 .jarvis-card-inner {
   position: absolute;
-  width: 100%;
+  width: 600px; /* 3 panneaux de 200px */
   height: 100%;
-  left: -200px; /* Positionne la face avant au centre du conteneur de 600px */
+  left: -200px; /* Position initiale: montre le panneau du milieu (la face avant) */
+  display: flex;
   transition: left 0.5s ease-in-out; /* Animation de la position */
 }
 
 .jarvis-card-front, .jarvis-card-back, .jarvis-card-runes {
   width: 200px;
   height: 100%;
+  flex-shrink: 0;
   background: var(--jarvis-bg);
   padding: 20px;
   box-sizing: border-box;
-  flex-shrink: 0; /* Empêche les faces de se réduire */
-  position: absolute; /* Positionnement absolu pour superposer */
-}
-
-.jarvis-card.is-stats-open .jarvis-card-inner {
-  left: -400px; /* Décale vers la gauche pour montrer le tiroir de droite */
 }
 
 .jarvis-card.is-runes-open .jarvis-card-inner {
-  left: 0; /* Décale vers la droite pour montrer le tiroir de gauche */
+  left: 0; /* Montre le panneau de gauche */
 }
 
-.jarvis-card-runes {
-  left: 0; /* Panneau de gauche */
-}
-
-.jarvis-card-front {
-  left: 200px; /* Panneau du milieu */
-}
-.jarvis-card-back {
-  left: 400px; /* Panneau de droite */
+.jarvis-card.is-stats-open .jarvis-card-inner {
+  left: -400px; /* Montre le panneau de droite */
 }
 
 @keyframes fadeIn {
@@ -160,6 +147,7 @@ button:hover {
 
 .jarvis-card-back {
   padding: 10px;
+  overflow-y: auto; /* Ajoute une barre de défilement si le contenu dépasse */
   border-left: 1px solid var(--jarvis-blue);
 }
 
@@ -300,6 +288,41 @@ button:hover {
   font-weight: bold;
   color: var(--jarvis-blue);
   text-shadow: 0 0 5px var(--jarvis-blue);
+}
+
+/* --- Styles pour le tiroir des runes individuelles --- */
+.individual-runes-container {
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 10px; /* Espace pour la barre de défilement */
+}
+
+.rune-item {
+  text-align: left;
+  margin-bottom: 12px;
+  font-size: 0.7em;
+}
+
+.rune-item-header {
+  font-weight: bold;
+  color: var(--jarvis-blue);
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(0, 184, 255, 0.3);
+  padding-bottom: 2px;
+}
+
+.rune-item-main-stat {
+  color: #fff;
+}
+
+.rune-item-substats {
+  list-style: none;
+  padding-left: 10px;
+  margin: 4px 0 0 0;
+}
+
+.rune-item-substats li {
+  color: #ccc;
 }
 
 /* --- Styles pour les stats des runes --- */

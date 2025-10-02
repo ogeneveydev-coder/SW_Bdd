@@ -185,12 +185,10 @@ function createMonsterCard(monsterData, unitData = null) {
   if (unitData) {
     // Si on a les données d'un monstre spécifique (avec runes)
     const runeStats = calculateRuneStats(unitData.runes);
-    const runeSets = getRuneSets(unitData.runes);
-    runeSetsHtml = `
-      <div class="rune-sets-container">
-        ${runeSets.map(set => `<div class="rune-set-item">${set.name} (${set.count})</div>`).join('')}
-      </div>
-    `;
+    // Génère le HTML pour le tiroir de gauche (runes individuelles)
+    runeSetsHtml = createIndividualRunesHtml(unitData.runes);
+
+    // Génère le HTML pour le tiroir de droite (stats complètes)
     statsDisplayHtml = `
       <p><span>Element:</span> ${element}</p>
       <p><span>Archetype:</span> ${archetype}</p>
@@ -232,12 +230,12 @@ function createMonsterCard(monsterData, unitData = null) {
     <div class="jarvis-card">
       <div class="jarvis-card-inner">
         <!-- Tiroir Gauche (Runes) -->
-        <div class="jarvis-card-front jarvis-card-runes">
+        <div class="jarvis-card-runes">
           <div class="jarvis-corner top-left"></div>
           <div class="jarvis-corner top-right"></div>
           <div class="jarvis-corner bottom-left"></div>
           <div class="jarvis-corner bottom-right"></div>
-          ${runeSetsHtml}
+          <div class="individual-runes-container">${runeSetsHtml}</div>
         </div>
         <!-- Face Avant -->
         <div class="jarvis-card-front">
@@ -508,15 +506,14 @@ function showMonsterInModal(cardHtml) {
       const isRunesOpen = card.classList.contains('is-runes-open');
       const isStatsOpen = card.classList.contains('is-stats-open');
 
-      // Si on clique sur la zone des sets de runes
-      if (e.target.closest('.rune-sets-container')) {
-        card.classList.remove('is-stats-open');
-        card.classList.toggle('is-runes-open'); // Ouvre/ferme le tiroir gauche
-      } 
-      // Si on clique sur la face avant (et qu'aucun tiroir n'est ouvert)
-      else if (e.target.closest('.jarvis-card-front') && !isRunesOpen && !isStatsOpen) {
-        card.classList.toggle('is-stats-open'); // Ouvre/ferme le tiroir droit
-      } else { // Si on clique ailleurs (ou sur un tiroir ouvert), on ferme tout
+      // Clic sur le tiroir de gauche (ouvre/ferme)
+      if (e.target.closest('.jarvis-card-runes')) {
+        card.classList.toggle('is-runes-open');
+      } // Clic sur le tiroir de droite (ouvre/ferme)
+      else if (e.target.closest('.jarvis-card-back')) {
+        card.classList.toggle('is-stats-open');
+      } else { // Clic sur la face avant : ouvre les deux tiroirs
+        card.classList.add('is-runes-open', 'is-stats-open');
         card.classList.remove('is-runes-open');
         card.classList.remove('is-stats-open');
       }
@@ -615,6 +612,58 @@ function getRuneSets(runes) {
         if (numSets > 0) activeSets.push({ name: setData.name, count: numSets });
     }
     return activeSets;
+}
+
+/**
+ * Crée le HTML pour afficher les 6 runes individuelles et leurs stats.
+ * @param {object} runes - L'objet de runes d'un monstre.
+ * @returns {string} Le code HTML pour le tiroir des runes.
+ */
+function createIndividualRunesHtml(runes) {
+  if (!runes || Object.keys(runes).length === 0) {
+    return '<p>Aucune rune équipée.</p>';
+  }
+
+  const statNameMap = {
+    1: 'HP', 2: 'HP %', 3: 'ATK', 4: 'ATK %',
+    5: 'DEF', 6: 'DEF %', 8: 'SPD', 9: 'CRIT Rate',
+    10: 'CRIT Dmg', 11: 'RES', 12: 'ACC'
+  };
+  const runeSetMap = {
+    1: 'Energy', 2: 'Guard', 3: 'Swift', 4: 'Blade', 5: 'Rage', 6: 'Focus',
+    7: 'Endure', 8: 'Fatal', 10: 'Despair', 11: 'Vampire', 13: 'Violent',
+    14: 'Nemesis', 15: 'Will', 16: 'Shield', 17: 'Revenge', 18: 'Destroy',
+    19: 'Fight', 20: 'Determination', 21: 'Enhance', 22: 'Accuracy',
+    23: 'Tolerance', 24: 'Seal', 25: 'Intangible'
+  };
+
+  let html = '';
+  // On trie par slot (1 à 6)
+  for (const slot of Object.keys(runes).sort()) {
+    const rune = runes[slot];
+    const mainStatId = rune.primary_effect[0];
+    const mainStatValue = rune.primary_effect[1];
+    const mainStatName = statNameMap[mainStatId] || 'Inconnu';
+    const isPercent = mainStatName.includes('%');
+
+    html += `<div class="rune-item">`;
+    html += `<div class="rune-item-header">Rune ${slot} (${runeSetMap[rune.set_id]})</div>`;
+    html += `<div class="rune-item-main-stat">${mainStatName}: +${mainStatValue}${isPercent ? '%' : ''}</div>`;
+
+    if (rune.secondary_effects && rune.secondary_effects.length > 0) {
+      html += `<ul class="rune-item-substats">`;
+      rune.secondary_effects.forEach(sub => {
+        const subStatId = sub[0];
+        const subStatValue = sub[1] + (sub[3] || 0); // Valeur + meule
+        const subStatName = statNameMap[subStatId] || 'Inconnu';
+        const isSubPercent = subStatName.includes('%');
+        html += `<li>${subStatName}: +${subStatValue}${isSubPercent ? '%' : ''}</li>`;
+      });
+      html += `</ul>`;
+    }
+    html += `</div>`;
+  }
+  return html;
 }
 
 function createRadialBarChart(monsterStats) {
