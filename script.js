@@ -175,7 +175,7 @@ function searchMonsterFromInput() {
  */
 function createMonsterCard(monsterData, unitData = null) {
   const { name, element, archetype, base_hp, base_attack, base_defense, speed, crit_rate, crit_damage, resistance, accuracy, image_filename } = monsterData.fields;
-  const radialChart = createRadialBarChart(monsterData.fields);
+  // const radialChart = createRadialBarChart(monsterData.fields); // Fonction non définie, temporairement désactivée
   const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
 
   let statsDisplayHtml;
@@ -233,7 +233,7 @@ function createMonsterCard(monsterData, unitData = null) {
               <div class="jarvis-image-container">
                   <img src="${imgUrl}" alt="${name}">
               </div>
-              ${radialChart}
+              <!-- ${radialChart} -->
               <div class="jarvis-name" style="margin-top: 5px;">${name}</div>
           </div>
         </div>
@@ -503,49 +503,6 @@ function closeModal() {
   if (modal) {
     modal.classList.remove('visible');
   }
-}
-
-/**
- * Calcule le total des stats bonus apportées par un set de runes.
- * @param {Array} runes - Le tableau de runes d'un monstre.
- * @returns {object} Un objet avec le total de chaque stat.
- */
-function calculateRuneStats(runes) {
-  const totals = {
-    HP_FLAT: 0, HP_PERC: 0, ATK_FLAT: 0, ATK_PERC: 0,
-    DEF_FLAT: 0, DEF_PERC: 0, SPD: 0, CR: 0, CD: 0, RES: 0, ACC: 0
-  };
-  if (!runes) return totals;
-
-  const statMap = {
-    1: 'HP_FLAT', 2: 'HP_PERC', 3: 'ATK_FLAT', 4: 'ATK_PERC',
-    5: 'DEF_FLAT', 6: 'DEF_PERC', 8: 'SPD', 9: 'CR',
-    10: 'CD', 11: 'RES', 12: 'ACC'
-  };
-
-  runes.forEach(rune => {
-    // Stat principale
-    if (rune.primary_effect) {
-        const mainStatId = rune.primary_effect[0];
-        const mainStatValue = rune.primary_effect[1];
-        if (statMap[mainStatId]) {
-            totals[statMap[mainStatId]] += mainStatValue;
-        }
-    }
-
-    // Substats
-    if (rune.secondary_effects) {
-        rune.secondary_effects.forEach(sub => {
-            const subStatId = sub[0];
-            const subStatValue = sub[1] + (sub[3] || 0); // Valeur de base + meule
-            if (statMap[subStatId]) {
-                totals[statMap[subStatId]] += subStatValue;
-            }
-        });
-    }
-  });
-
-  return totals;
 }
 
 /**
