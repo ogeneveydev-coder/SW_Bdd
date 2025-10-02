@@ -114,9 +114,19 @@ function searchMonster(unitId = null) {
   if (isSearchById) {
     const specificMonster = myMonsters.find(m => m.unit_id === unitId);
     if (!specificMonster) return;
-    const monsterType = awakenedMonsters.find(m => m.fields.com2us_id === specificMonster.unit_master_id);
-    if (monsterType) {
-      const cardHtml = createMonsterCard(monsterType, specificMonster); // Crée la carte
+
+    // CORRECTION : Gérer les monstres non-éveillés
+    // 1. Trouver le type de base du monstre (peut être non-éveillé)
+    let monsterType = allMonsters.find(m => m.fields.com2us_id === specificMonster.unit_master_id);
+    if (!monsterType) return; // Si même le type de base n'est pas trouvé, on arrête.
+
+    // 2. Si le monstre n'est pas éveillé, trouver sa forme éveillée
+    if (!monsterType.fields.is_awakened && monsterType.fields.awakens_to) {
+      monsterType = allMonsters.find(m => m.pk === monsterType.fields.awakens_to) || monsterType;
+    }
+    
+    if (monsterType) { // On a maintenant la bonne forme (éveillée) à afficher
+      const cardHtml = createMonsterCard(monsterType, specificMonster);
       showMonsterInModal(cardHtml); // Affiche dans la modale
     }
     return;
