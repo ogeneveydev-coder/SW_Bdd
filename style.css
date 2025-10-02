@@ -262,6 +262,12 @@ button:hover {
   color: var(--jarvis-blue); /* La valeur moyenne ressort */
 }
 
+.jarvis-stats .rune-bonus {
+  color: #4caf50; /* Vert pour les stats bonus */
+  font-weight: bold;
+  margin-left: 8px;
+}
+
 /* --- Styles pour les stats des runes --- */
 .rune-stats {
   border-top: 1px solid rgba(0, 184, 255, 0.3);

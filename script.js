@@ -182,43 +182,47 @@ function createMonsterCard(monsterData, unitData = null) {
   const radialChart = createRadialBarChart(monsterData.fields);
   const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
 
-  let runeStatsHtml = '';
+  let statsDisplayHtml;
+
   if (unitData) {
+    // Si on a les données d'un monstre spécifique (avec runes)
     const runeStats = calculateRuneStats(unitData.runes);
-    runeStatsHtml = `
+    statsDisplayHtml = `
+      <p><span>Element:</span> ${element}</p>
+      <p><span>Archetype:</span> ${archetype}</p>
+      <p><span>HP:</span> ${base_hp} <span class="rune-bonus">+${Math.round(base_hp * (runeStats.HP_PERC / 100)) + runeStats.HP_FLAT}</span></p>
+      <p><span>ATK:</span> ${base_attack} <span class="rune-bonus">+${Math.round(base_attack * (runeStats.ATK_PERC / 100)) + runeStats.ATK_FLAT}</span></p>
+      <p><span>DEF:</span> ${base_defense} <span class="rune-bonus">+${Math.round(base_defense * (runeStats.DEF_PERC / 100)) + runeStats.DEF_FLAT}</span></p>
+      <p><span>SPD:</span> ${speed} <span class="rune-bonus">+${runeStats.SPD}</span></p>
+      <p><span>CR:</span> ${crit_rate}% <span class="rune-bonus">+${runeStats.CR}%</span></p>
+      <p><span>CD:</span> ${crit_damage}% <span class="rune-bonus">+${runeStats.CD}%</span></p>
+      <p><span>RES:</span> ${resistance}% <span class="rune-bonus">+${runeStats.RES}%</span></p>
+      <p><span>ACC:</span> ${accuracy}% <span class="rune-bonus">+${runeStats.ACC}%</span></p>
+    `;
+  } else {
+    // Sinon, on affiche les stats de base et les stats comparatives
+    statsDisplayHtml = `
+      <p><span>Element:</span> ${element}</p>
+      <p><span>Archetype:</span> ${archetype}</p>
+      <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
+      <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
+      <p><span>CR:</span> ${crit_rate}% | <span>CD:</span> ${crit_damage}%</p>
+      <p><span>RES:</span> ${resistance}% | <span>ACC:</span> ${accuracy}%</p>
       <div class="rune-stats">
-        <p class="rune-stats-title">Stats des Runes</p>
+        <p class="rune-stats-title">Stats Moyennes (Tous les monstres)</p>
         <div class="rune-stats-grid">
-          ${runeStats.HP_FLAT ? `<p><span>HP:</span> +${runeStats.HP_FLAT}</p>` : ''}
-          ${runeStats.HP_PERC ? `<p><span>HP:</span> +${runeStats.HP_PERC}%</p>` : ''}
-          ${runeStats.ATK_FLAT ? `<p><span>ATK:</span> +${runeStats.ATK_FLAT}</p>` : ''}
-          ${runeStats.ATK_PERC ? `<p><span>ATK:</span> +${runeStats.ATK_PERC}%</p>` : ''}
-          ${runeStats.DEF_FLAT ? `<p><span>DEF:</span> +${runeStats.DEF_FLAT}</p>` : ''}
-          ${runeStats.DEF_PERC ? `<p><span>DEF:</span> +${runeStats.DEF_PERC}%</p>` : ''}
-          ${runeStats.SPD ? `<p><span>SPD:</span> +${runeStats.SPD}</p>` : ''}
-          ${runeStats.CR ? `<p><span>CR:</span> +${runeStats.CR}%</p>` : ''}
-          ${runeStats.CD ? `<p><span>CD:</span> +${runeStats.CD}%</p>` : ''}
-          ${runeStats.RES ? `<p><span>RES:</span> +${runeStats.RES}%</p>` : ''}
-          ${runeStats.ACC ? `<p><span>ACC:</span> +${runeStats.ACC}%</p>` : ''}
+          <p><span>HP:</span> ${globalMonsterStats.hp.avg}</p>
+          <p><span>ATK:</span> ${globalMonsterStats.atk.avg}</p>
+          <p><span>DEF:</span> ${globalMonsterStats.def.avg}</p>
+          <p><span>SPD:</span> ${globalMonsterStats.spd.avg}</p>
+          <p><span>CR:</span> ${globalMonsterStats.cr.avg}%</p>
+          <p><span>CD:</span> ${globalMonsterStats.cd.avg}%</p>
+          <p><span>RES:</span> ${globalMonsterStats.res.avg}%</p>
+          <p><span>ACC:</span> ${globalMonsterStats.acc.avg}%</p>
         </div>
       </div>
     `;
   }
-
-  // Génère le HTML pour les statistiques globales (min/avg/max)
-  // Ce bloc sera maintenant toujours affiché.
-  const comparativeStatsHtml = `
-    <div class="comparative-stats" style="font-size: 0.6em;">
-      <p><span>HP:</span> ${globalMonsterStats.hp.min} / <span>${globalMonsterStats.hp.avg}</span> / ${globalMonsterStats.hp.max}</p>
-      <p><span>ATK:</span> ${globalMonsterStats.atk.min} / <span>${globalMonsterStats.atk.avg}</span> / ${globalMonsterStats.atk.max}</p>
-      <p><span>DEF:</span> ${globalMonsterStats.def.min} / <span>${globalMonsterStats.def.avg}</span> / ${globalMonsterStats.def.max}</p>
-      <p><span>SPD:</span> ${globalMonsterStats.spd.min} / <span>${globalMonsterStats.spd.avg}</span> / ${globalMonsterStats.spd.max}</p>
-      <p><span>CR:</span> ${globalMonsterStats.cr.min}% / <span>${globalMonsterStats.cr.avg}%</span> / ${globalMonsterStats.cr.max}%</p>
-      <p><span>CD:</span> ${globalMonsterStats.cd.min}% / <span>${globalMonsterStats.cd.avg}%</span> / ${globalMonsterStats.cd.max}%</p>
-      <p><span>RES:</span> ${globalMonsterStats.res.min}% / <span>${globalMonsterStats.res.avg}%</span> / ${globalMonsterStats.res.max}%</p>
-      <p><span>ACC:</span> ${globalMonsterStats.acc.min}% / <span>${globalMonsterStats.acc.avg}%</span> / ${globalMonsterStats.acc.max}%</p>
-    </div>
-  `;
 
   return `
     <div class="jarvis-card">
@@ -244,14 +248,8 @@ function createMonsterCard(monsterData, unitData = null) {
           <div class="jarvis-corner bottom-left"></div>
           <div class="jarvis-corner bottom-right"></div>
           <div class="jarvis-stats">
-              <div class="jarvis-name">${name}</div>
-              <p><span>Element:</span> ${element}</p>
-              <p><span>Archetype:</span> ${archetype}</p>
-              <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
-              <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
-              <p><span>CR:</span> ${crit_rate}% | <span>CD:</span> ${crit_damage}%</p>
-              <p><span>RES:</span> ${resistance}% | <span>ACC:</span> ${accuracy}%</p>
-              ${runeStatsHtml || comparativeStatsHtml}
+              <div class="jarvis-name" style="margin-bottom: 10px;">${name}</div>
+              ${statsDisplayHtml}
           </div>
         </div>
       </div>
