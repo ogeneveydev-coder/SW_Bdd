@@ -491,6 +491,14 @@ function showMonsterInModal(cardHtml) {
         closeModal();
       }
     });
+
+    // Ajoute un événement pour gérer l'ouverture du tiroir de la carte DANS la modale
+    modal.addEventListener('click', (e) => {
+      const card = e.target.closest('.jarvis-card');
+      if (card) {
+        card.classList.toggle('is-open');
+      }
+    });
   }
 
   // Injecte la carte et affiche la modale
