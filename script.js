@@ -679,7 +679,7 @@ function createRadialBarChart(monsterStats) {
 
   // Objet pour mapper les noms de stats courts aux noms de champs réels dans les données
   const statFieldMap = {
-    hp: 'base_hp', atk: 'base_attack', def: 'base_defense', spd: 'speed',
+    hp: 'max_lvl_hp', atk: 'max_lvl_attack', def: 'max_lvl_defense', spd: 'speed',
     cr: 'crit_rate', cd: 'crit_damage', res: 'resistance', acc: 'accuracy'
   };
 
