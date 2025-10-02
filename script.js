@@ -175,7 +175,7 @@ function searchMonsterFromInput() {
  */
 function createMonsterCard(monsterData, unitData = null) {
   const { name, element, archetype, base_hp, base_attack, base_defense, speed, crit_rate, crit_damage, resistance, accuracy, image_filename } = monsterData.fields;
-  // const radialChart = createRadialBarChart(monsterData.fields); // Fonction non définie, temporairement désactivée
+  const radialChart = createRadialBarChart(monsterData.fields);
   const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
 
   let statsDisplayHtml;
@@ -233,7 +233,7 @@ function createMonsterCard(monsterData, unitData = null) {
               <div class="jarvis-image-container">
                   <img src="${imgUrl}" alt="${name}">
               </div>
-              <!-- ${radialChart} -->
+              ${radialChart}
               <div class="jarvis-name" style="margin-top: 5px;">${name}</div>
           </div>
         </div>
