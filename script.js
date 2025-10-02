@@ -97,23 +97,23 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-searchBtn.addEventListener('click', () => searchMonster()); // Modifié pour appeler sans argument
+searchBtn.addEventListener('click', () => searchMonster());
 resetBtn.addEventListener('click', resetSearch);
 
 searchInput.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     e.preventDefault(); // Empêche le rechargement de la page
     clearSuggestions();
-    searchMonster(); // Modifié pour appeler sans argument
+    searchMonster();
   } else if (e.key === 'Escape') {
     resetSearch(); // Utilise resetSearch pour tout effacer
   }
 });
 
-function searchMonster() {
-  const query = searchInput.value.trim();
+function searchMonster(unitId = null) {
+  const query = unitId ? '' : searchInput.value.trim();
   // Si la recherche est lancée depuis un clic sur "Mes Monstres", la query sera un ID
-  const isSearchById = !isNaN(parseInt(query, 10));
+  const isSearchById = unitId !== null;
 
   if (!query) { // Si la query est vide
     showResult("Veuillez entrer le nom d'un ou plusieurs monstres.");
@@ -121,7 +121,6 @@ function searchMonster() {
   }
 
   if (isSearchById) {
-    const unitId = parseInt(query, 10);
     const specificMonster = myMonsters.find(m => m.unit_id === unitId);
     const monsterType = awakenedMonsters.find(m => m.fields.com2us_id === specificMonster.unit_master_id);
     if (monsterType) {
@@ -404,9 +403,10 @@ function initializeBestiaryViews() {
     myContainer.addEventListener('click', (e) => {
       const gridItem = e.target.closest('.monster-grid-item');
       if (gridItem) {
-        const monsterId = gridItem.dataset.id; // On récupère l'ID unique
-        searchInput.value = monsterId; // On met l'ID dans la barre de recherche
-        searchMonster(); // On lance la recherche par ID
+        const monsterId = parseInt(gridItem.dataset.id, 10); // On récupère l'ID unique
+        const monsterName = gridItem.dataset.name;
+        searchInput.value = monsterName; // On met le NOM dans la barre de recherche
+        searchMonster(monsterId); // On lance la recherche en passant l'ID
         // Fait défiler la page vers le haut pour voir le résultat
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
