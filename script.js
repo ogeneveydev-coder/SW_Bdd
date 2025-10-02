@@ -523,7 +523,10 @@ function calculateRuneStats(runes) {
     10: 'CD', 11: 'RES', 12: 'ACC'
   };
 
-  runes.forEach(rune => {
+  // Les runes sont un objet { '1': {...}, '2': {...} }, on le transforme en tableau
+  const runeArray = Object.values(runes);
+
+  runeArray.forEach(rune => {
     // Stat principale
     if (rune.primary_effect) {
         const mainStatId = rune.primary_effect[0];
