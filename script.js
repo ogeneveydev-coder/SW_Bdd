@@ -220,6 +220,43 @@ function createMonsterCard(monsterData, unitData = null) {
     </div>
   `;
 
+  return `
+    <div class="jarvis-card">
+      <div class="jarvis-card-inner">
+        <!-- Face Avant -->
+        <div class="jarvis-card-front">
+          <div class="jarvis-corner top-left"></div>
+          <div class="jarvis-corner top-right"></div>
+          <div class="jarvis-corner bottom-left"></div>
+          <div class="jarvis-corner bottom-right"></div>
+          <div class="jarvis-content">
+              <div class="jarvis-image-container">
+                  <img src="${imgUrl}" alt="${name}">
+              </div>
+              ${radialChart}
+              <div class="jarvis-name" style="margin-top: 5px;">${name}</div>
+          </div>
+        </div>
+        <!-- Face Arrière -->
+        <div class="jarvis-card-back">
+          <div class="jarvis-corner top-left"></div>
+          <div class="jarvis-corner top-right"></div>
+          <div class="jarvis-corner bottom-left"></div>
+          <div class="jarvis-corner bottom-right"></div>
+          <div class="jarvis-stats">
+              <div class="jarvis-name">${name}</div>
+              <p><span>Element:</span> ${element}</p>
+              <p><span>Archetype:</span> ${archetype}</p>
+              <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
+              <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
+              <p><span>CR:</span> ${crit_rate}% | <span>CD:</span> ${crit_damage}%</p>
+              <p><span>RES:</span> ${resistance}% | <span>ACC:</span> ${accuracy}%</p>
+              ${runeStatsHtml || comparativeStatsHtml}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 // --- Logique d'autocomplétion ---
