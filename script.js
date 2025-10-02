@@ -87,14 +87,6 @@ window.addEventListener('DOMContentLoaded', () => {
       showResult("Impossible de charger les données des monstres.");
     });
 
-
-  // Ajoute un écouteur de clic sur le conteneur de résultats pour gérer la rotation des cartes
-  resultContainer.addEventListener('click', function(e) {
-    const card = e.target.closest('.jarvis-card');
-    if (card) {
-      card.classList.toggle('is-open');
-    }
-  });
 });
 
 searchBtn.addEventListener('click', () => searchMonsterFromInput());

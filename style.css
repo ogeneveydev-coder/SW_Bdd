@@ -103,7 +103,7 @@ button:hover {
 .jarvis-card {
   position: relative;
   background-color: transparent;
-  width: 200px; /* Largeur initiale */
+  width: 200px;
   height: 360px; /* Augmentation de la hauteur pour le graphique radar */
   animation: fadeIn 0.5s ease-out; /* Ajout de l'animation d'apparition */
   cursor: pointer;
