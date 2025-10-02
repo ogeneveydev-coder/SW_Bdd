@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier.
 const fileVersions = {
-  script: '2.30',
+  script: '2.31', // Version mise à jour
   style: '2.26',
   index: '2.7'
 };
@@ -14,7 +14,7 @@ let ownedMonsterIds = new Set(); // Stockera les IDs des monstres possédés pou
 let globalMonsterStats = {}; // Stockera les stats min/avg/max de tous les monstres
 
 // Valeurs maximales de référence pour calculer les pourcentages des anneaux
-const MAX_STATS = { 
+const MAX_STATS = {
   hp: 20000, atk: 1000, def: 1000, spd: 135,
   cr: 100, cd: 100, res: 100, acc: 100
 };
@@ -97,7 +97,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-searchBtn.addEventListener('click', searchMonster);
+searchBtn.addEventListener('click', () => searchMonster());
 resetBtn.addEventListener('click', resetSearch);
 
 searchInput.addEventListener('keydown', function(e) {
@@ -112,12 +112,26 @@ searchInput.addEventListener('keydown', function(e) {
 
 function searchMonster() {
   const query = searchInput.value.trim();
-  if (!query) {
+  // Si la recherche est lancée depuis un clic sur "Mes Monstres", la query sera un ID
+  const isSearchById = !isNaN(parseInt(query, 10));
+
+  if (!query) { // Si la query est vide
     showResult("Veuillez entrer le nom d'un ou plusieurs monstres.");
     return;
   }
 
-  // Sépare la recherche en termes distincts (ex: "lushen cyborg")
+  if (isSearchById) {
+    const unitId = parseInt(query, 10);
+    const specificMonster = myMonsters.find(m => m.unit_id === unitId);
+    const monsterType = awakenedMonsters.find(m => m.fields.com2us_id === specificMonster.unit_master_id);
+    if (monsterType) {
+      const cardHtml = createMonsterCard(monsterType, specificMonster);
+      showResult(`<div class="results-container">${cardHtml}</div>`);
+    }
+    return;
+  }
+
+  // --- Recherche par nom (comportement existant) ---
   const searchTerms = [...new Set(query.split(' ').map(term => strNoAccent(term.trim().toLowerCase())).filter(Boolean))];
   const foundMonsters = [];
   const foundAwakenedPks = new Set();
@@ -126,21 +140,22 @@ function searchMonster() {
   searchTerms.forEach(term => {
     allMonsters.forEach(monster => {
       const monsterName = strNoAccent(monster.fields.name.toLowerCase());
+
       // Si le terme de recherche correspond exactement au nom d'un monstre
       if (monsterName === term) {
-      let monsterToShow = monster;
+        let monsterToShow = monster;
 
-      // Si le monstre trouvé n'est pas éveillé, on récupère sa version éveillée
-      if (!monster.fields.is_awakened && monster.fields.awakens_to) {
-        const awakenedVersion = allMonsters.find(m => m.pk === monster.fields.awakens_to);
-        if (awakenedVersion) monsterToShow = awakenedVersion;
-      }
+        // Si le monstre trouvé n'est pas éveillé, on récupère sa version éveillée
+        if (!monster.fields.is_awakened && monster.fields.awakens_to) {
+          const awakenedVersion = allMonsters.find(m => m.pk === monster.fields.awakens_to);
+          if (awakenedVersion) monsterToShow = awakenedVersion;
+        }
 
-      // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
-      if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
-        foundMonsters.push(monsterToShow);
-        foundAwakenedPks.add(monsterToShow.pk);
-      }
+        // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
+        if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
+          foundMonsters.push(monsterToShow);
+          foundAwakenedPks.add(monsterToShow.pk);
+        }
       }
     });
   });
@@ -150,8 +165,48 @@ function searchMonster() {
     return;
   }
 
+  // Construit une carte HTML pour chaque monstre trouvé
+  const cardsHtml = foundMonsters.map(monster => createMonsterCard(monster)).join('');
+
+  // Affiche les cartes dans un conteneur
+  showResult(`<div class="results-container">${cardsHtml}</div>`);
+}
+
+/**
+ * Crée le HTML pour une seule carte de monstre.
+ * @param {object} monsterData - Les données du type de monstre (de bestiary_data.json).
+ * @param {object} [unitData=null] - Les données de l'unité spécifique du joueur (de my_bestiary.json).
+ * @returns {string} Le HTML de la carte.
+ */
+function createMonsterCard(monsterData, unitData = null) {
+  const { name, element, archetype, base_hp, base_attack, base_defense, speed, crit_rate, crit_damage, resistance, accuracy, image_filename } = monsterData.fields;
+  const radialChart = createRadialBarChart(monsterData.fields);
+  const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
+
+  let runeStatsHtml = '';
+  if (unitData) {
+    const runeStats = calculateRuneStats(unitData.runes);
+    runeStatsHtml = `
+      <div class="rune-stats">
+        <p class="rune-stats-title">Stats des Runes</p>
+        <div class="rune-stats-grid">
+          ${runeStats.HP_FLAT ? `<p><span>HP:</span> +${runeStats.HP_FLAT}</p>` : ''}
+          ${runeStats.HP_PERC ? `<p><span>HP:</span> +${runeStats.HP_PERC}%</p>` : ''}
+          ${runeStats.ATK_FLAT ? `<p><span>ATK:</span> +${runeStats.ATK_FLAT}</p>` : ''}
+          ${runeStats.ATK_PERC ? `<p><span>ATK:</span> +${runeStats.ATK_PERC}%</p>` : ''}
+          ${runeStats.DEF_FLAT ? `<p><span>DEF:</span> +${runeStats.DEF_FLAT}</p>` : ''}
+          ${runeStats.DEF_PERC ? `<p><span>DEF:</span> +${runeStats.DEF_PERC}%</p>` : ''}
+          ${runeStats.SPD ? `<p><span>SPD:</span> +${runeStats.SPD}</p>` : ''}
+          ${runeStats.CR ? `<p><span>CR:</span> +${runeStats.CR}%</p>` : ''}
+          ${runeStats.CD ? `<p><span>CD:</span> +${runeStats.CD}%</p>` : ''}
+          ${runeStats.RES ? `<p><span>RES:</span> +${runeStats.RES}%</p>` : ''}
+          ${runeStats.ACC ? `<p><span>ACC:</span> +${runeStats.ACC}%</p>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
   // Génère le HTML pour les statistiques globales (min/avg/max)
-  // Ce bloc sera maintenant toujours affiché.
   const comparativeStatsHtml = `
     <div class="comparative-stats" style="font-size: 0.6em;">
       <p><span>HP:</span> ${globalMonsterStats.hp.min} / <span>${globalMonsterStats.hp.avg}</span> / ${globalMonsterStats.hp.max}</p>
@@ -165,53 +220,43 @@ function searchMonster() {
     </div>
   `;
 
-  // Construit une carte HTML pour chaque monstre trouvé
-  const cardsHtml = foundMonsters.map(monster => {
-    const { name, element, archetype, base_hp, base_attack, base_defense, speed, crit_rate, crit_damage, resistance, accuracy, image_filename } = monster.fields;
-    const radialChart = createRadialBarChart(monster.fields);
-    const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
-    return `
-      <div class="jarvis-card">
-        <div class="jarvis-card-inner">
-          <!-- Face Avant -->
-          <div class="jarvis-card-front">
-            <div class="jarvis-corner top-left"></div>
-            <div class="jarvis-corner top-right"></div>
-            <div class="jarvis-corner bottom-left"></div>
-            <div class="jarvis-corner bottom-right"></div>
-            <div class="jarvis-content">
-                <div class="jarvis-image-container">
-                    <img src="${imgUrl}" alt="${name}">
-                </div>
-                ${radialChart}
-                <div class="jarvis-name" style="margin-top: 5px;">${name}</div>
-            </div>
+  return `
+    <div class="jarvis-card">
+      <div class="jarvis-card-inner">
+        <!-- Face Avant -->
+        <div class="jarvis-card-front">
+          <div class="jarvis-corner top-left"></div>
+          <div class="jarvis-corner top-right"></div>
+          <div class="jarvis-corner bottom-left"></div>
+          <div class="jarvis-corner bottom-right"></div>
+          <div class="jarvis-content">
+              <div class="jarvis-image-container">
+                  <img src="${imgUrl}" alt="${name}">
+              </div>
+              ${radialChart}
+              <div class="jarvis-name" style="margin-top: 5px;">${name}</div>
           </div>
-          <!-- Face Arrière -->
-          <div class="jarvis-card-back">
-            <div class="jarvis-corner top-left"></div>
-            <div class="jarvis-corner top-right"></div>
-            <div class="jarvis-corner bottom-left"></div>
-            <div class="jarvis-corner bottom-right"></div>
-            <div class="jarvis-stats">
-                <div class="jarvis-name">${name}</div>
-                <p><span>Element:</span> ${element}</p>
-                <p><span>Archetype:</span> ${archetype}</p>
-                <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
-                <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
-                <p><span>CR:</span> ${crit_rate}% | <span>CD:</span> ${crit_damage}%</p>
-                <p><span>RES:</span> ${resistance}% | <span>ACC:</span> ${accuracy}%</p>
-                ${comparativeStatsHtml}
-            </div>
+        </div>
+        <!-- Face Arrière -->
+        <div class="jarvis-card-back">
+          <div class="jarvis-corner top-left"></div>
+          <div class="jarvis-corner top-right"></div>
+          <div class="jarvis-corner bottom-left"></div>
+          <div class="jarvis-corner bottom-right"></div>
+          <div class="jarvis-stats">
+              <div class="jarvis-name">${name}</div>
+              <p><span>Element:</span> ${element}</p>
+              <p><span>Archetype:</span> ${archetype}</p>
+              <p><span>HP:</span> ${base_hp} | <span>ATK:</span> ${base_attack}</p>
+              <p><span>DEF:</span> ${base_defense} | <span>SPD:</span> ${speed}</p>
+              <p><span>CR:</span> ${crit_rate}% | <span>CD:</span> ${crit_damage}%</p>
+              <p><span>RES:</span> ${resistance}% | <span>ACC:</span> ${accuracy}%</p>
+              ${runeStatsHtml || comparativeStatsHtml}
           </div>
         </div>
       </div>
-    `;
-  }).join('');
-
-  // Affiche les cartes dans un conteneur
-  showResult(`<div class="results-container">${cardsHtml}</div>`);
-
+    </div>
+  `;
 }
 
 // --- Logique d'autocomplétion ---
@@ -361,9 +406,9 @@ function initializeBestiaryViews() {
     myContainer.addEventListener('click', (e) => {
       const gridItem = e.target.closest('.monster-grid-item');
       if (gridItem) {
-        const monsterName = gridItem.dataset.name;
-        searchInput.value = monsterName;
-        searchMonster();
+        const monsterId = gridItem.dataset.id; // On récupère l'ID unique
+        searchInput.value = monsterId; // On met l'ID dans la barre de recherche
+        searchMonster(); // On lance la recherche par ID
         // Fait défiler la page vers le haut pour voir le résultat
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -401,20 +446,71 @@ function populateMyBestiary() {
     return;
   }
 
-  // On ne veut que les ID uniques pour ne pas afficher les doublons
-  const myMonsterMasterIds = [...new Set(myMonsters.map(m => m.unit_master_id))];
-  const myMonstersToDisplay = awakenedMonsters.filter(m => myMonsterMasterIds.includes(m.fields.com2us_id));
+  // Crée une map pour un accès rapide aux données du monstre par son ID de base
+  const awakenedMonsterMap = new Map(awakenedMonsters.map(m => [m.fields.com2us_id, m]));
 
-  // Tri par identifiant (pk)
-  const sortedMonsters = myMonstersToDisplay.sort((a, b) => a.pk - b.pk);
+  // Tri des monstres personnels par l'ID de base (pk) pour le regroupement
+  const sortedMyMonsters = [...myMonsters].sort((a, b) => {
+    const monsterA = awakenedMonsterMap.get(a.unit_master_id);
+    const monsterB = awakenedMonsterMap.get(b.unit_master_id);
+    if (!monsterA || !monsterB) return 0;
+    return monsterA.pk - monsterB.pk;
+  });
 
-  const monsterListHtml = sortedMonsters.map(monster => {
-    const { name, element, image_filename } = monster.fields;
+  const monsterListHtml = sortedMyMonsters.map(myUnit => {
+    const monsterType = awakenedMonsterMap.get(myUnit.unit_master_id);
+    if (!monsterType) return ''; // Ne pas afficher si le type n'est pas trouvé
+
+    const { name, element, image_filename } = monsterType.fields;
     const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
-    return `<div class="monster-grid-item" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
+    // On utilise l'ID unique de l'unité (unit_id)
+    return `<div class="monster-grid-item" data-id="${myUnit.unit_id}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
   }).join('');
 
   container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
+}
+
+/**
+ * Calcule le total des stats bonus apportées par un set de runes.
+ * @param {Array} runes - Le tableau de runes d'un monstre.
+ * @returns {object} Un objet avec le total de chaque stat.
+ */
+function calculateRuneStats(runes) {
+  const totals = {
+    HP_FLAT: 0, HP_PERC: 0, ATK_FLAT: 0, ATK_PERC: 0,
+    DEF_FLAT: 0, DEF_PERC: 0, SPD: 0, CR: 0, CD: 0, RES: 0, ACC: 0
+  };
+  if (!runes) return totals;
+
+  const statMap = {
+    1: 'HP_FLAT', 2: 'HP_PERC', 3: 'ATK_FLAT', 4: 'ATK_PERC',
+    5: 'DEF_FLAT', 6: 'DEF_PERC', 8: 'SPD', 9: 'CR',
+    10: 'CD', 11: 'RES', 12: 'ACC'
+  };
+
+  runes.forEach(rune => {
+    // Stat principale
+    if (rune.primary_effect) {
+        const mainStatId = rune.primary_effect[0];
+        const mainStatValue = rune.primary_effect[1];
+        if (statMap[mainStatId]) {
+            totals[statMap[mainStatId]] += mainStatValue;
+        }
+    }
+
+    // Substats
+    if (rune.secondary_effects) {
+        rune.secondary_effects.forEach(sub => {
+            const subStatId = sub[0];
+            const subStatValue = sub[1] + (sub[3] || 0); // Valeur de base + meule
+            if (statMap[subStatId]) {
+                totals[statMap[subStatId]] += subStatValue;
+            }
+        });
+    }
+  });
+
+  return totals;
 }
 
 function createRadialBarChart(monsterStats) {
@@ -472,13 +568,13 @@ function createRadialBarChart(monsterStats) {
 
     const monsterPercentage = monsterValue / maxValue;
     const avgPercentage = avgValue / maxValue;
-    
+
     const monsterRadius = monsterPercentage * radius;
     const avgRadius = avgPercentage * radius;
 
     // Part de fond (représente 100%)
     chartHtml += `<path class="radial-bar-bg" d="${describeSector(center.x, center.y, radius, startAngle, endAngle)}"></path>`;
-    
+
     // Part de la stat du monstre
     chartHtml += `<path fill="url(#statGradient)" d="${describeSector(center.x, center.y, monsterRadius, startAngle, endAngle)}"></path>`;
 
