@@ -183,10 +183,9 @@ function createMonsterCard(monsterData, unitData = null) {
   let runeSetsHtml = '';
 
   if (unitData) {
-    // Si on a les données d'un monstre spécifique (avec runes)
-    const runeStats = calculateRuneStats(unitData.runes);
-    // Génère le HTML pour le tiroir de gauche (runes individuelles)
-    runeSetsHtml = createIndividualRunesHtml(unitData.runes);
+    // On ne traite les runes que si elles existent
+    const runeStats = unitData.runes ? calculateRuneStats(unitData.runes) : { HP_FLAT: 0, HP_PERC: 0, ATK_FLAT: 0, ATK_PERC: 0, DEF_FLAT: 0, DEF_PERC: 0, SPD: 0, CR: 0, CD: 0, RES: 0, ACC: 0 };
+    runeSetsHtml = unitData.runes ? createIndividualRunesHtml(unitData.runes) : '<p>Aucune rune équipée.</p>';
 
     // Génère le HTML pour le tiroir de droite (stats complètes)
     statsDisplayHtml = `
