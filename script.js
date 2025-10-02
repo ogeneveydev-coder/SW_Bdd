@@ -92,7 +92,7 @@ window.addEventListener('DOMContentLoaded', () => {
   resultContainer.addEventListener('click', function(e) {
     const card = e.target.closest('.jarvis-card');
     if (card) {
-      card.classList.toggle('is-flipped');
+      card.classList.toggle('is-open');
     }
   });
 });
