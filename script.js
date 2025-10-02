@@ -406,9 +406,9 @@ function initializeBestiaryViews() {
     myContainer.addEventListener('click', (e) => {
       const gridItem = e.target.closest('.monster-grid-item');
       if (gridItem) {
-        const monsterName = gridItem.dataset.name;
-        searchInput.value = monsterName;
-        searchMonster();
+        const monsterId = gridItem.dataset.id; // On récupère l'ID unique
+        searchInput.value = monsterId; // On met l'ID dans la barre de recherche
+        searchMonster(); // On lance la recherche par ID
         // Fait défiler la page vers le haut pour voir le résultat
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -468,6 +468,49 @@ function populateMyBestiary() {
   }).join('');
 
   container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
+}
+
+/**
+ * Calcule le total des stats bonus apportées par un set de runes.
+ * @param {Array} runes - Le tableau de runes d'un monstre.
+ * @returns {object} Un objet avec le total de chaque stat.
+ */
+function calculateRuneStats(runes) {
+  const totals = {
+    HP_FLAT: 0, HP_PERC: 0, ATK_FLAT: 0, ATK_PERC: 0,
+    DEF_FLAT: 0, DEF_PERC: 0, SPD: 0, CR: 0, CD: 0, RES: 0, ACC: 0
+  };
+  if (!runes) return totals;
+
+  const statMap = {
+    1: 'HP_FLAT', 2: 'HP_PERC', 3: 'ATK_FLAT', 4: 'ATK_PERC',
+    5: 'DEF_FLAT', 6: 'DEF_PERC', 8: 'SPD', 9: 'CR',
+    10: 'CD', 11: 'RES', 12: 'ACC'
+  };
+
+  runes.forEach(rune => {
+    // Stat principale
+    if (rune.primary_effect) {
+        const mainStatId = rune.primary_effect[0];
+        const mainStatValue = rune.primary_effect[1];
+        if (statMap[mainStatId]) {
+            totals[statMap[mainStatId]] += mainStatValue;
+        }
+    }
+
+    // Substats
+    if (rune.secondary_effects) {
+        rune.secondary_effects.forEach(sub => {
+            const subStatId = sub[0];
+            const subStatValue = sub[1] + (sub[3] || 0); // Valeur de base + meule
+            if (statMap[subStatId]) {
+                totals[statMap[subStatId]] += subStatValue;
+            }
+        });
+    }
+  });
+
+  return totals;
 }
 
 function createRadialBarChart(monsterStats) {
