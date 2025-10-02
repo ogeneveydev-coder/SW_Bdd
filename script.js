@@ -463,18 +463,25 @@ function populateMyBestiary() {
   }
 
   // Crée une map pour un accès rapide aux données du monstre par son ID de base
-  const awakenedMonsterMap = new Map(awakenedMonsters.map(m => [m.fields.com2us_id, m]));
+  const allMonsterMap = new Map(allMonsters.map(m => [m.fields.com2us_id, m]));
 
   // Tri des monstres personnels par l'ID de base (pk) pour le regroupement
   const sortedMyMonsters = [...myMonsters].sort((a, b) => {
-    const monsterA = awakenedMonsterMap.get(a.unit_master_id);
-    const monsterB = awakenedMonsterMap.get(b.unit_master_id);
+    const monsterA = allMonsterMap.get(a.unit_master_id);
+    const monsterB = allMonsterMap.get(b.unit_master_id);
     if (!monsterA || !monsterB) return 0;
     return monsterA.pk - monsterB.pk;
   });
 
   const monsterListHtml = sortedMyMonsters.map(myUnit => {
-    const monsterType = awakenedMonsterMap.get(myUnit.unit_master_id);
+    // CORRECTION : Chercher dans TOUS les monstres, pas seulement les éveillés
+    let monsterType = allMonsterMap.get(myUnit.unit_master_id);
+    if (!monsterType) return ''; // Ne pas afficher si le type n'est pas trouvé
+
+    // Si le monstre n'est pas éveillé, on trouve sa forme éveillée pour l'image et le nom
+    if (!monsterType.fields.is_awakened && monsterType.fields.awakens_to) {
+      monsterType = allMonsterMap.get(allMonsters.find(m => m.pk === monsterType.fields.awakens_to)?.fields.com2us_id) || monsterType;
+    }
     if (!monsterType) return ''; // Ne pas afficher si le type n'est pas trouvé
 
     const { name, element, image_filename } = monsterType.fields;
