@@ -446,17 +446,25 @@ function populateMyBestiary() {
     return;
   }
 
-  // On ne veut que les ID uniques pour ne pas afficher les doublons
-  const myMonsterMasterIds = [...new Set(myMonsters.map(m => m.unit_master_id))];
-  const myMonstersToDisplay = awakenedMonsters.filter(m => myMonsterMasterIds.includes(m.fields.com2us_id));
+  // Crée une map pour un accès rapide aux données du monstre par son ID de base
+  const awakenedMonsterMap = new Map(awakenedMonsters.map(m => [m.fields.com2us_id, m]));
 
-  // Tri par identifiant (pk)
-  const sortedMonsters = myMonstersToDisplay.sort((a, b) => a.pk - b.pk);
+  // Tri des monstres personnels par l'ID de base (pk) pour le regroupement
+  const sortedMyMonsters = [...myMonsters].sort((a, b) => {
+    const monsterA = awakenedMonsterMap.get(a.unit_master_id);
+    const monsterB = awakenedMonsterMap.get(b.unit_master_id);
+    if (!monsterA || !monsterB) return 0;
+    return monsterA.pk - monsterB.pk;
+  });
 
-  const monsterListHtml = sortedMonsters.map(monster => {
-    const { name, element, image_filename } = monster.fields;
+  const monsterListHtml = sortedMyMonsters.map(myUnit => {
+    const monsterType = awakenedMonsterMap.get(myUnit.unit_master_id);
+    if (!monsterType) return ''; // Ne pas afficher si le type n'est pas trouvé
+
+    const { name, element, image_filename } = monsterType.fields;
     const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
-    return `<div class="monster-grid-item" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
+    // On utilise l'ID unique de l'unité (unit_id)
+    return `<div class="monster-grid-item" data-id="${myUnit.unit_id}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
   }).join('');
 
   container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;

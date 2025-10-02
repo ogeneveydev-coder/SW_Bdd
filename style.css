@@ -262,6 +262,31 @@ button:hover {
   color: var(--jarvis-blue); /* La valeur moyenne ressort */
 }
 
+/* --- Styles pour les stats des runes --- */
+.rune-stats {
+  border-top: 1px solid rgba(0, 184, 255, 0.3);
+  margin-top: 10px;
+  padding-top: 5px;
+}
+
+.rune-stats-title {
+  font-size: 0.8em;
+  text-align: center;
+  color: var(--jarvis-blue);
+  margin-bottom: 8px;
+}
+
+.rune-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 15px; /* Espace vertical 0, horizontal 15px */
+}
+
+.rune-stats-grid p {
+  margin: 2px 0;
+  font-size: 0.7em;
+}
+
 /* --- Styles pour le graphique Radial à Barres --- */
 .radial-chart-container {
   width: 100%;
