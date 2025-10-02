@@ -97,14 +97,14 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-searchBtn.addEventListener('click', () => searchMonster());
+searchBtn.addEventListener('click', () => searchMonsterFromInput());
 resetBtn.addEventListener('click', resetSearch);
 
 searchInput.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     e.preventDefault(); // Empêche le rechargement de la page
     clearSuggestions();
-    searchMonster();
+    searchMonsterFromInput();
   } else if (e.key === 'Escape') {
     resetSearch(); // Utilise resetSearch pour tout effacer
   }
@@ -112,20 +112,20 @@ searchInput.addEventListener('keydown', function(e) {
 
 function searchMonster(unitId = null) {
   const query = unitId ? '' : searchInput.value.trim();
-  // Si la recherche est lancée depuis un clic sur "Mes Monstres", la query sera un ID
   const isSearchById = unitId !== null;
 
-  if (!query) { // Si la query est vide
+  if (!isSearchById && !query) {
     showResult("Veuillez entrer le nom d'un ou plusieurs monstres.");
     return;
   }
 
   if (isSearchById) {
     const specificMonster = myMonsters.find(m => m.unit_id === unitId);
+    if (!specificMonster) return;
     const monsterType = awakenedMonsters.find(m => m.fields.com2us_id === specificMonster.unit_master_id);
     if (monsterType) {
-      const cardHtml = createMonsterCard(monsterType, specificMonster);
-      showResult(`<div class="results-container">${cardHtml}</div>`);
+      const cardHtml = createMonsterCard(monsterType, specificMonster); // Crée la carte
+      showMonsterInModal(cardHtml); // Affiche dans la modale
     }
     return;
   }
@@ -168,6 +168,11 @@ function searchMonster(unitId = null) {
 
   // Affiche les cartes dans un conteneur
   showResult(`<div class="results-container">${cardsHtml}</div>`);
+}
+
+function searchMonsterFromInput() {
+  // Cette fonction est maintenant dédiée à la recherche depuis la barre de recherche
+  searchMonster();
 }
 
 /**
@@ -386,11 +391,12 @@ function initializeBestiaryViews() {
   container.addEventListener('click', (e) => {
     const gridItem = e.target.closest('.monster-grid-item');
     if (gridItem) {
-      const monsterName = gridItem.dataset.name;
-      searchInput.value = monsterName;
-      searchMonster();
-      // Fait défiler la page vers le haut pour voir le résultat
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const monsterName = gridItem.dataset.name.toLowerCase();
+      const monsterData = awakenedMonsters.find(m => m.fields.name.toLowerCase() === monsterName);
+      if (monsterData) {
+        const cardHtml = createMonsterCard(monsterData);
+        showMonsterInModal(cardHtml);
+      }
     }
   });
 
@@ -403,12 +409,9 @@ function initializeBestiaryViews() {
     myContainer.addEventListener('click', (e) => {
       const gridItem = e.target.closest('.monster-grid-item');
       if (gridItem) {
-        const monsterId = parseInt(gridItem.dataset.id, 10); // On récupère l'ID unique
-        const monsterName = gridItem.dataset.name;
-        searchInput.value = monsterName; // On met le NOM dans la barre de recherche
-        searchMonster(monsterId); // On lance la recherche en passant l'ID
-        // Fait défiler la page vers le haut pour voir le résultat
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        const monsterId = parseInt(gridItem.dataset.id, 10);
+        // On appelle directement la recherche par ID qui va ouvrir la modale
+        searchMonster(monsterId);
       }
     });
   }
@@ -466,6 +469,40 @@ function populateMyBestiary() {
   }).join('');
 
   container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
+}
+
+/**
+ * Affiche une carte de monstre dans une modale pop-up.
+ * @param {string} cardHtml - Le code HTML de la carte à afficher.
+ */
+function showMonsterInModal(cardHtml) {
+  // Crée la modale si elle n'existe pas
+  let modal = document.getElementById('monster-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'monster-modal';
+    modal.className = 'modal-overlay';
+    modal.innerHTML = '<div class="modal-content"></div>';
+    document.body.appendChild(modal);
+
+    // Ajoute un événement pour fermer la modale en cliquant sur le fond
+    modal.addEventListener('click', (e) => {
+      if (e.target.id === 'monster-modal') {
+        closeModal();
+      }
+    });
+  }
+
+  // Injecte la carte et affiche la modale
+  modal.querySelector('.modal-content').innerHTML = cardHtml;
+  modal.classList.add('visible');
+}
+
+function closeModal() {
+  const modal = document.getElementById('monster-modal');
+  if (modal) {
+    modal.classList.remove('visible');
+  }
 }
 
 /**

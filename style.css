@@ -431,3 +431,41 @@ button:hover {
 .view-container.active {
   display: block; /* Affiché si actif */
 }
+
+/* --- Styles pour la modale (Pop-up) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.modal-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  position: relative;
+  transform: scale(0.9);
+  transition: transform 0.3s;
+}
+
+.modal-overlay.visible .modal-content {
+  transform: scale(1);
+}
+
+/* La carte dans la modale n'a pas besoin d'animation d'apparition */
+.modal-content .jarvis-card {
+  animation: none;
+  cursor: default; /* Le curseur n'a pas besoin d'être un pointeur ici */
+}
