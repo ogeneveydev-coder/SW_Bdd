@@ -428,8 +428,15 @@ function initializeBestiaryViews() {
       const monsterType = awakenedMonsters.find(m => m.fields.name.toLowerCase() === monsterName);
       if (monsterType) {
         // CORRECTION : On cherche si le joueur possède ce monstre
-        const ownedUnit = myMonsters.find(unit => unit.unit_master_id === monsterType.fields.com2us_id);
-        
+        // On doit aussi trouver la forme non-éveillée pour vérifier si le joueur la possède.
+        const unawakenedType = allMonsters.find(m => m.fields.awakens_to === monsterType.pk);
+        const unawakenedId = unawakenedType ? unawakenedType.fields.com2us_id : null;
+
+        // On cherche une unité qui correspond soit à l'ID éveillé, soit à l'ID non-éveillé.
+        const ownedUnit = myMonsters.find(unit => 
+          unit.unit_master_id === monsterType.fields.com2us_id || (unawakenedId && unit.unit_master_id === unawakenedId)
+        );
+
         // On passe les données de l'unité si elle est trouvée, sinon on passe null
         const cardHtml = createMonsterCard(monsterType, ownedUnit || null);
         showMonsterInModal(cardHtml);
