@@ -432,29 +432,6 @@ function initializeBestiaryViews() {
       }
     }
   });
-
-  // --- GESTION DES ONGLETS PRINCIPAUX ---
-  const mainTabsContainer = document.querySelector('.main-tabs');
-  const viewContainers = document.querySelectorAll('.view-container');
-
-  mainTabsContainer.addEventListener('click', (e) => {
-    if (e.target.matches('.main-tab')) {
-      const selectedView = e.target.dataset.view;
-
-      // Met à jour la classe 'active' sur les onglets principaux
-      mainTabsContainer.querySelector('.active').classList.remove('active');
-      e.target.classList.add('active');
-
-      // Affiche le bon conteneur de vue
-      viewContainers.forEach(vc => {
-        if (vc.id === `${selectedView}-container`) {
-          vc.classList.add('active');
-        } else {
-          vc.classList.remove('active');
-        }
-      });
-    }
-  });
 }
 
 /**

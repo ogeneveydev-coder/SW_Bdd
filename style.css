@@ -473,39 +473,6 @@ strong {
   transition: filter 0.3s, opacity 0.3s;
 }
 
-/* --- Styles pour les onglets principaux et les vues --- */
-.main-tabs {
-  text-align: center;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #00bfff;
-  padding-bottom: 10px;
-}
-
-.main-tab {
-  background-color: #1a1a1a;
-  color: #00bfff;
-  border: 1px solid #00bfff;
-  padding: 10px 20px;
-  margin: 0 5px;
-  cursor: pointer;
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1em;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.main-tab.active, .main-tab:hover {
-  background-color: #00bfff;
-  color: #1a1a1a;
-}
-
-.view-container {
-  display: none; /* Caché par défaut */
-}
-
-.view-container.active {
-  display: block; /* Affiché si actif */
-}
-
 /* --- Styles pour la modale (Pop-up) --- */
 .modal-overlay {
   position: fixed;
