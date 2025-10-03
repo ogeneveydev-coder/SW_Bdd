@@ -371,10 +371,15 @@ function initializeBestiaryViews() {
   // Fonction pour générer et afficher la grille pour un élément donné
   const displayGridForElement = (element) => {
     const monstersToDisplay = awakenedMonsters.filter(m => m.fields.element === element);
-    // Tri par identifiant (pk = Primary Key) au lieu du nom
-    const filteredMonsters = monstersToDisplay.sort((a, b) => a.pk - b.pk);
+    // Tri pour afficher les monstres possédés en premier
+    monstersToDisplay.sort((a, b) => {
+      const isOwnedA = ownedMonsterIds.has(a.fields.com2us_id);
+      const isOwnedB = ownedMonsterIds.has(b.fields.com2us_id);
+      if (isOwnedA !== isOwnedB) return isOwnedA ? -1 : 1; // Trie par possession
+      return a.pk - b.pk; // Puis par ID
+    });
 
-    const monsterListHtml = filteredMonsters.map(monster => {
+    const monsterListHtml = monstersToDisplay.map(monster => {
         const { name, element, image_filename, com2us_id } = monster.fields;
         const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
         // Vérifie si le monstre est possédé et ajoute une classe si ce n'est pas le cas
@@ -415,22 +420,6 @@ function initializeBestiaryViews() {
     }
   });
 
-  // --- MES MONSTRES ---
-  const myContainer = document.getElementById('my-monster-list-container');
-  if (myContainer) {
-    populateMyBestiary();
-
-    // Ajoute la logique de clic sur un monstre de la liste personnelle
-    myContainer.addEventListener('click', (e) => {
-      const gridItem = e.target.closest('.monster-grid-item');
-      if (gridItem) {
-        const monsterId = parseInt(gridItem.dataset.id, 10);
-        // On appelle directement la recherche par ID qui va ouvrir la modale
-        searchMonster(monsterId);
-      }
-    });
-  }
-
   // --- GESTION DES ONGLETS PRINCIPAUX ---
   const mainTabsContainer = document.querySelector('.main-tabs');
   const viewContainers = document.querySelectorAll('.view-container');
@@ -453,44 +442,6 @@ function initializeBestiaryViews() {
       });
     }
   });
-}
-
-function populateMyBestiary() {
-  const container = document.getElementById('my-monster-list-container');
-  if (!container || myMonsters.length === 0) {
-    container.innerHTML = "<p>Aucun monstre trouvé dans 'my_bestiary.json'.</p>";
-    return;
-  }
-
-  // Crée une map pour un accès rapide aux données du monstre par son ID de base
-  const allMonsterMap = new Map(allMonsters.map(m => [m.fields.com2us_id, m]));
-
-  // Tri des monstres personnels par l'ID de base (pk) pour le regroupement
-  const sortedMyMonsters = [...myMonsters].sort((a, b) => {
-    const monsterA = allMonsterMap.get(a.unit_master_id);
-    const monsterB = allMonsterMap.get(b.unit_master_id);
-    if (!monsterA || !monsterB) return 0;
-    return monsterA.pk - monsterB.pk;
-  });
-
-  const monsterListHtml = sortedMyMonsters.map(myUnit => {
-    // CORRECTION : Chercher dans TOUS les monstres, pas seulement les éveillés
-    let monsterType = allMonsterMap.get(myUnit.unit_master_id);
-    if (!monsterType) return ''; // Ne pas afficher si le type n'est pas trouvé
-
-    // Si le monstre n'est pas éveillé, on trouve sa forme éveillée pour l'image et le nom
-    if (!monsterType.fields.is_awakened && monsterType.fields.awakens_to) {
-      monsterType = allMonsterMap.get(allMonsters.find(m => m.pk === monsterType.fields.awakens_to)?.fields.com2us_id) || monsterType;
-    }
-    if (!monsterType) return ''; // Ne pas afficher si le type n'est pas trouvé
-
-    const { name, element, image_filename } = monsterType.fields;
-    const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
-    // On utilise l'ID unique de l'unité (unit_id)
-    return `<div class="monster-grid-item" data-id="${myUnit.unit_id}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
-  }).join('');
-
-  container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
 }
 
 /**
