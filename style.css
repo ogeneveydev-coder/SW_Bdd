@@ -128,11 +128,6 @@ button:hover {
   box-sizing: border-box;
 }
 
-/* On cache le tiroir de gauche pour le moment */
-.jarvis-card-runes {
-  display: none;
-}
-
 .jarvis-card.is-runes-open .jarvis-card-inner {
   left: 0; /* Montre le panneau de gauche */
 }
