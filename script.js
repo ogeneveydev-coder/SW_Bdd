@@ -1,9 +1,9 @@
 /* tada*/
 
 // --- GESTION DES VERSIONS ---
-// Mettez à jour ces valeurs lorsque vous modifiez un fichier.
+// Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.30',
+  script: '2.31',
   style: '2.26',
   index: '2.7'
 };
@@ -197,18 +197,28 @@ function createMonsterCard(monsterData, unitData = null) {
     const runeStats = unitData.runes ? calculateRuneStats(unitData.runes) : { HP_FLAT: 0, HP_PERC: 0, ATK_FLAT: 0, ATK_PERC: 0, DEF_FLAT: 0, DEF_PERC: 0, SPD: 0, CR: 0, CD: 0, RES: 0, ACC: 0 };
     runeSetsHtml = unitData.runes ? createIndividualRunesHtml(unitData.runes) : '<p>Aucune rune équipée.</p>';
 
+    // Calcul des stats totales (base + runes)
+    const totalHp = max_lvl_hp + Math.round(max_lvl_hp * (runeStats.HP_PERC / 100)) + runeStats.HP_FLAT;
+    const totalAtk = max_lvl_attack + Math.round(max_lvl_attack * (runeStats.ATK_PERC / 100)) + runeStats.ATK_FLAT;
+    const totalDef = max_lvl_defense + Math.round(max_lvl_defense * (runeStats.DEF_PERC / 100)) + runeStats.DEF_FLAT;
+    const totalSpd = speed + runeStats.SPD;
+    const totalCr = crit_rate + runeStats.CR;
+    const totalCd = crit_damage + runeStats.CD;
+    const totalRes = resistance + runeStats.RES;
+    const totalAcc = accuracy + runeStats.ACC;
+
     // Génère le HTML pour le tiroir de droite (stats complètes)
     statsDisplayHtml = `
       <p><span>Element:</span> ${element}</p>
       <p><span>Archetype:</span> ${archetype}</p>
-      <p><span>HP:</span> ${max_lvl_hp} <span class="rune-bonus">+${Math.round(max_lvl_hp * (runeStats.HP_PERC / 100)) + runeStats.HP_FLAT}</span></p>
-      <p><span>ATK:</span> ${max_lvl_attack} <span class="rune-bonus">+${Math.round(max_lvl_attack * (runeStats.ATK_PERC / 100)) + runeStats.ATK_FLAT}</span></p>
-      <p><span>DEF:</span> ${max_lvl_defense} <span class="rune-bonus">+${Math.round(max_lvl_defense * (runeStats.DEF_PERC / 100)) + runeStats.DEF_FLAT}</span></p>
-      <p><span>SPD:</span> ${speed} <span class="rune-bonus">+${runeStats.SPD}</span></p>
-      <p><span>CR:</span> ${crit_rate}% <span class="rune-bonus">+${runeStats.CR}%</span></p>
-      <p><span>CD:</span> ${crit_damage}% <span class="rune-bonus">+${runeStats.CD}%</span></p>
-      <p><span>RES:</span> ${resistance}% <span class="rune-bonus">+${runeStats.RES}%</span></p>
-      <p><span>ACC:</span> ${accuracy}% <span class="rune-bonus">+${runeStats.ACC}%</span></p>
+      <p><span>HP:</span> ${max_lvl_hp} + <span class="rune-bonus">${Math.round(max_lvl_hp * (runeStats.HP_PERC / 100)) + runeStats.HP_FLAT}</span> = <strong>${totalHp}</strong></p>
+      <p><span>ATK:</span> ${max_lvl_attack} + <span class="rune-bonus">${Math.round(max_lvl_attack * (runeStats.ATK_PERC / 100)) + runeStats.ATK_FLAT}</span> = <strong>${totalAtk}</strong></p>
+      <p><span>DEF:</span> ${max_lvl_defense} + <span class="rune-bonus">${Math.round(max_lvl_defense * (runeStats.DEF_PERC / 100)) + runeStats.DEF_FLAT}</span> = <strong>${totalDef}</strong></p>
+      <p><span>SPD:</span> ${speed} + <span class="rune-bonus">${runeStats.SPD}</span> = <strong>${totalSpd}</strong></p>
+      <p><span>CR:</span> ${crit_rate}% + <span class="rune-bonus">${runeStats.CR}%</span> = <strong>${totalCr}%</strong></p>
+      <p><span>CD:</span> ${crit_damage}% + <span class="rune-bonus">${runeStats.CD}%</span> = <strong>${totalCd}%</strong></p>
+      <p><span>RES:</span> ${resistance}% + <span class="rune-bonus">${runeStats.RES}%</span> = <strong>${totalRes}%</strong></p>
+      <p><span>ACC:</span> ${accuracy}% + <span class="rune-bonus">${runeStats.ACC}%</span> = <strong>${totalAcc}%</strong></p>
     `;
   } else {
     // Sinon, on affiche les stats de base et les stats comparatives
