@@ -272,6 +272,23 @@ button:hover {
   margin-left: 8px;
 }
 
+.jarvis-stats strong {
+  color: #fff;
+  text-shadow: 0 0 3px var(--jarvis-blue);
+  margin-left: 8px;
+}
+
+.stats-separator {
+  border: none;
+  height: 1px;
+  background-color: rgba(0, 184, 255, 0.3);
+  margin: 10px 0;
+}
+
+.total-stats-container p {
+  margin: 6px 0;
+}
+
 /* --- Styles pour le tiroir des sets de runes --- */
 .rune-sets-container {
   display: flex;
