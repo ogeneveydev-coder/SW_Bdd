@@ -213,14 +213,14 @@ function createMonsterCard(monsterData, unitData = null) {
         <p><span>Element:</span> ${element}</p>
         <p><span>Archetype:</span> ${archetype}</p>
         <hr class="stats-separator">
-        <p><span>HP:</span> ${max_lvl_hp} + <span class="rune-bonus">${Math.round(max_lvl_hp * (runeStats.HP_PERC / 100)) + runeStats.HP_FLAT}</span> = <strong>${totalHp}</strong></p>
-        <p><span>ATK:</span> ${max_lvl_attack} + <span class="rune-bonus">${Math.round(max_lvl_attack * (runeStats.ATK_PERC / 100)) + runeStats.ATK_FLAT}</span> = <strong>${totalAtk}</strong></p>
-        <p><span>DEF:</span> ${max_lvl_defense} + <span class="rune-bonus">${Math.round(max_lvl_defense * (runeStats.DEF_PERC / 100)) + runeStats.DEF_FLAT}</span> = <strong>${totalDef}</strong></p>
-        <p><span>SPD:</span> ${speed} + <span class="rune-bonus">${runeStats.SPD}</span> = <strong>${totalSpd}</strong></p>
-        <p><span>CR:</span> ${crit_rate}% + <span class="rune-bonus">${runeStats.CR}%</span> = <strong>${totalCr}%</strong></p>
-        <p><span>CD:</span> ${crit_damage}% + <span class="rune-bonus">${runeStats.CD}%</span> = <strong>${totalCd}%</strong></p>
-        <p><span>RES:</span> ${resistance}% + <span class="rune-bonus">${runeStats.RES}%</span> = <strong>${totalRes}%</strong></p>
-        <p><span>ACC:</span> ${accuracy}% + <span class="rune-bonus">${runeStats.ACC}%</span> = <strong>${totalAcc}%</strong></p>
+        <p><span>HP:</span> ${max_lvl_hp} <span class="rune-bonus">+${Math.round(max_lvl_hp * (runeStats.HP_PERC / 100)) + runeStats.HP_FLAT}</span></p>
+        <p><span>ATK:</span> ${max_lvl_attack} <span class="rune-bonus">+${Math.round(max_lvl_attack * (runeStats.ATK_PERC / 100)) + runeStats.ATK_FLAT}</span></p>
+        <p><span>DEF:</span> ${max_lvl_defense} <span class="rune-bonus">+${Math.round(max_lvl_defense * (runeStats.DEF_PERC / 100)) + runeStats.DEF_FLAT}</span></p>
+        <p><span>SPD:</span> ${speed} <span class="rune-bonus">+${runeStats.SPD}</span></p>
+        <p><span>CR:</span> ${crit_rate}% <span class="rune-bonus">+${runeStats.CR}%</span></p>
+        <p><span>CD:</span> ${crit_damage}% <span class="rune-bonus">+${runeStats.CD}%</span></p>
+        <p><span>RES:</span> ${resistance}% <span class="rune-bonus">+${runeStats.RES}%</span></p>
+        <p><span>ACC:</span> ${accuracy}% <span class="rune-bonus">+${runeStats.ACC}%</span></p>
       </div>
     `;
   } else {
