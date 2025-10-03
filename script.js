@@ -395,9 +395,14 @@ function initializeBestiaryViews() {
     const monsterListHtml = monstersToDisplay.map(monster => {
         const { name, element, image_filename, com2us_id } = monster.fields;
         const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
-        // Vérifie si le monstre est possédé et ajoute une classe si ce n'est pas le cas
-        const isOwned = ownedMonsterIds.has(com2us_id);
+
+        // CORRECTION : Vérifie si le joueur possède la forme éveillée OU non-éveillée
+        const unawakenedType = allMonsters.find(m => m.fields.awakens_to === monster.pk);
+        const unawakenedId = unawakenedType ? unawakenedType.fields.com2us_id : null;
+
+        const isOwned = ownedMonsterIds.has(com2us_id) || (unawakenedId && ownedMonsterIds.has(unawakenedId));
         const ownedClass = isOwned ? '' : 'not-owned';
+
         return `<div class="monster-grid-item ${ownedClass}" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
       }).join('');
 
