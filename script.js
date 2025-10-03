@@ -425,9 +425,13 @@ function initializeBestiaryViews() {
     const gridItem = e.target.closest('.monster-grid-item');
     if (gridItem) {
       const monsterName = gridItem.dataset.name.toLowerCase();
-      const monsterData = awakenedMonsters.find(m => m.fields.name.toLowerCase() === monsterName);
-      if (monsterData) {
-        const cardHtml = createMonsterCard(monsterData);
+      const monsterType = awakenedMonsters.find(m => m.fields.name.toLowerCase() === monsterName);
+      if (monsterType) {
+        // CORRECTION : On cherche si le joueur possède ce monstre
+        const ownedUnit = myMonsters.find(unit => unit.unit_master_id === monsterType.fields.com2us_id);
+        
+        // On passe les données de l'unité si elle est trouvée, sinon on passe null
+        const cardHtml = createMonsterCard(monsterType, ownedUnit || null);
         showMonsterInModal(cardHtml);
       }
     }
