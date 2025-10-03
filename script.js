@@ -397,7 +397,7 @@ function initializeBestiaryViews() {
         const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
 
         // CORRECTION : Vérifie si le joueur possède la forme éveillée OU non-éveillée
-        const unawakenedType = allMonsters.find(m => m.fields.awakens_to === monster.pk);
+        const unawakenedType = monster.fields.awakens_from ? allMonsters.find(m => m.pk === monster.fields.awakens_from) : null;
         const unawakenedId = unawakenedType ? unawakenedType.fields.com2us_id : null;
 
         const isOwned = ownedMonsterIds.has(com2us_id) || (unawakenedId && ownedMonsterIds.has(unawakenedId));
@@ -434,7 +434,7 @@ function initializeBestiaryViews() {
       if (monsterType) {
         // CORRECTION : On cherche si le joueur possède ce monstre
         // On doit aussi trouver la forme non-éveillée pour vérifier si le joueur la possède.
-        const unawakenedType = allMonsters.find(m => m.fields.awakens_to === monsterType.pk);
+        const unawakenedType = monsterType.fields.awakens_from ? allMonsters.find(m => m.pk === monsterType.fields.awakens_from) : null;
         const unawakenedId = unawakenedType ? unawakenedType.fields.com2us_id : null;
 
         // On cherche une unité qui correspond soit à l'ID éveillé, soit à l'ID non-éveillé.
