@@ -483,17 +483,9 @@ function showMonsterInModal(cardHtml) {
       const card = e.target.closest('.jarvis-card');
       if (!card) return;
 
-      const isRunesOpen = card.classList.contains('is-runes-open');
-      const isStatsOpen = card.classList.contains('is-stats-open');
-
-      // Si on clique sur le tiroir des runes, on le bascule
-      if (e.target.closest('.jarvis-card-runes')) {
-        card.classList.toggle('is-runes-open');
-      } // Si on clique sur le tiroir des stats, on le bascule
-      else if (e.target.closest('.jarvis-card-back')) { 
-        card.classList.toggle('is-stats-open');
-      } // Si on clique sur la face avant, on bascule le tiroir des stats
-      else if (e.target.closest('.jarvis-card-front')) {
+      // Logique simplifiée : tout clic sur la carte (avant ou arrière)
+      // bascule l'affichage du tiroir de droite.
+      if (e.target.closest('.jarvis-card-front') || e.target.closest('.jarvis-card-back')) {
         card.classList.toggle('is-stats-open');
       }
     });

@@ -128,6 +128,11 @@ button:hover {
   box-sizing: border-box;
 }
 
+/* On cache le tiroir de gauche pour le moment */
+.jarvis-card-runes {
+  display: none;
+}
+
 .jarvis-card.is-runes-open .jarvis-card-inner {
   left: 0; /* Montre le panneau de gauche */
 }
@@ -266,13 +271,13 @@ button:hover {
   color: var(--jarvis-blue); /* La valeur moyenne ressort */
 }
 
-.jarvis-stats .rune-bonus {
+/* CORRECTION : Le sélecteur est maintenant plus général pour s'appliquer correctement */
+.rune-bonus {
   color: #4caf50; /* Vert pour les stats bonus */
   font-weight: bold;
-  margin-left: 8px;
 }
 
-.jarvis-stats strong {
+strong {
   color: #fff;
   text-shadow: 0 0 3px var(--jarvis-blue);
   margin-left: 8px;
