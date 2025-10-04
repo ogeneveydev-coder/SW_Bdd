@@ -1,0 +1,41 @@
+[
+  {
+    "team_id": "gb12_dot_01",
+    "name": "GB12 - Équipe DoT F2P",
+    "category": "Donjon des Géants",
+    "monsters": [
+      { "monster_id": 14115, "is_owned": true },
+      { "monster_id": 19415, "is_owned": true },
+      { "monster_id": 14111, "is_owned": false }
+    ],
+    "counter": [
+      { "team_id": "ao_lushen_01", "success": 5, "failure": 2 },
+      { "team_id": "db12_tricaru_01", "success": 10, "failure": 1 }
+    ],
+    "notes": "Le premier monstre est le leader. L'équipe se base sur les dégâts continus."
+  },
+  {
+    "team_id": "ao_lushen_01",
+    "name": "Arène (Attaque) - Double Lushen",
+    "category": "Arène",
+    "monsters": [
+      { "monster_id": 14115, "is_owned": true },
+      { "monster_id": 14115, "is_owned": true },
+      { "monster_id": 19415, "is_owned": true }
+    ],
+    "counter": [],
+    "notes": "Nécessite un booster ATB rapide."
+  },
+  {
+    "team_id": "db12_tricaru_01",
+    "name": "DB12 - Tricaru",
+    "category": "Donjon des Dragons",
+    "monsters": [
+      { "monster_id": 16312, "is_owned": true },
+      { "monster_id": 19415, "is_owned": true },
+      { "monster_id": 19415, "is_owned": true }
+    ],
+    "counter": [],
+    "notes": "Équipe F2P stable et rapide."
+  }
+]

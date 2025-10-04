@@ -3,9 +3,9 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.35',
+  script: '2.36',
   style: '2.39',
-  index: '2.14'
+  index: '2.14' // Pas de changement dans index.html
 };
 const allMonsters = []; // Contiendra TOUS les monstres (éveillés et non-éveillés) pour la recherche
 let awakenedMonsters = []; // Ne contiendra que les monstres éveillés pour l'affichage
@@ -13,6 +13,7 @@ let myMonsters = []; // Stockera les monstres du joueur
 let ownedMonsterIds = new Set(); // Stockera les IDs des monstres possédés pour une recherche rapide
 let globalMonsterStats = {}; // Stockera les stats min/avg/max de tous les monstres
 
+let teamsData = []; // Stockera les données des équipes
 // Valeurs maximales de référence pour calculer les pourcentages des anneaux
 const MAX_STATS = { 
   hp: 20000, atk: 1000, def: 1000, spd: 135,
@@ -38,9 +39,13 @@ window.addEventListener('DOMContentLoaded', () => {
     fetch('my_bestiary.json').then(res => res.json()).catch(err => {
       console.warn("Fichier my_bestiary.json non trouvé ou invalide. La section 'Mes Monstres' sera vide.", err);
       return null; // Retourne null si le fichier n'existe pas pour ne pas bloquer le reste
+    }),
+    fetch('teams.json').then(res => res.json()).catch(err => {
+      console.warn("Fichier teams.json non trouvé ou invalide.", err);
+      return []; // Retourne un tableau vide en cas d'erreur
     })
   ])
-    .then(([bestiaryData, myBestiaryData]) => {
+    .then(([bestiaryData, myBestiaryData, loadedTeamsData]) => {
       // 1. On charge TOUS les monstres 2-6 étoiles dans allMonsters pour la recherche
       const allRelevantMonsters = bestiaryData.filter(obj => obj.model === "bestiary.monster" && obj.fields.natural_stars >= 2);
       allMonsters.push(...allRelevantMonsters);
@@ -52,6 +57,9 @@ window.addEventListener('DOMContentLoaded', () => {
         myMonsters = myBestiaryData.unit_list;
         ownedMonsterIds = new Set(myMonsters.map(m => m.unit_master_id));
       }
+
+      // On stocke les données des équipes
+      teamsData = loadedTeamsData;
 
       // Pré-calcule les statistiques globales sur tous les monstres filtrés
       const stats = {
