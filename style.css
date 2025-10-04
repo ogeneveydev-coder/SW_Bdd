@@ -427,7 +427,8 @@ strong {
 }
 
 #monster-list-container {
-  flex-grow: 1; /* Le conteneur prend toute la hauteur restante */
+  /* flex-grow: 1; */ /* RETIRÉ : Cette propriété poussait les autres éléments hors du cadre */
+  height: calc(100% - 150px); /* Hauteur fixe pour laisser de la place au titre et aux onglets */
   overflow-y: auto;
   padding: 10px;
 }
