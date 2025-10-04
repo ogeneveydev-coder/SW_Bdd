@@ -334,13 +334,15 @@ strong {
 
 /* --- Styles pour le Bestiaire Complet --- */
 #full-bestiary-container {
-  margin-top: 50px;
-  padding: 20px;
-  background: rgba(0, 20, 40, 0.5); /* Fond un peu plus sombre */
-  border: 1px solid var(--jarvis-blue);
-  box-shadow: 0 0 15px var(--jarvis-blue), inset 0 0 10px rgba(0, 184, 255, 0.5);
-  border-radius: 4px;
-  text-align: center;
+  /* Réinitialisation des styles car il est maintenant dans un tiroir déjà stylé */
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  height: 100%; /* Prend toute la hauteur du tiroir parent */
+  display: flex; /* Utilise flexbox pour organiser le contenu verticalement */
+  flex-direction: column;
 }
 
 #full-bestiary-container h2 {
@@ -370,7 +372,7 @@ strong {
 }
 
 #monster-list-container {
-  max-height: 400px;
+  flex-grow: 1; /* Fait en sorte que la liste prenne tout l'espace vertical restant */
   overflow-y: auto;
   padding: 10px;
 }
@@ -459,7 +461,7 @@ strong {
   /* top: 0; */ /* Le top sera maintenant déterminé par le flux normal du document */
   left: 0;
   width: 100%;
-  height: 400px; /* Hauteur définie pour s'insérer entre les sections */
+  height: 550px; /* Hauteur augmentée pour le bestiaire */
   background: rgba(24, 32, 44, 0.95);
   border-bottom: 2px solid var(--jarvis-blue); /* Bordure en bas pour un look pleine largeur */
   box-shadow: 0 5px 15px rgba(0, 184, 255, 0.3);

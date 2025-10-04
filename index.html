@@ -22,22 +22,19 @@
   <div id="result"></div>
 
   <!-- Tiroir latéral 'Monstres' -->
-  <button id="side-drawer-toggle">Afficher Mes Monstres</button>
-  <div id="side-drawer" class="lateral-drawer"><p>Monstres</p></div>
-  <!-- Fin du tiroir latéral -->
-
-  <!-- Conteneur pour le Bestiaire Complet -->
-  <div id="full-bestiary-container">
-    <h2>Bestiaire Complet</h2>
-    <div class="element-tabs">
-      <button class="element-tab active" data-element="fire">Fire</button>
-      <button class="element-tab" data-element="water">Water</button>
-      <button class="element-tab" data-element="wind">Wind</button>
-      <button class="element-tab" data-element="light">Light</button>
-      <button class="element-tab" data-element="dark">Dark</button>
-    </div>
-    <div id="monster-list-container">
-      <!-- La liste des monstres sera injectée ici par JavaScript -->
+  <button id="side-drawer-toggle">Afficher le Bestiaire</button>
+  <div id="side-drawer" class="lateral-drawer">
+    <!-- Le Bestiaire Complet est maintenant à l'intérieur du tiroir -->
+    <div id="full-bestiary-container">
+      <h2>Bestiaire Complet</h2>
+      <div class="element-tabs">
+        <button class="element-tab active" data-element="fire">Fire</button>
+        <button class="element-tab" data-element="water">Water</button>
+        <button class="element-tab" data-element="wind">Wind</button>
+        <button class="element-tab" data-element="light">Light</button>
+        <button class="element-tab" data-element="dark">Dark</button>
+      </div>
+      <div id="monster-list-container"></div>
     </div>
   </div>
 
