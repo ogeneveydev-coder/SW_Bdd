@@ -474,7 +474,7 @@ strong {
 /* --- Poignée du tiroir --- */
 .drawer-handle {
   position: fixed; /* Positionné par rapport à la fenêtre */
-  top: 50%;
+  top: 275px; /* Centre vertical de la poignée (hauteur du tiroir / 2) */
   left: 0;
   transform: translateY(-50%); /* Centrage vertical */
   width: 30px;
