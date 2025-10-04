@@ -452,7 +452,7 @@ strong {
 
 #side-drawer {
   position: fixed; /* Repasse en fixed pour être indépendant du flux */
-  top: 0;
+  top: 150px; /* Ajout d'un décalage vers le bas */
   left: 0;
   /* top: 0; */ /* Le top sera maintenant déterminé par le flux normal du document */
   width: 100%;
@@ -474,7 +474,7 @@ strong {
 /* --- Poignée du tiroir --- */
 .drawer-handle {
   position: fixed; /* Positionné par rapport à la fenêtre */
-  top: 275px; /* Centre vertical de la poignée (hauteur du tiroir / 2) */
+  top: 425px; /* Centre vertical ajusté (150px de décalage + 550px/2) */
   left: 0;
   transform: translateY(-50%); /* Centrage vertical */
   width: 30px;
