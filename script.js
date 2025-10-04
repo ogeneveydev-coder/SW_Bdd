@@ -162,23 +162,32 @@ function searchMonster(unitId = null) {
 
   // Pour chaque terme de recherche, on trouve les monstres correspondants
   searchTerms.forEach(term => {
+    // CORRECTION : On vérifie si le terme est un nom de famille (non-éveillé) partagé par plusieurs éléments.
+    const familyMatches = allMonsters.filter(m => !m.fields.is_awakened && strNoAccent(m.fields.name.toLowerCase()) === term);
+    const isFamilyName = new Set(familyMatches.map(m => m.fields.element)).size > 1;
+
+    // Si c'est un nom de famille, on ignore ce terme pour éviter d'afficher toute la famille.
+    if (isFamilyName) {
+      return; // Passe au terme de recherche suivant
+    }
+
     allMonsters.forEach(monster => {
       const monsterName = strNoAccent(monster.fields.name.toLowerCase());
       // Si le terme de recherche correspond exactement au nom d'un monstre
       if (monsterName === term) {
-      let monsterToShow = monster;
+        let monsterToShow = monster;
 
-      // Si le monstre trouvé n'est pas éveillé, on récupère sa version éveillée
-      if (!monster.fields.is_awakened && monster.fields.awakens_to) {
-        const awakenedVersion = allMonsters.find(m => m.pk === monster.fields.awakens_to);
-        if (awakenedVersion) monsterToShow = awakenedVersion;
-      }
+        // Si le monstre trouvé n'est pas éveillé, on récupère sa version éveillée
+        if (!monster.fields.is_awakened && monster.fields.awakens_to) {
+          const awakenedVersion = allMonsters.find(m => m.pk === monster.fields.awakens_to);
+          if (awakenedVersion) monsterToShow = awakenedVersion;
+        }
 
-      // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
-      if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
-        foundMonsters.push(monsterToShow);
-        foundAwakenedPks.add(monsterToShow.pk);
-      }
+        // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
+        if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
+          foundMonsters.push(monsterToShow);
+          foundAwakenedPks.add(monsterToShow.pk);
+        }
       }
     });
   });
