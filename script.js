@@ -26,6 +26,8 @@ const suggestionsContainer = document.getElementById('suggestions-container');
 const searchBtn = document.getElementById('searchBtn');
 const resetBtn = document.getElementById('resetBtn');
 const bestiaryToggleBtn = document.getElementById('bestiary-toggle-btn');
+const bestiaryContainer = document.getElementById('full-bestiary-container');
+const bestiaryTabs = document.querySelector('.element-tabs');
 
 // Charger les données une seule fois au démarrage
 window.addEventListener('DOMContentLoaded', () => {
@@ -105,10 +107,9 @@ searchInput.addEventListener('keydown', function(e) {
 
 // --- GESTION DU TIROIR DU BESTIAIRE ---
 bestiaryToggleBtn.addEventListener('click', () => {
-  const bestiaryContainer = document.getElementById('full-bestiary-container');
   const isOpen = bestiaryContainer.classList.contains('is-open');
 
-  bestiaryContainer.classList.toggle('is-open');
+  if (bestiaryContainer) bestiaryContainer.classList.toggle('is-open');
   bestiaryToggleBtn.classList.toggle('is-open');
 
   // Change la flèche pour indiquer l'état
@@ -350,13 +351,11 @@ function displayFileVersions() {
  */
 function initializeBestiaryViews() {
   // --- BESTIAIRE COMPLET ---
-  const container = document.getElementById('monster-list-container');
-  const tabsContainer = document.querySelector('.element-tabs');
-  if (!container || !tabsContainer) return;
+  if (!bestiaryContainer || !bestiaryTabs) return;
 
   // Fonction pour générer et afficher la grille pour un élément donné
   const displayGridForElement = (element) => {
-    const monstersToDisplay = awakenedMonsters.filter(m => m.fields.element === element);
+    const monstersToDisplay = awakenedMonsters.filter(m => m.fields.element === element);    const container = bestiaryContainer.querySelector('#monster-list-container');
     // Tri pour afficher les monstres possédés en premier
     monstersToDisplay.sort((a, b) => {
       // CORRECTION : La logique de tri doit aussi vérifier les formes non-éveillées
@@ -381,16 +380,16 @@ function initializeBestiaryViews() {
         return `<div class="monster-grid-item ${ownedClass}" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
       }).join('');
 
-    container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
+    if (container) container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
   };
 
   // Ajoute la logique de clic sur les onglets
-  tabsContainer.addEventListener('click', (e) => {
+  bestiaryTabs.addEventListener('click', (e) => {
     if (e.target.matches('.element-tab')) {
       const selectedElement = e.target.dataset.element;
 
       // Met à jour la classe 'active' sur les onglets
-      tabsContainer.querySelector('.active').classList.remove('active');
+      bestiaryTabs.querySelector('.active').classList.remove('active');
       e.target.classList.add('active');
 
       displayGridForElement(selectedElement);
@@ -401,7 +400,8 @@ function initializeBestiaryViews() {
   displayGridForElement('fire');
 
   // Ajoute la logique de clic sur un monstre de la liste
-  container.addEventListener('click', (e) => {
+  bestiaryContainer.addEventListener('click', (e) => {
+    const container = bestiaryContainer.querySelector('#monster-list-container');
     const gridItem = e.target.closest('.monster-grid-item');
     if (gridItem) {
       const monsterName = gridItem.dataset.name.toLowerCase();
