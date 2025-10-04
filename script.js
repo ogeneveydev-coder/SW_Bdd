@@ -25,7 +25,6 @@ const resultContainer = document.getElementById('result');
 const suggestionsContainer = document.getElementById('suggestions-container');
 const searchBtn = document.getElementById('searchBtn');
 const resetBtn = document.getElementById('resetBtn');
-const bestiaryToggleBtn = document.getElementById('bestiary-toggle-btn');
 const bestiaryContainer = document.getElementById('full-bestiary-container');
 const bestiaryTabs = document.querySelector('.element-tabs');
 
@@ -102,21 +101,6 @@ searchInput.addEventListener('keydown', function(e) {
     searchMonsterFromInput();
   } else if (e.key === 'Escape') {
     resetSearch(); // Utilise resetSearch pour tout effacer
-  }
-});
-
-// --- GESTION DU TIROIR DU BESTIAIRE ---
-bestiaryToggleBtn.addEventListener('click', () => {
-  const isOpen = bestiaryContainer.classList.contains('is-open');
-
-  if (bestiaryContainer) bestiaryContainer.classList.toggle('is-open');
-  bestiaryToggleBtn.classList.toggle('is-open');
-
-  // Change la flèche pour indiquer l'état
-  if (isOpen) {
-    bestiaryToggleBtn.textContent = '›';
-  } else {
-    bestiaryToggleBtn.textContent = '‹';
   }
 });
 
