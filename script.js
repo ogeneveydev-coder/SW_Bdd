@@ -3,9 +3,9 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.32',
-  style: '2.27',
-  index: '2.8'
+  script: '2.33',
+  style: '2.28',
+  index: '2.9'
 };
 const allMonsters = []; // Contiendra TOUS les monstres (éveillés et non-éveillés) pour la recherche
 let awakenedMonsters = []; // Ne contiendra que les monstres éveillés pour l'affichage
@@ -25,7 +25,6 @@ const resultContainer = document.getElementById('result');
 const suggestionsContainer = document.getElementById('suggestions-container');
 const searchBtn = document.getElementById('searchBtn');
 const resetBtn = document.getElementById('resetBtn');
-const bestiaryContainer = document.getElementById('full-bestiary-container');
 const bestiaryTabs = document.querySelector('.element-tabs');
 
 // Charger les données une seule fois au démarrage
