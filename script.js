@@ -351,12 +351,12 @@ function displayFileVersions() {
  */
 function initializeBestiaryViews() {
   // --- BESTIAIRE COMPLET ---
-  if (!bestiaryContainer || !bestiaryTabs) return;
+  const monsterListContainer = document.getElementById('monster-list-container');
+  if (!monsterListContainer || !bestiaryTabs) return;
 
   // Fonction pour générer et afficher la grille pour un élément donné
   const displayGridForElement = (element) => {
-    const monstersToDisplay = awakenedMonsters.filter(m => m.fields.element === element);
-    const container = bestiaryContainer.querySelector('#monster-list-container');
+    const monstersToDisplay = awakenedMonsters.filter(m => m.fields.element === element);    
     // Tri pour afficher les monstres possédés en premier
     monstersToDisplay.sort((a, b) => {
       // CORRECTION : La logique de tri doit aussi vérifier les formes non-éveillées
@@ -381,7 +381,7 @@ function initializeBestiaryViews() {
         return `<div class="monster-grid-item ${ownedClass}" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
       }).join('');
 
-    if (container) container.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
+    monsterListContainer.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
   };
 
   // Ajoute la logique de clic sur les onglets
@@ -401,8 +401,7 @@ function initializeBestiaryViews() {
   displayGridForElement('fire');
 
   // Ajoute la logique de clic sur un monstre de la liste
-  bestiaryContainer.addEventListener('click', (e) => {
-    const container = bestiaryContainer.querySelector('#monster-list-container');
+  monsterListContainer.addEventListener('click', (e) => {
     const gridItem = e.target.closest('.monster-grid-item');
     if (gridItem) {
       const monsterName = gridItem.dataset.name.toLowerCase();
