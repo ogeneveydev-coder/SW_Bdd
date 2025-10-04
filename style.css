@@ -333,71 +333,14 @@ strong {
 }
 
 /* --- Styles pour le Bestiaire Complet --- */
-.side-drawer#full-bestiary-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 320px; /* Largeur du tiroir */
-  height: 100vh;
-  background: rgba(0, 20, 40, 0.95);
-  border-right: 1px solid var(--jarvis-blue);
-  box-shadow: 5px 0 25px rgba(0, 184, 255, 0.3);
-  transform: translateX(-100%);
-  transition: transform 0.4s ease-in-out;
-  z-index: 900;
-  display: flex;
-  flex-direction: column;
+#full-bestiary-container {
+  margin-top: 50px;
   padding: 20px;
-  box-sizing: border-box;
-  text-align: center;
-}
-
-/* --- Logique du tiroir avec Checkbox --- */
-.drawer-toggle-checkbox {
-  display: none; /* La case à cocher est invisible */
-}
-
-.drawer-toggle-label {
-  position: fixed;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  z-index: 901;
-  width: 30px;
-  height: 60px;
-  background: var(--jarvis-bg);
+  background: rgba(0, 20, 40, 0.5); /* Fond un peu plus sombre */
   border: 1px solid var(--jarvis-blue);
-  color: white;
-  box-shadow: 0 0 5px var(--jarvis-blue), inset 0 0 3px rgba(0, 184, 255, 0.5);
-  border-radius: 0 4px 4px 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5em;
-  transition: left 0.4s ease-in-out, background-color 0.3s, color 0.3s;
-}
-
-.drawer-toggle-label:hover {
-  background-color: var(--jarvis-blue);
-  color: var(--jarvis-bg-solid);
-}
-
-/* Quand la checkbox est cochée, on déplace le tiroir et le bouton */
-.drawer-toggle-checkbox:checked ~ .side-drawer {
-  transform: translateX(0);
-}
-
-.drawer-toggle-checkbox:checked ~ .drawer-toggle-label {
-  left: 320px; /* Doit correspondre à la largeur du tiroir */
-}
-
-/* Change la flèche quand le tiroir est ouvert */
-.drawer-toggle-checkbox:checked ~ .drawer-toggle-label::before {
-  content: '‹';
-}
-.drawer-toggle-checkbox:not(:checked) ~ .drawer-toggle-label::before {
-  content: '›';
+  box-shadow: 0 0 15px var(--jarvis-blue), inset 0 0 10px rgba(0, 184, 255, 0.5);
+  border-radius: 4px;
+  text-align: center;
 }
 
 #full-bestiary-container h2 {
@@ -427,8 +370,7 @@ strong {
 }
 
 #monster-list-container {
-  /* flex-grow: 1; */ /* RETIRÉ : Cette propriété poussait les autres éléments hors du cadre */
-  height: calc(100% - 150px); /* Hauteur fixe pour laisser de la place au titre et aux onglets */
+  max-height: 400px;
   overflow-y: auto;
   padding: 10px;
 }
@@ -504,12 +446,4 @@ strong {
 .modal-content .jarvis-card {
   animation: none;
   cursor: default; /* Le curseur n'a pas besoin d'être un pointeur ici */
-}
-
-/* Contenu principal de la page */
-#main-content {
-  transition: margin-left 0.4s ease-in-out;
-}
-.drawer-toggle-checkbox:checked ~ #main-content {
-  margin-left: 320px; /* Pousse le contenu principal quand le tiroir est ouvert */
 }

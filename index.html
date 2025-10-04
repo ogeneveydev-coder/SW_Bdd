@@ -10,11 +10,18 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <input type="checkbox" id="bestiary-toggle-checkbox" class="drawer-toggle-checkbox">
-  <label for="bestiary-toggle-checkbox" id="bestiary-toggle-label" class="drawer-toggle-label">›</label>
+  <div id="version-container"></div>
+  <h1>Recherche de Monstre (Summoners War)</h1>
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Nom du monstre..." autocomplete="off">
+    <div id="suggestions-container"></div> <!-- Conteneur pour les suggestions -->
+  </div>
+  <button id="searchBtn">Search</button>
+  <button id="resetBtn">Reset</button> <!-- Bouton ajouté -->
+  <div id="result"></div>
 
   <!-- Conteneur pour le Bestiaire Complet -->
-  <div id="full-bestiary-container" class="side-drawer">
+  <div id="full-bestiary-container">
     <h2>Bestiaire Complet</h2>
     <div class="element-tabs">
       <button class="element-tab active" data-element="fire">Fire</button>
@@ -25,21 +32,8 @@
     </div>
     <div id="monster-list-container">
       <!-- La liste des monstres sera injectée ici par JavaScript -->
-      Monstres
     </div>
   </div>
-
-  <main id="main-content">
-    <div id="version-container"></div>
-    <h1>Recherche de Monstre (Summoners War)</h1>
-    <div class="search-container">
-      <input type="text" id="searchInput" placeholder="Nom du monstre..." autocomplete="off">
-      <div id="suggestions-container"></div> <!-- Conteneur pour les suggestions -->
-    </div>
-    <button id="searchBtn">Search</button>
-    <button id="resetBtn">Reset</button> <!-- Bouton ajouté -->
-    <div id="result"></div>
-  </main>
 
   <script src="script.js"></script>
 </body>

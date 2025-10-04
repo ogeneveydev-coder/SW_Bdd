@@ -334,8 +334,7 @@ function displayFileVersions() {
  */
 function initializeBestiaryViews() {
   // --- BESTIAIRE COMPLET ---
-  const monsterListContainer = document.getElementById('monster-list-container');
-  if (!monsterListContainer || !bestiaryTabs) return;
+  const monsterListContainer = document.getElementById('monster-list-container');  if (!monsterListContainer || !bestiaryTabs) return;
 
   // Fonction pour générer et afficher la grille pour un élément donné
   const displayGridForElement = (element) => {
@@ -364,8 +363,7 @@ function initializeBestiaryViews() {
         return `<div class="monster-grid-item ${ownedClass}" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
       }).join('');
 
-    // TEST : On affiche un simple mot pour vérifier si le conteneur est accessible.
-    monsterListContainer.innerHTML = 'monstres';
+    monsterListContainer.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
   };
 
   // Ajoute la logique de clic sur les onglets
