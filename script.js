@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.37',
+  script: '2.38',
   style: '2.39',
   index: '2.14' // Pas de changement dans index.html
 };
@@ -229,9 +229,6 @@ function searchMonster(unitId = null) {
     return;
   }
 
-  // Ferme le tiroir du bestiaire pour laisser la place aux résultats
-  closeBestiaryDrawer();
-
   // Construit une carte HTML pour chaque monstre trouvé
   const cardsHtml = foundMonsters.map(monster => createMonsterCard(monster)).join('');
 
@@ -379,6 +376,11 @@ function clearSuggestions() {
 function showResult(html) {
   // Utiliser innerHTML est acceptable ici car le contenu provient de notre propre code
   // et non d'une saisie utilisateur non filtrée.
+
+  // CORRECTION : On ferme le tiroir ici pour s'assurer qu'il se ferme bien LORSQUE les résultats s'affichent.
+  if (html) { // On ne ferme le tiroir que si on affiche de nouveaux résultats.
+    closeBestiaryDrawer();
+  }
   resultContainer.innerHTML = html;
 }
 
