@@ -398,7 +398,12 @@ function initializeBestiaryViews() {
   });
 
   // Affiche la grille pour le premier onglet ("fire") par défaut
-  displayGridForElement('fire');
+  // CORRECTION : On s'assure que le DOM est prêt avant d'afficher la première grille
+  if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', () => displayGridForElement('fire'));
+  } else {
+    displayGridForElement('fire');
+  }
 
   // Ajoute la logique de clic sur un monstre de la liste
   container.addEventListener('click', (e) => {
