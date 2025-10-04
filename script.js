@@ -355,7 +355,7 @@ function initializeBestiaryViews() {
 
   // Fonction pour générer et afficher la grille pour un élément donné
   const displayGridForElement = (element) => {
-    const monstersToDisplay = awakenedMonsters.filter(m => m.fields.element === element);
+    const monstersToDisplay = awakenedMonsters.filter(m => m.fields.element === element);    
     const container = bestiaryContainer.querySelector('#monster-list-container');
     // Tri pour afficher les monstres possédés en premier
     monstersToDisplay.sort((a, b) => {
