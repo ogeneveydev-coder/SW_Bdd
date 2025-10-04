@@ -387,10 +387,8 @@ function initializeBestiaryViews() {
     // Tri pour afficher les monstres possédés en premier
     monstersToDisplay.sort((a, b) => {
       // CORRECTION : La logique de tri doit aussi vérifier les formes non-éveillées
-      const unawakenedA = a.fields.awakens_from ? allMonsters.find(m => m.pk === a.fields.awakens_from) : null;
-      const unawakenedB = b.fields.awakens_from ? allMonsters.find(m => m.pk === b.fields.awakens_from) : null;
-      const isOwnedA = ownedMonsterIds.has(a.fields.com2us_id) || (unawakenedA && ownedMonsterIds.has(unawakenedA.fields.com2us_id));
-      const isOwnedB = ownedMonsterIds.has(b.fields.com2us_id) || (unawakenedB && ownedMonsterIds.has(unawakenedB.fields.com2us_id));
+      const isOwnedA = ownedMonsterIds.has(a.fields.com2us_id) || (a.fields.awakens_from && ownedMonsterIds.has(allMonsters.find(m => m.pk === a.fields.awakens_from)?.fields.com2us_id));
+      const isOwnedB = ownedMonsterIds.has(b.fields.com2us_id) || (b.fields.awakens_from && ownedMonsterIds.has(allMonsters.find(m => m.pk === b.fields.awakens_from)?.fields.com2us_id));
 
       if (isOwnedA !== isOwnedB) return isOwnedA ? -1 : 1;
       return a.pk - b.pk; // Puis par ID
@@ -401,12 +399,9 @@ function initializeBestiaryViews() {
         const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
 
         // CORRECTION : Vérifie si le joueur possède la forme éveillée OU non-éveillée
-        // Trouve la contrepartie (éveillée ou non) du monstre actuel
-        const counterpart = monster.fields.awakens_from 
-            ? allMonsters.find(m => m.pk === monster.fields.awakens_from) 
-            : allMonsters.find(m => m.fields.awakens_to === monster.pk);
-        const unawakenedId = counterpart ? counterpart.fields.com2us_id : null;
-
+        const unawakenedMonster = monster.fields.awakens_from ? allMonsters.find(m => m.pk === monster.fields.awakens_from) : null;
+        const unawakenedId = unawakenedMonster ? unawakenedMonster.fields.com2us_id : null;
+        
         const isOwned = ownedMonsterIds.has(com2us_id) || (unawakenedId && ownedMonsterIds.has(unawakenedId));
         const ownedClass = isOwned ? '' : 'not-owned';
 
@@ -441,11 +436,9 @@ function initializeBestiaryViews() {
       if (monsterType) {
         // CORRECTION : On cherche si le joueur possède ce monstre
         // On doit aussi trouver la forme non-éveillée pour vérifier si le joueur la possède.
-        const counterpart = monsterType.fields.awakens_from 
-            ? allMonsters.find(m => m.pk === monsterType.fields.awakens_from) 
-            : allMonsters.find(m => m.fields.awakens_to === monsterType.pk);
-        const unawakenedId = counterpart ? counterpart.fields.com2us_id : null;
-
+        const unawakenedMonster = monsterType.fields.awakens_from ? allMonsters.find(m => m.pk === monsterType.fields.awakens_from) : null;
+        const unawakenedId = unawakenedMonster ? unawakenedMonster.fields.com2us_id : null;
+        
         // On cherche une unité qui correspond soit à l'ID éveillé, soit à l'ID non-éveillé.
         const ownedUnit = myMonsters.find(unit => 
           unit.unit_master_id === monsterType.fields.com2us_id || (unawakenedId && unit.unit_master_id === unawakenedId)
