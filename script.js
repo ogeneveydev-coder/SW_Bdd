@@ -3,9 +3,9 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.31',
-  style: '2.26',
-  index: '2.7'
+  script: '2.32',
+  style: '2.27',
+  index: '2.8'
 };
 const allMonsters = []; // Contiendra TOUS les monstres (éveillés et non-éveillés) pour la recherche
 let awakenedMonsters = []; // Ne contiendra que les monstres éveillés pour l'affichage
@@ -25,6 +25,7 @@ const resultContainer = document.getElementById('result');
 const suggestionsContainer = document.getElementById('suggestions-container');
 const searchBtn = document.getElementById('searchBtn');
 const resetBtn = document.getElementById('resetBtn');
+const bestiaryToggleBtn = document.getElementById('bestiary-toggle-btn');
 
 // Charger les données une seule fois au démarrage
 window.addEventListener('DOMContentLoaded', () => {
@@ -99,6 +100,22 @@ searchInput.addEventListener('keydown', function(e) {
     searchMonsterFromInput();
   } else if (e.key === 'Escape') {
     resetSearch(); // Utilise resetSearch pour tout effacer
+  }
+});
+
+// --- GESTION DU TIROIR DU BESTIAIRE ---
+bestiaryToggleBtn.addEventListener('click', () => {
+  const bestiaryContainer = document.getElementById('full-bestiary-container');
+  const isOpen = bestiaryContainer.classList.contains('is-open');
+
+  bestiaryContainer.classList.toggle('is-open');
+  bestiaryToggleBtn.classList.toggle('is-open');
+
+  // Change la flèche pour indiquer l'état
+  if (isOpen) {
+    bestiaryToggleBtn.textContent = '›';
+  } else {
+    bestiaryToggleBtn.textContent = '‹';
   }
 });
 
