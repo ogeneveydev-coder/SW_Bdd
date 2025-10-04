@@ -4,7 +4,7 @@
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
   script: '2.35',
-  style: '2.32',
+  style: '2.33',
   index: '2.11'
 };
 const allMonsters = []; // Contiendra TOUS les monstres (éveillés et non-éveillés) pour la recherche

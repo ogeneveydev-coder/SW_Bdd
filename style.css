@@ -458,10 +458,10 @@ strong {
   position: absolute;
   /* top: 0; */ /* Le top sera maintenant déterminé par le flux normal du document */
   left: 0;
-  width: 320px;
+  width: 100%;
   height: 400px; /* Hauteur définie pour s'insérer entre les sections */
   background: rgba(24, 32, 44, 0.95);
-  border-right: 2px solid var(--jarvis-blue);
+  border-bottom: 2px solid var(--jarvis-blue); /* Bordure en bas pour un look pleine largeur */
   box-shadow: 0 5px 15px rgba(0, 184, 255, 0.3);
   padding: 20px;
   box-sizing: border-box;
