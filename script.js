@@ -374,7 +374,7 @@ function showResult(html) {
 
   // CORRECTION : On ferme le tiroir ici pour s'assurer qu'il se ferme bien LORSQUE les résultats s'affichent.
   if (html) { // On ne ferme le tiroir que si on affiche de nouveaux résultats.
-    closeDrawer();
+    closeBestiaryDrawer();
   }
   resultContainer.innerHTML = html;
 }
