@@ -386,9 +386,13 @@ function initializeBestiaryViews() {
     const monstersToDisplay = awakenedMonsters.filter(m => m.fields.element === element);
     // Tri pour afficher les monstres possédés en premier
     monstersToDisplay.sort((a, b) => {
-      const isOwnedA = ownedMonsterIds.has(a.fields.com2us_id);
-      const isOwnedB = ownedMonsterIds.has(b.fields.com2us_id);
-      if (isOwnedA !== isOwnedB) return isOwnedA ? -1 : 1; // Trie par possession
+      // CORRECTION : La logique de tri doit aussi vérifier les formes non-éveillées
+      const unawakenedA = a.fields.awakens_from ? allMonsters.find(m => m.pk === a.fields.awakens_from) : null;
+      const unawakenedB = b.fields.awakens_from ? allMonsters.find(m => m.pk === b.fields.awakens_from) : null;
+      const isOwnedA = ownedMonsterIds.has(a.fields.com2us_id) || (unawakenedA && ownedMonsterIds.has(unawakenedA.fields.com2us_id));
+      const isOwnedB = ownedMonsterIds.has(b.fields.com2us_id) || (unawakenedB && ownedMonsterIds.has(unawakenedB.fields.com2us_id));
+
+      if (isOwnedA !== isOwnedB) return isOwnedA ? -1 : 1;
       return a.pk - b.pk; // Puis par ID
     });
 
