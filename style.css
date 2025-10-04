@@ -451,9 +451,10 @@ strong {
 }
 
 #side-drawer {
-  position: relative; /* Changé en relative pour positionner la poignée */
+  position: fixed; /* Repasse en fixed pour être indépendant du flux */
+  top: 0;
+  left: 0;
   /* top: 0; */ /* Le top sera maintenant déterminé par le flux normal du document */
-  margin-top: 20px;
   width: 100%;
   height: 550px; /* Hauteur augmentée pour le bestiaire */
   background: rgba(24, 32, 44, 0.95);
@@ -461,8 +462,9 @@ strong {
   box-shadow: 0 5px 15px rgba(0, 184, 255, 0.3);
   padding: 20px;
   box-sizing: border-box;
-  display: none; /* Caché par défaut */
-  z-index: 800;
+  transform: translateX(-100%);
+  transition: transform 0.4s ease-in-out;
+  z-index: 800; /* Doit être au-dessus du bestiaire mais sous la modale */
 }
 
 #side-drawer.is-open {
@@ -471,10 +473,10 @@ strong {
 
 /* --- Poignée du tiroir --- */
 .drawer-handle {
-  position: absolute;
+  position: fixed; /* Positionné par rapport à la fenêtre */
   top: 50%;
-  left: 100%;
-  transform: translateY(-50%);
+  left: 0;
+  transform: translateY(-50%); /* Centrage vertical */
   width: 30px;
   height: 80px;
   background: var(--jarvis-bg-solid);
@@ -489,7 +491,8 @@ strong {
   color: var(--jarvis-blue);
   font-size: 2em;
   font-weight: bold;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s, left 0.4s ease-in-out;
+  z-index: 801; /* Au-dessus du tiroir */
 }
 
 .drawer-handle:hover {
@@ -497,6 +500,7 @@ strong {
   color: var(--jarvis-bg-solid);
 }
 
-#side-drawer:not(.is-open) .drawer-handle {
-  left: 0;
+/* Quand le tiroir est ouvert, on déplace la poignée */
+#side-drawer.is-open + .drawer-handle {
+  left: calc(100% - 30px); /* Se place sur le bord droit de l'écran */
 }
