@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.38',
+  script: '2.39',
   style: '2.39',
   index: '2.14' // Pas de changement dans index.html
 };
@@ -379,7 +379,7 @@ function showResult(html) {
 
   // CORRECTION : On ferme le tiroir ici pour s'assurer qu'il se ferme bien LORSQUE les résultats s'affichent.
   if (html) { // On ne ferme le tiroir que si on affiche de nouveaux résultats.
-    closeBestiaryDrawer();
+    closeDrawer();
   }
   resultContainer.innerHTML = html;
 }
