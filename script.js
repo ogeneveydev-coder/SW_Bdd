@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.36',
+  script: '2.37',
   style: '2.39',
   index: '2.14' // Pas de changement dans index.html
 };
@@ -112,6 +112,17 @@ drawerHandle.addEventListener('click', () => {
   }
 });
 
+/**
+ * Ferme le tiroir du bestiaire s'il est ouvert.
+ */
+function closeBestiaryDrawer() {
+  const drawer = document.getElementById('side-drawer');
+  if (drawer && drawer.classList.contains('is-open')) {
+    drawer.classList.remove('is-open');
+    drawerHandle.textContent = '›';
+  }
+}
+
 searchBtn.addEventListener('click', () => searchMonsterFromInput());
 resetBtn.addEventListener('click', resetSearch);
 
@@ -217,6 +228,9 @@ function searchMonster(unitId = null) {
     showResult("Aucun des monstres recherchés n'a été trouvé.");
     return;
   }
+
+  // Ferme le tiroir du bestiaire pour laisser la place aux résultats
+  closeBestiaryDrawer();
 
   // Construit une carte HTML pour chaque monstre trouvé
   const cardsHtml = foundMonsters.map(monster => createMonsterCard(monster)).join('');
