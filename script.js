@@ -145,16 +145,12 @@ function searchMonster(unitId = null) {
 
     // 2. Si le monstre n'est pas éveillé, trouver sa première forme éveillée.
     // On ne suit PAS la chaîne pour les formes alternatives (ex: Druides).
+    // CORRECTION : On suit la chaîne d'éveil, mais on s'arrête si la forme suivante
+    // s'éveille depuis la forme actuelle (cas des formes alternatives comme les Druides).
     while (monsterType.fields.awakens_to) {
       const nextForm = allMonsters.find(m => m.pk === monsterType.fields.awakens_to);
-      if (nextForm) {
-        // CORRECTION : On s'arrête si la forme suivante a le même nom (cas des Druides, etc.)
-        if (nextForm.fields.name === monsterType.fields.name) {
-          break;
-        }
+      if (nextForm && nextForm.fields.awakens_from === monsterType.pk) {
         monsterType = nextForm;
-      } else {
-        break;
       }
     }
     
@@ -189,17 +185,13 @@ function searchMonster(unitId = null) {
 
         // Si le monstre trouvé n'est pas éveillé, on récupère sa première forme éveillée.
         // On ne suit PAS la chaîne pour les formes alternatives (ex: Druides).
+        // CORRECTION : On suit la chaîne d'éveil, mais on s'arrête si la forme suivante
+        // s'éveille depuis la forme actuelle (cas des formes alternatives comme les Druides).
         while (monsterToShow.fields.awakens_to) {
           const nextForm = allMonsters.find(m => m.pk === monsterToShow.fields.awakens_to);
-          if (nextForm) {
-            // CORRECTION : On s'arrête si la forme suivante a le même nom (cas des Druides, etc.)
-            if (nextForm.fields.name === monsterToShow.fields.name) {
-              break;
-            }
+          if (nextForm && nextForm.fields.awakens_from === monsterToShow.pk) {
             monsterToShow = nextForm;
-          } else {
-            break;
-          }
+          } 
         }
 
         // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
