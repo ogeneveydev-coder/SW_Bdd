@@ -149,8 +149,14 @@ function searchMonster(unitId = null) {
     // s'éveille depuis la forme actuelle (cas des formes alternatives comme les Druides).
     while (monsterType.fields.awakens_to) {
       const nextForm = allMonsters.find(m => m.pk === monsterType.fields.awakens_to);
-      if (nextForm && nextForm.fields.awakens_from === monsterType.pk) {
+      if (nextForm) {
+        // On s'arrête si la forme suivante a le même nom (cas des Druides, Licornes, etc.)
+        if (nextForm.fields.name === monsterType.fields.name) {
+          break;
+        }
         monsterType = nextForm;
+      } else {
+        break; // Arrête la boucle si la forme suivante n'est pas trouvée
       }
     }
     
@@ -189,9 +195,15 @@ function searchMonster(unitId = null) {
         // s'éveille depuis la forme actuelle (cas des formes alternatives comme les Druides).
         while (monsterToShow.fields.awakens_to) {
           const nextForm = allMonsters.find(m => m.pk === monsterToShow.fields.awakens_to);
-          if (nextForm && nextForm.fields.awakens_from === monsterToShow.pk) {
+          if (nextForm) {
+            // On s'arrête si la forme suivante a le même nom (cas des Druides, Licornes, etc.)
+            if (nextForm.fields.name === monsterToShow.fields.name) {
+              break;
+            }
             monsterToShow = nextForm;
-          } 
+          } else {
+            break; // Arrête la boucle si la forme suivante n'est pas trouvée
+          }
         }
 
         // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
