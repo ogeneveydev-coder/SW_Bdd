@@ -189,43 +189,8 @@ function createMonsterCard(monsterData, unitData = null) {
   const radialChart = createRadialBarChart(monsterData.fields);
   const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
 
-  let statsDisplayHtml;
-  let runeSetsHtml = '';
-
-  if (unitData) {
-    // On ne traite les runes que si elles existent
-    const runeStats = unitData.runes ? calculateRuneStats(unitData.runes) : { HP_FLAT: 0, HP_PERC: 0, ATK_FLAT: 0, ATK_PERC: 0, DEF_FLAT: 0, DEF_PERC: 0, SPD: 0, CR: 0, CD: 0, RES: 0, ACC: 0 };
-    runeSetsHtml = unitData.runes ? createIndividualRunesHtml(unitData.runes) : '<p>Aucune rune équipée.</p>';
-
-    // Calcul des stats totales (base + runes)
-    const totalHp = max_lvl_hp + Math.round(max_lvl_hp * (runeStats.HP_PERC / 100)) + runeStats.HP_FLAT;
-    const totalAtk = max_lvl_attack + Math.round(max_lvl_attack * (runeStats.ATK_PERC / 100)) + runeStats.ATK_FLAT;
-    const totalDef = max_lvl_defense + Math.round(max_lvl_defense * (runeStats.DEF_PERC / 100)) + runeStats.DEF_FLAT;
-    const totalSpd = speed + runeStats.SPD;
-    const totalCr = crit_rate + runeStats.CR;
-    const totalCd = crit_damage + runeStats.CD;
-    const totalRes = resistance + runeStats.RES;
-    const totalAcc = accuracy + runeStats.ACC;
-
-    // Génère le HTML pour le tiroir de droite (stats complètes)
-    statsDisplayHtml = `
-      <div class="total-stats-container">
-        <p><span>Element:</span> ${element}</p>
-        <p><span>Archetype:</span> ${archetype}</p>
-        <hr class="stats-separator">
-        <p><span>HP:</span> ${max_lvl_hp} <span class="rune-bonus">+${Math.round(max_lvl_hp * (runeStats.HP_PERC / 100)) + runeStats.HP_FLAT}</span></p>
-        <p><span>ATK:</span> ${max_lvl_attack} <span class="rune-bonus">+${Math.round(max_lvl_attack * (runeStats.ATK_PERC / 100)) + runeStats.ATK_FLAT}</span></p>
-        <p><span>DEF:</span> ${max_lvl_defense} <span class="rune-bonus">+${Math.round(max_lvl_defense * (runeStats.DEF_PERC / 100)) + runeStats.DEF_FLAT}</span></p>
-        <p><span>SPD:</span> ${speed} <span class="rune-bonus">+${runeStats.SPD}</span></p>
-        <p><span>CR:</span> ${crit_rate}% <span class="rune-bonus">+${runeStats.CR}%</span></p>
-        <p><span>CD:</span> ${crit_damage}% <span class="rune-bonus">+${runeStats.CD}%</span></p>
-        <p><span>RES:</span> ${resistance}% <span class="rune-bonus">+${runeStats.RES}%</span></p>
-        <p><span>ACC:</span> ${accuracy}% <span class="rune-bonus">+${runeStats.ACC}%</span></p>
-      </div>
-    `;
-  } else {
-    // Sinon, on affiche les stats de base et les stats comparatives
-    statsDisplayHtml = `
+  // SIMPLIFICATION : On affiche toujours les stats de base, qu'on possède le monstre ou non.
+  const statsDisplayHtml = `
       <p><span>Element:</span> ${element}</p>
       <p><span>Archetype:</span> ${archetype}</p>
       <p><span>HP:</span> ${max_lvl_hp} | <span>ATK:</span> ${max_lvl_attack}</p>
@@ -246,19 +211,10 @@ function createMonsterCard(monsterData, unitData = null) {
         </div>
       </div>
     `;
-  }
 
   return `
     <div class="jarvis-card">
       <div class="jarvis-card-inner">
-        <!-- Tiroir Gauche (Runes) -->
-        <div class="jarvis-card-runes">
-          <div class="jarvis-corner top-left"></div>
-          <div class="jarvis-corner top-right"></div>
-          <div class="jarvis-corner bottom-left"></div>
-          <div class="jarvis-corner bottom-right"></div>
-          <div class="individual-runes-container">${runeSetsHtml}</div>
-        </div>
         <!-- Face Avant -->
         <div class="jarvis-card-front">
           <div class="jarvis-corner top-left"></div>
@@ -478,15 +434,9 @@ function showMonsterInModal(cardHtml) {
       const card = e.target.closest('.jarvis-card');
       if (!card) return;
 
-      // Si on clique sur le tiroir des runes, on le bascule
-      if (e.target.closest('.jarvis-card-runes')) {
-        card.classList.toggle('is-runes-open');
-        card.classList.remove('is-stats-open'); // Ferme l'autre tiroir
-      } 
-      // Si on clique sur la face avant ou le tiroir de droite, on bascule le tiroir de droite
-      else if (e.target.closest('.jarvis-card-front') || e.target.closest('.jarvis-card-back')) {
+      // SIMPLIFICATION : On ne gère plus que l'ouverture du tiroir de droite (stats)
+      if (e.target.closest('.jarvis-card-front') || e.target.closest('.jarvis-card-back')) {
         card.classList.toggle('is-stats-open');
-        card.classList.remove('is-runes-open'); // Ferme l'autre tiroir
       }
 
     });
@@ -502,140 +452,6 @@ function closeModal() {
   if (modal) {
     modal.classList.remove('visible');
   }
-}
-
-/**
- * Calcule le total des stats bonus apportées par un set de runes.
- * @param {Array} runes - Le tableau de runes d'un monstre.
- * @returns {object} Un objet avec le total de chaque stat.
- */
-function calculateRuneStats(runes) {
-  const totals = {
-    HP_FLAT: 0, HP_PERC: 0, ATK_FLAT: 0, ATK_PERC: 0,
-    DEF_FLAT: 0, DEF_PERC: 0, SPD: 0, CR: 0, CD: 0, RES: 0, ACC: 0
-  };
-  if (!runes) return totals;
-
-  const statMap = {
-    1: 'HP_FLAT', 2: 'HP_PERC', 3: 'ATK_FLAT', 4: 'ATK_PERC',
-    5: 'DEF_FLAT', 6: 'DEF_PERC', 8: 'SPD', 9: 'CR',
-    10: 'CD', 11: 'RES', 12: 'ACC'
-  };
-
-  // Les runes sont un objet { '1': {...}, '2': {...} }, on le transforme en tableau
-  const runeArray = Object.values(runes);
-
-  runeArray.forEach(rune => {
-    // Stat principale
-    if (rune.primary_effect) {
-        const mainStatId = rune.primary_effect[0];
-        const mainStatValue = rune.primary_effect[1];
-        if (statMap[mainStatId]) {
-            totals[statMap[mainStatId]] += mainStatValue;
-        }
-    }
-
-    // Substats
-    if (rune.secondary_effects) {
-        rune.secondary_effects.forEach(sub => {
-            const subStatId = sub[0];
-            const subStatValue = sub[1] + (sub[3] || 0); // Valeur de base + meule
-            if (statMap[subStatId]) {
-                totals[statMap[subStatId]] += subStatValue;
-            }
-        });
-    }
-  });
-
-  return totals;
-}
-
-/**
- * Identifie les sets de runes équipés sur un monstre.
- * @param {object} runes - L'objet de runes d'un monstre.
- * @returns {Array} Un tableau d'objets représentant les sets complets.
- */
-function getRuneSets(runes) {
-    const runeSetMap = {
-        1: { name: 'Energy', amount: 2 }, 2: { name: 'Guard', amount: 2 },
-        3: { name: 'Swift', amount: 4 }, 4: { name: 'Blade', amount: 2 },
-        5: { name: 'Rage', amount: 4 }, 6: { name: 'Focus', amount: 2 },
-        7: { name: 'Endure', amount: 2 }, 8: { name: 'Fatal', amount: 4 },
-        10: { name: 'Despair', amount: 4 }, 11: { name: 'Vampire', amount: 4 },
-        13: { name: 'Violent', amount: 4 }, 14: { name: 'Nemesis', amount: 2 },
-        15: { name: 'Will', amount: 2 }, 16: { name: 'Shield', amount: 2 },
-        17: { name: 'Revenge', amount: 2 }, 18: { name: 'Destroy', amount: 2 },
-        19: { name: 'Fight', amount: 2 }, 20: { name: 'Determination', amount: 2 },
-        21: { name: 'Enhance', amount: 2 }, 22: { name: 'Accuracy', amount: 2 },
-        23: { name: 'Tolerance', amount: 2 }, 24: { name: 'Seal', amount: 2 },
-        25: { name: 'Intangible', amount: 2 }
-    };
-
-    const counts = {};
-    Object.values(runes).forEach(rune => {
-        const setId = rune.set_id;
-        if (setId) counts[setId] = (counts[setId] || 0) + 1;
-    });
-
-    const activeSets = [];
-    for (const setId in counts) {
-        const setData = runeSetMap[setId];
-        const numSets = Math.floor(counts[setId] / setData.amount);
-        if (numSets > 0) activeSets.push({ name: setData.name, count: numSets });
-    }
-    return activeSets;
-}
-
-/**
- * Crée le HTML pour afficher les 6 runes individuelles et leurs stats.
- * @param {object} runes - L'objet de runes d'un monstre.
- * @returns {string} Le code HTML pour le tiroir des runes.
- */
-function createIndividualRunesHtml(runes) {
-  if (!runes || Object.keys(runes).length === 0) {
-    return '<p>Aucune rune équipée.</p>';
-  }
-
-  const statNameMap = {
-    1: 'HP', 2: 'HP %', 3: 'ATK', 4: 'ATK %',
-    5: 'DEF', 6: 'DEF %', 8: 'SPD', 9: 'CRIT Rate',
-    10: 'CRIT Dmg', 11: 'RES', 12: 'ACC'
-  };
-  const runeSetMap = {
-    1: 'Energy', 2: 'Guard', 3: 'Swift', 4: 'Blade', 5: 'Rage', 6: 'Focus',
-    7: 'Endure', 8: 'Fatal', 10: 'Despair', 11: 'Vampire', 13: 'Violent',
-    14: 'Nemesis', 15: 'Will', 16: 'Shield', 17: 'Revenge', 18: 'Destroy',
-    19: 'Fight', 20: 'Determination', 21: 'Enhance', 22: 'Accuracy',
-    23: 'Tolerance', 24: 'Seal', 25: 'Intangible'
-  };
-
-  let html = '';
-  // On trie par slot (1 à 6)
-  for (const slot of Object.keys(runes).sort()) {
-    const rune = runes[slot];
-    const mainStatId = rune.primary_effect[0];
-    const mainStatValue = rune.primary_effect[1];
-    const mainStatName = statNameMap[mainStatId] || 'Inconnu';
-    const isPercent = mainStatName.includes('%');
-
-    html += `<div class="rune-item">`;
-    html += `<div class="rune-item-header">Rune ${slot} (${runeSetMap[rune.set_id]})</div>`;
-    html += `<div class="rune-item-main-stat">${mainStatName}: +${mainStatValue}${isPercent ? '%' : ''}</div>`;
-
-    if (rune.secondary_effects && rune.secondary_effects.length > 0) {
-      html += `<ul class="rune-item-substats">`;
-      rune.secondary_effects.forEach(sub => {
-        const subStatId = sub[0];
-        const subStatValue = sub[1] + (sub[3] || 0); // Valeur + meule
-        const subStatName = statNameMap[subStatId] || 'Inconnu';
-        const isSubPercent = subStatName.includes('%');
-        html += `<li>${subStatName}: +${subStatValue}${isSubPercent ? '%' : ''}</li>`;
-      });
-      html += `</ul>`;
-    }
-    html += `</div>`;
-  }
-  return html;
 }
 
 function createRadialBarChart(monsterStats) {
