@@ -364,7 +364,8 @@ function initializeBestiaryViews() {
         return `<div class="monster-grid-item ${ownedClass}" data-element="${element}" data-name="${name}" title="${name}"><img src="${imgUrl}" alt="${name}" loading="lazy"></div>`;
       }).join('');
 
-    monsterListContainer.innerHTML = `<div class="monster-grid">${monsterListHtml}</div>`;
+    // TEST : On affiche un simple mot pour vérifier si le conteneur est accessible.
+    monsterListContainer.innerHTML = 'monstres';
   };
 
   // Ajoute la logique de clic sur les onglets
