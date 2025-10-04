@@ -447,3 +447,31 @@ strong {
   animation: none;
   cursor: default; /* Le curseur n'a pas besoin d'être un pointeur ici */
 }
+
+/* --- Styles pour le tiroir 'Monstres' --- */
+#monsters-drawer-toggle {
+  display: block;
+  margin: 0 auto 20px auto; /* Centre le bouton */
+}
+
+#top-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--jarvis-bg-solid);
+  border-bottom: 2px solid var(--jarvis-blue);
+  box-shadow: 0 5px 15px rgba(0, 184, 255, 0.3);
+  padding: 10px;
+  box-sizing: border-box;
+  text-align: center;
+  transform: translateY(-100%);
+  transition: transform 0.4s ease-in-out;
+  z-index: 950; /* En dessous de la modale, mais au-dessus du reste */
+  font-size: 1.5em;
+  color: var(--jarvis-blue);
+}
+
+#top-drawer.is-open {
+  transform: translateY(0);
+}
