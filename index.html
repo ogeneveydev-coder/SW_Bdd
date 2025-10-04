@@ -12,11 +12,6 @@
 <body>
   <div id="version-container"></div>
 
-  <!-- Nouveau tiroir 'Monstres' -->
-  <button id="monsters-drawer-toggle">Afficher le tiroir 'Monstres'</button>
-  <div id="top-drawer"><p>Monstres</p></div>
-  <!-- Fin du nouveau tiroir -->
-
   <h1>Recherche de Monstre (Summoners War)</h1>
   <div class="search-container">
     <input type="text" id="searchInput" placeholder="Nom du monstre..." autocomplete="off">
@@ -25,6 +20,11 @@
   <button id="searchBtn">Search</button>
   <button id="resetBtn">Reset</button> <!-- Bouton ajouté -->
   <div id="result"></div>
+
+  <!-- Tiroir latéral 'Monstres' -->
+  <button id="side-drawer-toggle">Afficher Mes Monstres</button>
+  <div id="side-drawer" class="lateral-drawer"><p>Monstres</p></div>
+  <!-- Fin du tiroir latéral -->
 
   <!-- Conteneur pour le Bestiaire Complet -->
   <div id="full-bestiary-container">

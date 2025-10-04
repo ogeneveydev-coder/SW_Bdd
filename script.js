@@ -3,9 +3,9 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.34',
-  style: '2.29',
-  index: '2.10'
+  script: '2.35',
+  style: '2.30',
+  index: '2.11'
 };
 const allMonsters = []; // Contiendra TOUS les monstres (éveillés et non-éveillés) pour la recherche
 let awakenedMonsters = []; // Ne contiendra que les monstres éveillés pour l'affichage
@@ -26,7 +26,7 @@ const suggestionsContainer = document.getElementById('suggestions-container');
 const searchBtn = document.getElementById('searchBtn');
 const resetBtn = document.getElementById('resetBtn');
 const bestiaryTabs = document.querySelector('.element-tabs');
-const monstersDrawerToggle = document.getElementById('monsters-drawer-toggle');
+const sideDrawerToggle = document.getElementById('side-drawer-toggle');
 
 // Charger les données une seule fois au démarrage
 window.addEventListener('DOMContentLoaded', () => {
@@ -91,9 +91,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
 });
 
-// --- Logique pour le nouveau tiroir 'Monstres' ---
-monstersDrawerToggle.addEventListener('click', () => {
-  const drawer = document.getElementById('top-drawer');
+// --- Logique pour le tiroir latéral 'Monstres' ---
+sideDrawerToggle.addEventListener('click', () => {
+  const drawer = document.getElementById('side-drawer');
   drawer.classList.toggle('is-open');
 });
 
