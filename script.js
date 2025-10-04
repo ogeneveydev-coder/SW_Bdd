@@ -173,26 +173,22 @@ function searchMonster(unitId = null) {
   const foundAwakenedPks = new Set();
 
   // Pour chaque terme de recherche, on trouve les monstres correspondants
-  searchTerms.forEach(term => {
+  for (const term of searchTerms) {
     // CORRECTION : On vérifie si le terme est un nom de famille (non-éveillé) partagé par plusieurs éléments.
     const familyMatches = allMonsters.filter(m => !m.fields.is_awakened && strNoAccent(m.fields.name.toLowerCase()) === term);
     const isFamilyName = new Set(familyMatches.map(m => m.fields.element)).size > 1;
 
     // Si c'est un nom de famille, on ignore ce terme pour éviter d'afficher toute la famille.
     if (isFamilyName) {
-      return; // Passe au terme de recherche suivant
+      continue; // Passe au terme de recherche suivant
     }
 
-    allMonsters.forEach(monster => {
+    for (const monster of allMonsters) {
       const monsterName = strNoAccent(monster.fields.name.toLowerCase());
       // Si le terme de recherche correspond exactement au nom d'un monstre
       if (monsterName === term) {
         let monsterToShow = monster;
 
-        // Si le monstre trouvé n'est pas éveillé, on récupère sa première forme éveillée.
-        // On ne suit PAS la chaîne pour les formes alternatives (ex: Druides).
-        // CORRECTION : On suit la chaîne d'éveil, mais on s'arrête si la forme suivante
-        // s'éveille depuis la forme actuelle (cas des formes alternatives comme les Druides).
         while (monsterToShow.fields.awakens_to) {
           const nextForm = allMonsters.find(m => m.pk === monsterToShow.fields.awakens_to);
           if (nextForm) {
@@ -211,9 +207,11 @@ function searchMonster(unitId = null) {
           foundMonsters.push(monsterToShow);
           foundAwakenedPks.add(monsterToShow.pk);
         }
+        // Une fois qu'on a trouvé et traité la première correspondance pour ce nom, on arrête de chercher.
+        break; // Sort de la boucle `for (const monster of allMonsters)`
       }
-    });
-  });
+    }
+  }
 
   if (foundMonsters.length === 0) {
     showResult("Aucun des monstres recherchés n'a été trouvé.");
