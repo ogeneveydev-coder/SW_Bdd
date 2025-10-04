@@ -292,17 +292,27 @@ searchInput.addEventListener('input', (e) => {
   }
   const normalizedCurrentWord = strNoAccent(currentWord);
 
-  const suggestions = allMonsters
-    .filter(m => {
-      const monsterNameLower = strNoAccent(m.fields.name.toLowerCase());
-      // Suggère seulement si le nom commence par le mot actuel ET n'est pas déjà dans la recherche
-      return monsterNameLower.startsWith(normalizedCurrentWord) && !existingNames.has(monsterNameLower);
-    })
-    .slice(0, 5);
+  // 1. Trouver tous les noms de monstres uniques qui correspondent
+  const matchingNames = [...new Set(allMonsters
+      .filter(m => strNoAccent(m.fields.name.toLowerCase()).startsWith(normalizedCurrentWord))
+      .map(m => m.fields.name)
+  )];
+
+  // 2. Filtrer les noms de famille
+  const suggestions = matchingNames.filter(name => {
+    const normalizedName = strNoAccent(name.toLowerCase());
+    // Un nom est considéré comme un nom de famille s'il existe en tant que nom non-éveillé pour plusieurs éléments.
+    const familyMatches = allMonsters.filter(m => !m.fields.is_awakened && strNoAccent(m.fields.name.toLowerCase()) === normalizedName);
+    const isFamilyName = new Set(familyMatches.map(m => m.fields.element)).size > 1;
+
+    // On ne suggère pas le nom s'il est déjà dans la recherche ou si c'est un nom de famille
+    return !existingNames.has(normalizedName) && !isFamilyName;
+  }).slice(0, 5); // Limite à 5 suggestions
+
 
   if (suggestions.length > 0) {
     suggestionsContainer.innerHTML = suggestions.map(s =>
-      `<div class="suggestion-item">${s.fields.name}</div>`
+      `<div class="suggestion-item">${s}</div>`
     ).join('');
   } else {
     clearSuggestions();
