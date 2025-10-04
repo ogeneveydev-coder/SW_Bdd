@@ -49,9 +49,6 @@ window.addEventListener('DOMContentLoaded', () => {
       // 2. On ne garde que les monstres ÉVEILLÉS dans awakenedMonsters pour l'affichage des grilles et la recherche de type
       awakenedMonsters = allMonsters.filter(m => m.fields.is_awakened);
 
-      // Une fois les données chargées, on génère le bestiaire complet
-      initializeBestiaryViews();
-
       if (myBestiaryData && myBestiaryData.unit_list) {
         myMonsters = myBestiaryData.unit_list;
         ownedMonsterIds = new Set(myMonsters.map(m => m.unit_master_id));
@@ -83,6 +80,9 @@ window.addEventListener('DOMContentLoaded', () => {
         res: calc(stats.res),
         acc: calc(stats.acc),
       };
+
+      // CORRECTION : On initialise le bestiaire ICI, une fois que TOUTES les données sont prêtes.
+      initializeBestiaryViews();
 
     })
     .catch(err => {
