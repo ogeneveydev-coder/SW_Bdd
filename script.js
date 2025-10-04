@@ -123,18 +123,18 @@ function closeBestiaryDrawer() {
   }
 }
 
-searchBtn.addEventListener('click', () => searchMonsterFromInput());
-resetBtn.addEventListener('click', resetSearch);
-
 searchInput.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     e.preventDefault(); // Empêche le rechargement de la page
     clearSuggestions();
-    searchMonsterFromInput();
+    searchMonster(); // Appel direct de la fonction de recherche
   } else if (e.key === 'Escape') {
     resetSearch(); // Utilise resetSearch pour tout effacer
   }
 });
+
+searchBtn.addEventListener('click', () => searchMonster());
+resetBtn.addEventListener('click', resetSearch);
 
 function searchMonster(unitId = null) {
   const query = unitId ? '' : searchInput.value.trim();
@@ -234,11 +234,6 @@ function searchMonster(unitId = null) {
 
   // Affiche les cartes dans un conteneur
   showResult(`<div class="results-container">${cardsHtml}</div>`);
-}
-
-function searchMonsterFromInput() {
-  // Cette fonction est maintenant dédiée à la recherche depuis la barre de recherche
-  searchMonster();
 }
 
 /**
