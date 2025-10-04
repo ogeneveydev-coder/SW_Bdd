@@ -402,7 +402,7 @@ function initializeBestiaryViews() {
 
         // CORRECTION : Vérifie si le joueur possède la forme éveillée OU non-éveillée
         const unawakenedType = monster.fields.awakens_from ? allMonsters.find(m => m.pk === monster.fields.awakens_from) : null;
-        const unawakenedId = unawakenedType ? unawakenedType.fields.com2us_id : null; // Correction de la logique
+        const unawakenedId = unawakenedType ? unawakenedType.fields.com2us_id : null;
 
         const isOwned = ownedMonsterIds.has(com2us_id) || (unawakenedId && ownedMonsterIds.has(unawakenedId));
         const ownedClass = isOwned ? '' : 'not-owned';
@@ -439,7 +439,7 @@ function initializeBestiaryViews() {
         // CORRECTION : On cherche si le joueur possède ce monstre
         // On doit aussi trouver la forme non-éveillée pour vérifier si le joueur la possède.
         const unawakenedType = monsterType.fields.awakens_from ? allMonsters.find(m => m.pk === monsterType.fields.awakens_from) : null;
-        const unawakenedId = unawakenedType ? unawakenedType.fields.com2us_id : null; // Correction de la logique
+        const unawakenedId = unawakenedType ? unawakenedType.fields.com2us_id : null;
 
         // On cherche une unité qui correspond soit à l'ID éveillé, soit à l'ID non-éveillé.
         const ownedUnit = myMonsters.find(unit => 
