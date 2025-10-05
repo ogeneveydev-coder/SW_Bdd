@@ -234,6 +234,17 @@ function searchMonster(unitId = null) {
 
   // Affiche les cartes dans un conteneur
   showResult(`<div class="results-container">${cardsHtml}</div>`);
+
+  // NOUVEAU : Si exactement 3 monstres sont trouvés, on cherche les counters.
+  if (foundMonsters.length === 3) {
+    const monsterIds = foundMonsters.map(m => m.fields.com2us_id);
+    displayCounterTeams(monsterIds);
+  } else {
+    // On s'assure de cacher la section des counters si on n'a pas 3 monstres.
+    const counterSection = document.getElementById('counter-teams-section');
+    counterSection.style.display = 'none';
+    counterSection.querySelector('#counter-teams-result').innerHTML = '';
+  }
 }
 
 /**
@@ -388,6 +399,7 @@ function resetSearch() {
   searchInput.value = '';
   showResult('');
   clearSuggestions();
+  document.getElementById('counter-teams-section').style.display = 'none'; // Cache aussi les counters
 }
 
 function strNoAccent(str) {
@@ -616,6 +628,81 @@ function createRadialBarChart(monsterStats) {
         </defs>
         ${chartHtml}
       </svg>
+    </div>
+  `;
+}
+
+/**
+ * Affiche les équipes "counter" pour une équipe donnée.
+ * @param {number[]} monsterIds - Un tableau des com2us_id des 3 monstres de l'équipe.
+ */
+function displayCounterTeams(monsterIds) {
+  const counterSection = document.getElementById('counter-teams-section');
+  const counterResultContainer = document.getElementById('counter-teams-result');
+
+  // 1. Trouver l'équipe qui correspond aux monstres recherchés.
+  // On trie les IDs pour que la comparaison soit indépendante de l'ordre.
+  const sortedMonsterIds = [...monsterIds].sort();
+  const foundTeam = teamsData.find(team => {
+    const teamMonsterIds = team.monsters.map(m => m.monster_id).sort();
+    return teamMonsterIds.length === sortedMonsterIds.length && teamMonsterIds.every((id, index) => id === sortedMonsterIds[index]);
+  });
+
+  // 2. Si on a trouvé l'équipe et qu'elle a des counters.
+  if (foundTeam && foundTeam.counter && foundTeam.counter.length > 0) {
+    const counterTeamsHtml = foundTeam.counter.map(counterInfo => {
+      const counterTeamData = teamsData.find(t => t.team_id === counterInfo.team_id);
+      if (counterTeamData) {
+        return createTeamCard(counterTeamData, counterInfo);
+      }
+      return '';
+    }).join('');
+
+    counterResultContainer.innerHTML = counterTeamsHtml;
+  } else {
+    // 3. Si pas d'équipe trouvée ou pas de counters.
+    counterResultContainer.innerHTML = `<p>Aucun counter trouvé pour cette équipe.</p>`;
+  }
+
+  // 4. On affiche la section.
+  counterSection.style.display = 'block';
+}
+
+/**
+ * Crée le HTML pour une carte d'équipe.
+ * @param {object} teamData - Les données de l'équipe depuis teams.json.
+ * @param {object} [counterInfo=null] - Les informations de counter (win/loss).
+ * @returns {string} Le HTML de la carte d'équipe.
+ */
+function createTeamCard(teamData, counterInfo = null) {
+  const monsterImagesHtml = teamData.monsters.map(monster => {
+    // On trouve le monstre correspondant dans notre base de données complète
+    const monsterInfo = allMonsters.find(m => m.fields.com2us_id === monster.monster_id);
+    if (monsterInfo) {
+      const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${monsterInfo.fields.image_filename}`;
+      return `<div class="team-monster-icon"><img src="${imgUrl}" alt="${monsterInfo.fields.name}" title="${monsterInfo.fields.name}"></div>`;
+    }
+    return '';
+  }).join('');
+
+  const counterStatsHtml = counterInfo ? `
+    <div class="team-counter-stats">
+      <span>Win: ${counterInfo.success}</span> | <span>Loss: ${counterInfo.failure}</span>
+    </div>
+  ` : '';
+
+  return `
+    <div class="team-card">
+      <div class="team-card-header">
+        <h3>${teamData.name}</h3>
+        ${counterStatsHtml}
+      </div>
+      <div class="team-monsters">
+        ${monsterImagesHtml}
+      </div>
+      <div class="team-notes">
+        <p>${teamData.notes}</p>
+      </div>
     </div>
   `;
 }

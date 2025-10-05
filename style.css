@@ -504,3 +504,59 @@ strong {
   left: auto; /* On annule la position à gauche */
   right: 20px; /* On la positionne à droite */
 }
+
+/* --- Styles pour les cartes d'équipes (Counters) --- */
+#counter-teams-result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.team-card {
+  background: var(--jarvis-bg);
+  border: 1px solid var(--jarvis-blue);
+  border-radius: 8px;
+  padding: 15px;
+  width: 350px;
+  box-shadow: 0 0 10px rgba(0, 184, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.team-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 184, 255, 0.3);
+  padding-bottom: 10px;
+}
+
+.team-card-header h3 {
+  margin: 0;
+  font-size: 1.1em;
+  color: var(--jarvis-blue);
+}
+
+.team-monsters {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.team-monster-icon img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--jarvis-blue);
+}
+
+.team-notes p {
+  font-size: 0.8em;
+  opacity: 0.8;
+  margin: 0;
+  font-style: italic;
+}
