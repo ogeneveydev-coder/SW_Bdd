@@ -476,7 +476,7 @@ strong {
 .drawer-handle {
   position: fixed; /* Positionné par rapport à la fenêtre */
   bottom: 20px; /* Ancré en bas de la page */
-  right: 20px; /* Ancré à droite de la page */
+  left: 20px; /* CORRECTION : Ancré à gauche de la page par défaut */
   width: 30px;
   height: 80px;
   background: var(--jarvis-bg-solid);
@@ -497,4 +497,10 @@ strong {
 .drawer-handle:hover {
   background-color: var(--jarvis-blue);
   color: var(--jarvis-bg-solid);
+}
+
+/* Quand le bestiaire est ouvert, on déplace la poignée à droite */
+#bestiary-section.is-open + .drawer-handle {
+  left: auto; /* On annule la position à gauche */
+  right: 20px; /* On la positionne à droite */
 }
