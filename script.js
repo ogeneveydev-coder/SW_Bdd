@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.47',
+  script: '2.48',
   style: '2.40', // Pas de changement de style
   index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
@@ -876,17 +876,63 @@ function openAddCounterModal(defenseMonsters) {
   });
 
   modal.querySelector('#confirm-add-counter').addEventListener('click', () => {
-    if (selectedCounterMonsters.length > 0) {
-      // NOTE : Cette logique met à jour les données en mémoire.
-      // Les changements seront perdus au rechargement de la page.
-      // Une future étape pourrait être de sauvegarder ces données.
-      
-      // Pour l'instant, on simule l'ajout et on rafraîchit l'affichage.
-      console.log("Nouveau counter à ajouter :", selectedCounterMonsters.map(m => m.fields.name).join(', '));
-      console.log("Pour la défense :", defenseMonsters.map(m => m.fields.name).join(', '));
-      alert("Fonctionnalité d'ajout en cours de développement ! Le counter a été loggué en console.");
-      modal.remove();
-      // Ici, il faudrait ajouter le nouveau counter à `teamsData` et rappeler `displayCounterTeams`.
+    // 1. Trouve ou crée l'équipe de défense
+    const defenseTeam = findOrCreateTeam(defenseMonsters, "Defense");
+
+    // 2. Trouve ou crée l'équipe counter
+    const counterTeam = findOrCreateTeam(selectedCounterMonsters, "Counter");
+
+    // 3. Lie le counter à l'équipe de défense
+    const existingCounterLink = defenseTeam.counter.find(c => c.team_id === counterTeam.team_id);
+
+    if (existingCounterLink) {
+      // Si le lien existe déjà, on peut incrémenter un compteur (ici, on ne fait rien pour l'instant)
+      console.log(`Le counter ${counterTeam.name} existe déjà pour la défense ${defenseTeam.name}.`);
+    } else {
+      // Sinon, on ajoute le nouveau lien
+      defenseTeam.counter.push({
+        team_id: counterTeam.team_id,
+        success: 1, // On initialise avec une victoire
+        failure: 0
+      });
     }
+
+    // 4. Ferme la modale et rafraîchit l'affichage des counters
+    modal.remove();
+    displayCounterTeams(defenseMonsters.map(m => m.fields.com2us_id));
+
+    // Affiche un message de confirmation
+    alert(`Counter ajouté avec succès à la défense ${defenseTeam.name} !`);
   });
+}
+
+/**
+ * Trouve une équipe par ses monstres, ou la crée si elle n'existe pas.
+ * @param {object[]} monsters - Tableau d'objets monstres.
+ * @param {string} type - "Defense" ou "Counter", pour le nommage.
+ * @returns {object} L'objet équipe trouvé ou créé.
+ */
+function findOrCreateTeam(monsters, type) {
+  const monsterIds = monsters.map(m => m.fields.com2us_id).sort();
+
+  // Cherche si une équipe avec exactement ces monstres existe déjà
+  let team = teamsData.find(t => {
+    const teamMonsterIds = t.monsters.map(m => m.monster_id).sort();
+    return teamMonsterIds.length === monsterIds.length && teamMonsterIds.every((id, i) => id === monsterIds[i]);
+  });
+
+  // Si l'équipe n'est pas trouvée, on la crée
+  if (!team) {
+    team = {
+      team_id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      name: `${type}: ${monsters.map(m => m.fields.name).join(', ')}`,
+      category: "User-Generated",
+      monsters: monsterIds.map(id => ({ monster_id: id, is_owned: false })),
+      counter: [],
+      notes: "Équipe générée par l'utilisateur."
+    };
+    teamsData.push(team); // Ajoute la nouvelle équipe à nos données en mémoire
+  }
+
+  return team;
 }
