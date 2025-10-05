@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.43',
+  script: '2.44',
   style: '2.40', // Pas de changement de style
   index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
@@ -241,6 +241,8 @@ function searchMonster(unitId = null) {
 
   if (foundMonsters.length === 3) {
     addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
+    // On attache l'événement pour ouvrir la modale
+    document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModal(foundMonsters));
     counterResultContainer.innerHTML = ''; // On s'assure que la zone des résultats de counter est vide.
     counterSection.style.display = 'block'; // On affiche la section pour voir le bouton.
   } else {
@@ -736,9 +738,9 @@ function createTeamCard(teamData, counterInfo = null) {
 
 /**
  * Ouvre une modale pour ajouter une nouvelle équipe "counter".
- * @param {object} defenseTeam - L'objet de l'équipe de défense à contrer.
+ * @param {object[]} defenseMonsters - Un tableau des 3 objets monstres de la défense.
  */
-function openAddCounterModal(defenseTeam) {
+function openAddCounterModal(defenseMonsters) {
   // Crée la modale si elle n'existe pas
   let modal = document.getElementById('add-counter-modal');
   if (modal) modal.remove(); // Supprime l'ancienne pour la recréer
@@ -748,10 +750,9 @@ function openAddCounterModal(defenseTeam) {
   modal.className = 'modal-overlay';
 
   // Prévisualisation de l'équipe de défense
-  const defensePreviewHtml = defenseTeam.monsters.map(m => {
-    const monsterInfo = allMonsters.find(mon => mon.fields.com2us_id === m.monster_id);
-    return monsterInfo ? `<img src="https://swarfarm.com/static/herders/images/monsters/${monsterInfo.fields.image_filename}" title="${monsterInfo.fields.name}">` : '';
-  }).join('');
+  const defensePreviewHtml = defenseMonsters.map(monster => 
+    `<img src="https://swarfarm.com/static/herders/images/monsters/${monster.fields.image_filename}" title="${monster.fields.name}">`
+  ).join('');
 
   modal.innerHTML = `
     <div class="add-counter-modal-content">
@@ -831,8 +832,8 @@ function openAddCounterModal(defenseTeam) {
       // Une future étape pourrait être de sauvegarder ces données.
       
       // Pour l'instant, on simule l'ajout et on rafraîchit l'affichage.
-      console.log("Nouveau counter à ajouter :", selectedCounterMonsters.map(m => m.fields.name));
-      console.log("Pour la défense :", defenseTeam.name);
+      console.log("Nouveau counter à ajouter :", selectedCounterMonsters.map(m => m.fields.name).join(', '));
+      console.log("Pour la défense :", defenseMonsters.map(m => m.fields.name).join(', '));
       alert("Fonctionnalité d'ajout en cours de développement ! Le counter a été loggué en console.");
       modal.remove();
       // Ici, il faudrait ajouter le nouveau counter à `teamsData` et rappeler `displayCounterTeams`.
