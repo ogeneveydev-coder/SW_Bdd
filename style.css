@@ -64,6 +64,15 @@ button:hover {
   box-shadow: 0 0 20px var(--jarvis-blue);
 }
 
+/* Style pour les boutons désactivés */
+button:disabled, button:disabled:hover {
+  background: var(--jarvis-bg);
+  color: #666;
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 #result {
   /* Le conteneur de résultat n'a plus besoin de marge supérieure, car il est dans sa propre section */
   margin-top: 20px;

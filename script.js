@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.45',
+  script: '2.46',
   style: '2.40', // Pas de changement de style
   index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
@@ -793,8 +793,10 @@ function openAddCounterModal(defenseMonsters) {
       suggestionsContainer.innerHTML = '';
       return;
     }
+    // CORRECTION : On ne suggère pas les monstres déjà sélectionnés.
+    const selectedIds = new Set(selectedCounterMonsters.map(m => m.fields.com2us_id));
     const suggestions = allMonsters
-      .filter(m => m.fields.is_awakened && strNoAccent(m.fields.name.toLowerCase()).includes(strNoAccent(query)))
+      .filter(m => m.fields.is_awakened && !selectedIds.has(m.fields.com2us_id) && strNoAccent(m.fields.name.toLowerCase()).includes(strNoAccent(query)))
       .slice(0, 5);
 
     suggestionsContainer.innerHTML = suggestions.map(s => 
