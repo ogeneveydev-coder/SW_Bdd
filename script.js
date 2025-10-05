@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.40',
-  style: '2.39',
+  script: '2.41',
+  style: '2.40',
   index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
 const allMonsters = []; // Contiendra TOUS les monstres (éveillés et non-éveillés) pour la recherche
@@ -242,8 +242,10 @@ function searchMonster(unitId = null) {
   } else {
     // On s'assure de cacher la section des counters si on n'a pas 3 monstres.
     const counterSection = document.getElementById('counter-teams-section');
-    counterSection.style.display = 'none';
+    // CORRECTION : On vide aussi le conteneur du bouton pour éviter qu'il ne reste affiché.
+    counterSection.querySelector('#add-counter-container').innerHTML = '';
     counterSection.querySelector('#counter-teams-result').innerHTML = '';
+    counterSection.style.display = 'none';
   }
 }
 
