@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.51',
+  script: '2.53',
   style: '2.40', // Pas de changement de style
   index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
@@ -668,8 +668,14 @@ function createSmallMonsterCard(monsterInfo) {
   const { name, image_filename, com2us_id } = monsterInfo.fields;
   const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
 
+  // CORRECTION : Vérifie si le joueur possède la forme éveillée OU non-éveillée
+  const unawakenedMonster = monsterInfo.fields.awakens_from ? allMonsters.find(m => m.pk === monsterInfo.fields.awakens_from) : null;
+  const unawakenedId = unawakenedMonster ? unawakenedMonster.fields.com2us_id : null;
+  const isOwned = ownedMonsterIds.has(com2us_id) || (unawakenedId && ownedMonsterIds.has(unawakenedId));
+  const ownedClass = isOwned ? '' : 'not-owned';
+
   return `
-    <div class="small-monster-card" title="Cliquer pour retirer ${name}" data-monster-id="${monsterInfo.fields.com2us_id}">
+    <div class="small-monster-card ${ownedClass}" title="Cliquer pour retirer ${name}" data-monster-id="${monsterInfo.fields.com2us_id}">
       <img src="${imgUrl}" alt="${name}">
       <div class="small-monster-name">${name}</div>
     </div>
@@ -836,6 +842,7 @@ function openAddCounterModal(defenseMonsters) {
         updateCounterPreview();
         counterSearchInput.value = '';
         document.getElementById('counter-suggestions-container').innerHTML = '';
+        counterSearchInput.focus(); // CORRECTION : Remet le focus sur le champ de recherche
       }
     }
   });

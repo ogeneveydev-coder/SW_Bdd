@@ -577,6 +577,7 @@ strong {
 .team-monsters {
   display: flex;
   gap: 10px;
+  align-items: center; /* CORRECTION : Centre verticalement les petites cartes de monstres */
   flex-grow: 1; /* Permet aux monstres de prendre l'espace restant */
 }
 
@@ -617,6 +618,12 @@ strong {
   overflow: hidden;
   text-overflow: ellipsis;
   width: 100%;
+}
+
+/* Style pour les monstres non possédés dans les cartes d'équipe */
+.small-monster-card.not-owned img {
+  filter: grayscale(100%);
+  opacity: 0.6;
 }
 
 /* --- Styles pour la modale "Add Counter" --- */
