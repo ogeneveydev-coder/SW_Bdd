@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.46',
+  script: '2.47',
   style: '2.40', // Pas de changement de style
   index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
@@ -251,6 +251,26 @@ function searchMonster(unitId = null) {
   }
 }
 
+// Logique pour retirer un monstre de la recherche principale
+resultContainer.addEventListener('click', e => {
+  if (e.target.classList.contains('remove-btn')) {
+    const monsterNameToRemove = e.target.dataset.monsterName;
+    if (!monsterNameToRemove) return;
+
+    const currentSearch = searchInput.value.split(' ');
+    const nameToRemove = strNoAccent(monsterNameToRemove.toLowerCase());
+    
+    // Trouve l'index du premier mot correspondant au monstre à retirer
+    const indexToRemove = currentSearch.findIndex(term => strNoAccent(term.toLowerCase()) === nameToRemove);
+
+    if (indexToRemove > -1) {
+      currentSearch.splice(indexToRemove, 1); // Retire le mot
+      searchInput.value = currentSearch.join(' ').trim() + ' '; // Met à jour l'input
+      searchMonster(); // Relance la recherche
+    }
+  }
+});
+
 /**
  * Crée le HTML pour une seule carte de monstre.
  * @param {object} monsterData - Les données du type de monstre (de bestiary_data.json).
@@ -287,7 +307,8 @@ function createMonsterCard(monsterData, unitData = null) {
     `;
 
   return `
-    <div class="jarvis-card">
+    <div class="jarvis-card" data-monster-name="${name}">
+      <div class="remove-btn" data-monster-name="${name}">&times;</div>
       <div class="jarvis-card-inner">
         <!-- Face Avant -->
         <div class="jarvis-card-front">
@@ -648,7 +669,7 @@ function createSmallMonsterCard(monsterInfo) {
   const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
 
   return `
-    <div class="small-monster-card" title="${name}">
+    <div class="small-monster-card" title="Cliquer pour retirer ${name}" data-monster-id="${com2us_id}">
       <img src="${imgUrl}" alt="${name}">
       <div class="small-monster-name">${name}</div>
     </div>
@@ -819,6 +840,20 @@ function openAddCounterModal(defenseMonsters) {
         counterSearchInput.value = '';
         document.getElementById('counter-suggestions-container').innerHTML = '';
       }
+    }
+  });
+
+  // Clic sur un monstre sélectionné pour le retirer
+  selectedPreview.addEventListener('click', e => {
+    const cardToRemove = e.target.closest('.small-monster-card');
+    if (cardToRemove) {
+      const monsterIdToRemove = parseInt(cardToRemove.dataset.monsterId, 10);
+      
+      // Filtre le tableau pour retirer le monstre cliqué
+      selectedCounterMonsters = selectedCounterMonsters.filter(m => m.fields.com2us_id !== monsterIdToRemove);
+      
+      // Met à jour l'affichage
+      updateCounterPreview();
     }
   });
 
