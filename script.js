@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.49',
+  script: '2.51',
   style: '2.40', // Pas de changement de style
   index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
@@ -743,12 +743,9 @@ function createTeamCard(teamData, counterInfo = null) {
 
   return `
     <div class="team-card">
-      <div class="team-card-header">
-        <h3>${teamData.name}</h3>
+      <div class="team-card-main">
+        <div class="team-monsters">${monsterImagesHtml}</div>
         ${counterStatsHtml}
-      </div>
-      <div class="team-monsters">
-        ${monsterImagesHtml}
       </div>
       <div class="team-notes">
         <p>${teamData.notes}</p>
