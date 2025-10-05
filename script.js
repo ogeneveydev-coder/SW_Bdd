@@ -3,9 +3,9 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.39',
+  script: '2.40',
   style: '2.39',
-  index: '2.14' // Pas de changement dans index.html
+  index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
 const allMonsters = []; // Contiendra TOUS les monstres (éveillés et non-éveillés) pour la recherche
 let awakenedMonsters = []; // Ne contiendra que les monstres éveillés pour l'affichage
@@ -101,7 +101,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // --- Logique pour le tiroir latéral 'Monstres' ---
 drawerHandle.addEventListener('click', () => {
-  const drawer = document.getElementById('side-drawer');
+  const drawer = document.getElementById('bestiary-section');
   const isOpen = drawer.classList.toggle('is-open');
 
   // Change la flèche pour indiquer l'état
@@ -116,9 +116,9 @@ drawerHandle.addEventListener('click', () => {
  * Ferme le tiroir du bestiaire s'il est ouvert.
  */
 function closeBestiaryDrawer() {
-  const drawer = document.getElementById('side-drawer');
+  const drawer = document.getElementById('bestiary-section');
   if (drawer && drawer.classList.contains('is-open')) {
-    drawer.classList.remove('is-open');
+    drawer.classList.remove('is-open'); // Cache la section
     drawerHandle.textContent = '›';
   }
 }
@@ -373,11 +373,13 @@ function showResult(html) {
   // et non d'une saisie utilisateur non filtrée.
 
   // On décale le tiroir vers le bas si des résultats s'affichent, et on le remet en place sinon.
-  const drawer = document.getElementById('side-drawer');
-  if (html) { // On ne ferme le tiroir que si on affiche de nouveaux résultats.
-    drawer.classList.add('is-shifted');
+  const monsterSearchSection = document.getElementById('monster-search-section');
+  if (html && html.trim() !== '') {
+    // Si on a des résultats, on les affiche. La section est déjà visible.
+    resultContainer.style.display = 'block';
   } else {
-    drawer.classList.remove('is-shifted');
+    // S'il n'y a pas de résultats, on cache le conteneur de résultats.
+    resultContainer.style.display = 'none';
   }
   resultContainer.innerHTML = html;
 }

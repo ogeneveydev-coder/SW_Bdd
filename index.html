@@ -12,18 +12,33 @@
 <body>
   <div id="version-container"></div>
 
-  <h1>Recherche de Monstre (Summoners War)</h1>
-  <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Nom du monstre..." autocomplete="off">
-    <div id="suggestions-container"></div> <!-- Conteneur pour les suggestions -->
-  </div>
-  <button id="searchBtn">Search</button>
-  <button id="resetBtn">Reset</button> <!-- Bouton ajouté -->
-  <div id="result"></div>
+  <!-- SECTION 1: RECHERCHE D'ÉQUIPES (placeholder) -->
+  <section id="team-search-section" class="page-section">
+    <h2>Recherche d'Équipes</h2>
+    <!-- Le contenu pour la recherche d'équipes viendra ici -->
+    <p style="opacity: 0.5;">(Fonctionnalité à venir)</p>
+  </section>
 
-  <!-- Tiroir latéral 'Monstres' -->
-  <div id="side-drawer" class="lateral-drawer">
-    <!-- Le Bestiaire Complet est maintenant à l'intérieur du tiroir -->
+  <!-- SECTION 2: RECHERCHE DE MONSTRES ET RÉSULTATS -->
+  <section id="monster-search-section" class="page-section">
+    <h2>Recherche de Monstres</h2>
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="Entrez le nom d'un monstre..." autocomplete="off">
+      <div id="suggestions-container"></div>
+    </div>
+    <button id="searchBtn">Search</button>
+    <button id="resetBtn">Reset</button>
+    <div id="result" style="display: none;"></div> <!-- Le conteneur de résultats est maintenant ici et caché par défaut -->
+  </section>
+
+  <!-- SECTION 3: ÉQUIPES COUNTER (cachée par défaut) -->
+  <section id="counter-teams-section" class="page-section" style="display: none;">
+    <h2>Équipes Counter</h2>
+    <div id="counter-teams-result"></div>
+  </section>
+
+  <!-- SECTION 4: BESTIAIRE (le tiroir est maintenant contenu ici) -->
+  <section id="bestiary-section" class="page-section">
     <div id="full-bestiary-container">
       <h2>Bestiaire Complet</h2>
       <div class="element-tabs">
@@ -35,10 +50,12 @@
       </div>
       <div id="monster-list-container"></div>
     </div>
-  </div>
-  <!-- La poignée est maintenant un élément frère pour rester visible -->
+  </section>
+
+  <!-- La poignée reste en dehors pour être fixe et contrôler la section 4 -->
   <div id="drawer-handle" class="drawer-handle">›</div>
 
+  <!-- Scripts JS -->
   <script src="script.js"></script>
 </body>
 </html>
