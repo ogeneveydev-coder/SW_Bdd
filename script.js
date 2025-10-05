@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.42',
+  script: '2.43',
   style: '2.40', // Pas de changement de style
   index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
@@ -234,16 +234,17 @@ function searchMonster(unitId = null) {
   // Affiche les cartes dans un conteneur
   showResult(`<div class="results-container">${cardsHtml}</div>`);
 
-  // NOUVEAU : Si exactement 3 monstres sont trouvés, on cherche les counters.
+  // SIMPLIFICATION : Si exactement 3 monstres sont trouvés, on affiche le bouton "Add Counter".
+  const counterSection = document.getElementById('counter-teams-section');
+  const addCounterContainer = document.getElementById('add-counter-container');
+  const counterResultContainer = document.getElementById('counter-teams-result');
+
   if (foundMonsters.length === 3) {
-    const monsterIds = foundMonsters.map(m => m.fields.com2us_id);
-    displayCounterTeams(monsterIds);
+    addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
+    counterResultContainer.innerHTML = ''; // On s'assure que la zone des résultats de counter est vide.
+    counterSection.style.display = 'block'; // On affiche la section pour voir le bouton.
   } else {
     // On s'assure de cacher la section des counters si on n'a pas 3 monstres.
-    const counterSection = document.getElementById('counter-teams-section');
-    // CORRECTION : On vide aussi le conteneur du bouton pour éviter qu'il ne reste affiché.
-    counterSection.querySelector('#add-counter-container').innerHTML = '';
-    counterSection.querySelector('#counter-teams-result').innerHTML = '';
     counterSection.style.display = 'none';
   }
 }
