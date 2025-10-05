@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.44',
+  script: '2.45',
   style: '2.40', // Pas de changement de style
   index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
@@ -782,6 +782,7 @@ function openAddCounterModal(defenseMonsters) {
   // Logique de la modale
   const counterSearchInput = document.getElementById('counter-search-input');
   const selectedPreview = modal.querySelector('.selected-counter-preview');
+  const confirmButton = modal.querySelector('#confirm-add-counter');
   let selectedCounterMonsters = [];
 
   // Réutilisation de la logique d'autocomplétion (simplifiée pour la modale)
@@ -803,10 +804,14 @@ function openAddCounterModal(defenseMonsters) {
 
   // Clic sur une suggestion
   modal.querySelector('#counter-suggestions-container').addEventListener('click', e => {
-    if (e.target.classList.contains('suggestion-item') && selectedCounterMonsters.length < 3) {
+    // CONTRAINTE 1: On vérifie qu'on a moins de 3 monstres sélectionnés.
+    if (e.target.classList.contains('suggestion-item') && selectedCounterMonsters.length < 3) { 
       const monsterId = parseInt(e.target.dataset.monsterId, 10);
       const monsterInfo = allMonsters.find(m => m.fields.com2us_id === monsterId);
-      if (monsterInfo && !selectedCounterMonsters.find(m => m.fields.com2us_id === monsterId)) {
+
+      // CONTRAINTE 2: On vérifie que le monstre n'est pas déjà dans la sélection.
+      const isAlreadySelected = selectedCounterMonsters.some(m => m.fields.com2us_id === monsterId);
+      if (monsterInfo && !isAlreadySelected) {
         selectedCounterMonsters.push(monsterInfo);
         updateCounterPreview();
         counterSearchInput.value = '';
@@ -817,9 +822,17 @@ function openAddCounterModal(defenseMonsters) {
 
   function updateCounterPreview() {
     selectedPreview.innerHTML = selectedCounterMonsters.map(m => createSmallMonsterCard(m)).join('');
+    // Met à jour l'état du bouton "Add"
+    updateAddButtonState();
+  }
+
+  function updateAddButtonState() {
+    // Active le bouton uniquement si 3 monstres sont sélectionnés
+    confirmButton.disabled = selectedCounterMonsters.length !== 3;
   }
 
   // Gestion des boutons
+  updateAddButtonState(); // Désactive le bouton au démarrage
   modal.querySelector('#cancel-add-counter').addEventListener('click', () => modal.remove());
   modal.addEventListener('click', e => {
     if (e.target.id === 'add-counter-modal') modal.remove();
@@ -837,8 +850,6 @@ function openAddCounterModal(defenseMonsters) {
       alert("Fonctionnalité d'ajout en cours de développement ! Le counter a été loggué en console.");
       modal.remove();
       // Ici, il faudrait ajouter le nouveau counter à `teamsData` et rappeler `displayCounterTeams`.
-    } else {
-      alert("Veuillez sélectionner au moins un monstre pour le counter.");
     }
   });
 }
