@@ -665,11 +665,11 @@ function createRadialBarChart(monsterStats) {
 function createSmallMonsterCard(monsterInfo) {
   if (!monsterInfo) return '';
 
-  const { name, image_filename } = monsterInfo.fields;
+  const { name, image_filename, com2us_id } = monsterInfo.fields;
   const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
 
   return `
-    <div class="small-monster-card" title="Cliquer pour retirer ${name}" data-monster-id="${com2us_id}">
+    <div class="small-monster-card" title="Cliquer pour retirer ${name}" data-monster-id="${monsterInfo.fields.com2us_id}">
       <img src="${imgUrl}" alt="${name}">
       <div class="small-monster-name">${name}</div>
     </div>
