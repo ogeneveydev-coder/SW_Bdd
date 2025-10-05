@@ -372,9 +372,12 @@ function showResult(html) {
   // Utiliser innerHTML est acceptable ici car le contenu provient de notre propre code
   // et non d'une saisie utilisateur non filtrée.
 
-  // CORRECTION : On ferme le tiroir ici pour s'assurer qu'il se ferme bien LORSQUE les résultats s'affichent.
+  // On décale le tiroir vers le bas si des résultats s'affichent, et on le remet en place sinon.
+  const drawer = document.getElementById('side-drawer');
   if (html) { // On ne ferme le tiroir que si on affiche de nouveaux résultats.
-    closeBestiaryDrawer();
+    drawer.classList.add('is-shifted');
+  } else {
+    drawer.classList.remove('is-shifted');
   }
   resultContainer.innerHTML = html;
 }
