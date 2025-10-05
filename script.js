@@ -671,13 +671,8 @@ function displayCounterTeams(monsterIds) {
     const counterTeamsHtml = foundTeam.counter.map(counterInfo => {
       const counterTeamData = teamsData.find(t => t.team_id === counterInfo.team_id);
       if (counterTeamData) {
-        // NOUVEAU : On crée des petites cartes pour chaque monstre du counter.
-        const monsterCardsHtml = counterTeamData.monsters.map(monster => {
-          const monsterInfo = allMonsters.find(m => m.fields.com2us_id === monster.monster_id);
-          return createSmallMonsterCard(monsterInfo);
-        }).join('');
-
-        return `<div class="counter-team-group">${monsterCardsHtml}</div>`;
+        // CORRECTION : On utilise la fonction createTeamCard pour afficher l'équipe counter
+        return createTeamCard(counterTeamData, counterInfo);
       }
       return '';
     }).join('');
@@ -690,4 +685,40 @@ function displayCounterTeams(monsterIds) {
 
   // 4. On affiche la section.
   counterSection.style.display = 'block';
+}
+
+/**
+ * Crée le HTML pour une carte d'équipe.
+ * @param {object} teamData - Les données de l'équipe depuis teams.json.
+ * @param {object} [counterInfo=null] - Les informations de counter (win/loss).
+ * @returns {string} Le HTML de la carte d'équipe.
+ */
+function createTeamCard(teamData, counterInfo = null) {
+  const monsterImagesHtml = teamData.monsters.map(monster => {
+    // On trouve le monstre correspondant dans notre base de données complète
+    const monsterInfo = allMonsters.find(m => m.fields.com2us_id === monster.monster_id);
+    // On utilise la fonction createSmallMonsterCard pour chaque monstre
+    return createSmallMonsterCard(monsterInfo);
+  }).join('');
+
+  const counterStatsHtml = counterInfo ? `
+    <div class="team-counter-stats">
+      <span>Win: ${counterInfo.success}</span> | <span>Loss: ${counterInfo.failure}</span>
+    </div>
+  ` : '';
+
+  return `
+    <div class="team-card">
+      <div class="team-card-header">
+        <h3>${teamData.name}</h3>
+        ${counterStatsHtml}
+      </div>
+      <div class="team-monsters">
+        ${monsterImagesHtml}
+      </div>
+      <div class="team-notes">
+        <p>${teamData.notes}</p>
+      </div>
+    </div>
+  `;
 }
