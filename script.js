@@ -667,33 +667,33 @@ function displayCounterTeams(monsterIds) {
     return teamMonsterIds.length === sortedMonsterIds.length && teamMonsterIds.every((id, index) => id === sortedMonsterIds[index]);
   });
 
-  // Gère l'affichage du bouton "Add Counter"
+  // Si aucune équipe n'est trouvée, on ne fait rien et on s'assure que la section est cachée.
   if (foundTeam) {
+    // Gère l'affichage du bouton "Add Counter"
     addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
     document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModal(foundTeam));
+
+    // 2. Si l'équipe a des counters, on les affiche.
+    if (foundTeam.counter && foundTeam.counter.length > 0) {
+      const counterTeamsHtml = foundTeam.counter.map(counterInfo => {
+        const counterTeamData = teamsData.find(t => t.team_id === counterInfo.team_id);
+        if (counterTeamData) {
+          return createTeamCard(counterTeamData, counterInfo);
+        }
+        return '';
+      }).join('');
+      counterResultContainer.innerHTML = counterTeamsHtml;
+    } else {
+      // 3. Si pas de counters, on affiche un message.
+      counterResultContainer.innerHTML = `<p>Aucun counter trouvé pour cette équipe.</p>`;
+    }
+    // 4. On affiche la section des counters.
+    counterSection.style.display = 'block';
   } else {
     addCounterContainer.innerHTML = '';
+    counterResultContainer.innerHTML = '';
+    counterSection.style.display = 'none';
   }
-
-  // 2. Si on a trouvé l'équipe et qu'elle a des counters.
-  if (foundTeam && foundTeam.counter && foundTeam.counter.length > 0) {
-    const counterTeamsHtml = foundTeam.counter.map(counterInfo => {
-      const counterTeamData = teamsData.find(t => t.team_id === counterInfo.team_id);
-      if (counterTeamData) {
-        // CORRECTION : On utilise la fonction createTeamCard pour afficher l'équipe counter
-        return createTeamCard(counterTeamData, counterInfo);
-      }
-      return '';
-    }).join('');
-
-    counterResultContainer.innerHTML = counterTeamsHtml;
-  } else {
-    // 3. Si pas d'équipe trouvée ou pas de counters.
-    counterResultContainer.innerHTML = `<p>Aucun counter trouvé pour cette équipe.</p>`;
-  }
-
-  // 4. On affiche la section.
-  counterSection.style.display = 'block';
 }
 
 /**
