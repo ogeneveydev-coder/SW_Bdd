@@ -3,7 +3,7 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.48',
+  script: '2.49',
   style: '2.40', // Pas de changement de style
   index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
@@ -892,8 +892,8 @@ function openAddCounterModal(defenseMonsters) {
       // Sinon, on ajoute le nouveau lien
       defenseTeam.counter.push({
         team_id: counterTeam.team_id,
-        success: 1, // On initialise avec une victoire
-        failure: 0
+        success: 0, // CORRECTION : On initialise avec zéro victoire
+        failure: 0  // et zéro défaite
       });
     }
 
@@ -925,11 +925,11 @@ function findOrCreateTeam(monsters, type) {
   if (!team) {
     team = {
       team_id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-      name: `${type}: ${monsters.map(m => m.fields.name).join(', ')}`,
+      name: `${monsters.map(m => m.fields.name).join(', ')}`, // CORRECTION : Nom sans préfixe
       category: "User-Generated",
       monsters: monsterIds.map(id => ({ monster_id: id, is_owned: false })),
       counter: [],
-      notes: "Équipe générée par l'utilisateur."
+      notes: "" // CORRECTION : Pas de note par défaut
     };
     teamsData.push(team); // Ajoute la nouvelle équipe à nos données en mémoire
   }

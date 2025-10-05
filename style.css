@@ -131,11 +131,11 @@ button:disabled, button:disabled:hover {
   position: absolute;
   top: 5px;
   right: 5px;
-  width: 20px;
-  height: 20px;
-  background: rgba(255, 0, 0, 0.7);
-  color: white;
-  border: 1px solid white;
+  width: 22px;
+  height: 22px;
+  background: var(--jarvis-bg);
+  color: var(--jarvis-blue);
+  border: 1px solid var(--jarvis-blue);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -144,6 +144,13 @@ button:disabled, button:disabled:hover {
   font-weight: bold;
   cursor: pointer;
   z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.jarvis-card .remove-btn:hover {
+  background: var(--jarvis-blue);
+  color: var(--jarvis-bg-solid);
+  box-shadow: 0 0 10px var(--jarvis-blue);
 }
 
 .jarvis-card-inner {
