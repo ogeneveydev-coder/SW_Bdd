@@ -3,8 +3,8 @@
 // --- GESTION DES VERSIONS ---
 // Mettez à jour ces valeurs lorsque vous modifiez un fichier. (Version mise à jour pour cette modification)
 const fileVersions = {
-  script: '2.41',
-  style: '2.40',
+  script: '2.42',
+  style: '2.40', // Pas de changement de style
   index: '2.15' // Version mise à jour pour la nouvelle structure en 4 sections
 };
 const allMonsters = []; // Contiendra TOUS les monstres (éveillés et non-éveillés) pour la recherche
@@ -179,10 +179,10 @@ function searchMonster(unitId = null) {
   }
 
   // --- Recherche par nom (comportement existant) ---
-  const searchTerms = [...new Set(query.split(' ').map(term => strNoAccent(term.trim().toLowerCase())).filter(Boolean))];
+  const searchTerms = query.split(' ').map(term => strNoAccent(term.trim().toLowerCase())).filter(Boolean);
   const foundMonsters = [];
-  const foundAwakenedPks = new Set();
 
+  // CORRECTION: On ne filtre plus les doublons ici pour permettre la recherche d'équipes avec des monstres identiques.
   // Pour chaque terme de recherche, on trouve les monstres correspondants
   for (const term of searchTerms) {
     // CORRECTION : On vérifie si le terme est un nom de famille (non-éveillé) partagé par plusieurs éléments.
@@ -214,9 +214,8 @@ function searchMonster(unitId = null) {
         }
 
         // On ajoute le monstre à la liste des résultats s'il n'y est pas déjà
-        if (monsterToShow && !foundAwakenedPks.has(monsterToShow.pk)) {
+        if (monsterToShow) {
           foundMonsters.push(monsterToShow);
-          foundAwakenedPks.add(monsterToShow.pk);
         }
         // Une fois qu'on a trouvé et traité la première correspondance pour ce nom, on arrête de chercher.
         break; // Sort de la boucle `for (const monster of allMonsters)`
