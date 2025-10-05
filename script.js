@@ -656,6 +656,7 @@ function createSmallMonsterCard(monsterInfo) {
  */
 function displayCounterTeams(monsterIds) {
   const counterSection = document.getElementById('counter-teams-section');
+  const addCounterContainer = document.getElementById('add-counter-container');
   const counterResultContainer = document.getElementById('counter-teams-result');
 
   // 1. Trouver l'équipe qui correspond aux monstres recherchés.
@@ -665,6 +666,14 @@ function displayCounterTeams(monsterIds) {
     const teamMonsterIds = team.monsters.map(m => m.monster_id).sort();
     return teamMonsterIds.length === sortedMonsterIds.length && teamMonsterIds.every((id, index) => id === sortedMonsterIds[index]);
   });
+
+  // Gère l'affichage du bouton "Add Counter"
+  if (foundTeam) {
+    addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
+    document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModal(foundTeam));
+  } else {
+    addCounterContainer.innerHTML = '';
+  }
 
   // 2. Si on a trouvé l'équipe et qu'elle a des counters.
   if (foundTeam && foundTeam.counter && foundTeam.counter.length > 0) {
@@ -721,4 +730,112 @@ function createTeamCard(teamData, counterInfo = null) {
       </div>
     </div>
   `;
+}
+
+/**
+ * Ouvre une modale pour ajouter une nouvelle équipe "counter".
+ * @param {object} defenseTeam - L'objet de l'équipe de défense à contrer.
+ */
+function openAddCounterModal(defenseTeam) {
+  // Crée la modale si elle n'existe pas
+  let modal = document.getElementById('add-counter-modal');
+  if (modal) modal.remove(); // Supprime l'ancienne pour la recréer
+
+  modal = document.createElement('div');
+  modal.id = 'add-counter-modal';
+  modal.className = 'modal-overlay';
+
+  // Prévisualisation de l'équipe de défense
+  const defensePreviewHtml = defenseTeam.monsters.map(m => {
+    const monsterInfo = allMonsters.find(mon => mon.fields.com2us_id === m.monster_id);
+    return monsterInfo ? `<img src="https://swarfarm.com/static/herders/images/monsters/${monsterInfo.fields.image_filename}" title="${monsterInfo.fields.name}">` : '';
+  }).join('');
+
+  modal.innerHTML = `
+    <div class="add-counter-modal-content">
+      <div class="add-counter-modal-header">
+        <h3>Ajouter un Counter pour :</h3>
+        <div class="defense-team-preview">${defensePreviewHtml}</div>
+      </div>
+      <div class="add-counter-modal-body">
+        <div class="search-container">
+          <input type="text" id="counter-search-input" placeholder="Chercher les monstres du counter..." autocomplete="off">
+          <div id="counter-suggestions-container"></div>
+        </div>
+        <div class="selected-counter-preview">
+          <!-- Les monstres sélectionnés pour le counter apparaîtront ici -->
+        </div>
+      </div>
+      <div class="add-counter-modal-footer">
+        <button id="cancel-add-counter">Annuler</button>
+        <button id="confirm-add-counter">Add</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  modal.classList.add('visible');
+
+  // Logique de la modale
+  const counterSearchInput = document.getElementById('counter-search-input');
+  const selectedPreview = modal.querySelector('.selected-counter-preview');
+  let selectedCounterMonsters = [];
+
+  // Réutilisation de la logique d'autocomplétion (simplifiée pour la modale)
+  counterSearchInput.addEventListener('input', () => {
+    const query = counterSearchInput.value.trim().toLowerCase();
+    const suggestionsContainer = document.getElementById('counter-suggestions-container');
+    if (query.length < 2) {
+      suggestionsContainer.innerHTML = '';
+      return;
+    }
+    const suggestions = allMonsters
+      .filter(m => m.fields.is_awakened && strNoAccent(m.fields.name.toLowerCase()).includes(strNoAccent(query)))
+      .slice(0, 5);
+
+    suggestionsContainer.innerHTML = suggestions.map(s => 
+      `<div class="suggestion-item" data-monster-id="${s.fields.com2us_id}">${s.fields.name}</div>`
+    ).join('');
+  });
+
+  // Clic sur une suggestion
+  modal.querySelector('#counter-suggestions-container').addEventListener('click', e => {
+    if (e.target.classList.contains('suggestion-item') && selectedCounterMonsters.length < 3) {
+      const monsterId = parseInt(e.target.dataset.monsterId, 10);
+      const monsterInfo = allMonsters.find(m => m.fields.com2us_id === monsterId);
+      if (monsterInfo && !selectedCounterMonsters.find(m => m.fields.com2us_id === monsterId)) {
+        selectedCounterMonsters.push(monsterInfo);
+        updateCounterPreview();
+        counterSearchInput.value = '';
+        document.getElementById('counter-suggestions-container').innerHTML = '';
+      }
+    }
+  });
+
+  function updateCounterPreview() {
+    selectedPreview.innerHTML = selectedCounterMonsters.map(m => createSmallMonsterCard(m)).join('');
+  }
+
+  // Gestion des boutons
+  modal.querySelector('#cancel-add-counter').addEventListener('click', () => modal.remove());
+  modal.addEventListener('click', e => {
+    if (e.target.id === 'add-counter-modal') modal.remove();
+  });
+
+  modal.querySelector('#confirm-add-counter').addEventListener('click', () => {
+    if (selectedCounterMonsters.length > 0) {
+      // NOTE : Cette logique met à jour les données en mémoire.
+      // Les changements seront perdus au rechargement de la page.
+      // Une future étape pourrait être de sauvegarder ces données.
+      
+      // Pour l'instant, on simule l'ajout et on rafraîchit l'affichage.
+      console.log("Nouveau counter à ajouter :", selectedCounterMonsters.map(m => m.fields.name));
+      console.log("Pour la défense :", defenseTeam.name);
+      alert("Fonctionnalité d'ajout en cours de développement ! Le counter a été loggué en console.");
+      modal.remove();
+      // Ici, il faudrait ajouter le nouveau counter à `teamsData` et rappeler `displayCounterTeams`.
+    } else {
+      alert("Veuillez sélectionner au moins un monstre pour le counter.");
+    }
+  });
 }
