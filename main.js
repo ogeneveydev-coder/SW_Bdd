@@ -281,10 +281,11 @@ function strNoAccent(str) {
 
 function openAddCounterModal(defenseMonsters, defenseTeamId) {
     const onConfirm = (selectedCounterMonsters) => {
-        const defenseTeam = findOrCreateTeam(defenseMonsters);
+        // On ne recrée pas la team de défense, on la retrouve directement dans nos données.
+        const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId);
         const counterTeam = findOrCreateTeam(selectedCounterMonsters);
 
-        const existingCounterLink = defenseTeam.counter.find(c => c.team_id === counterTeam.team_id);
+        const existingCounterLink = defenseTeam && defenseTeam.counter.find(c => c.team_id === counterTeam.team_id);
 
         if (!existingCounterLink) {
             defenseTeam.counter.push({
