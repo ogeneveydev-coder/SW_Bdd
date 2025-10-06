@@ -15,7 +15,7 @@ import {
 
 // --- GESTION DES VERSIONS ---
 const fileVersions = {
-  script: '4.0.0', // Version majeure pour la modularisation
+  script: '4.1.0', // Version pour l'ajout des compteurs win/loss
   style: '2.40',
   index: '2.16' // Version mise à jour pour le script module
 };
@@ -122,6 +122,32 @@ function setupEventListeners() {
         }
     });
 
+    // Gestion des clics sur les boutons Win/Loss
+    document.getElementById('counter-teams-result').addEventListener('click', e => {
+        if (e.target.classList.contains('win-btn')) {
+            const counterTeamId = e.target.dataset.counterTeamId;
+            const defenseTeamId = e.target.dataset.defenseTeamId;
+            updateCounterStats(defenseTeamId, counterTeamId, 'success');
+        } else if (e.target.classList.contains('loss-btn')) {
+            const counterTeamId = e.target.dataset.counterTeamId;
+            const defenseTeamId = e.target.dataset.defenseTeamId;
+            updateCounterStats(defenseTeamId, counterTeamId, 'failure');
+        }
+    });
+
+    // Gestion des clics sur les boutons Win/Loss
+    document.getElementById('counter-teams-result').addEventListener('click', e => {
+        if (e.target.classList.contains('win-btn')) {
+            const counterTeamId = e.target.dataset.counterTeamId;
+            const defenseTeamId = e.target.dataset.defenseTeamId;
+            updateCounterStats(defenseTeamId, counterTeamId, 'success');
+        } else if (e.target.classList.contains('loss-btn')) {
+            const counterTeamId = e.target.dataset.counterTeamId;
+            const defenseTeamId = e.target.dataset.defenseTeamId;
+            updateCounterStats(defenseTeamId, counterTeamId, 'failure');
+        }
+    });
+
     searchInput.addEventListener('input', handleAutocomplete);
 
     document.addEventListener('click', (e) => {
@@ -215,7 +241,7 @@ function searchMonster(unitId = null) {
 
   if (foundMonsters.length === 3) {
     addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
-    document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModal(foundMonsters));
+    document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModal(foundMonsters, findOrCreateTeam(foundMonsters).team_id));
     counterResultContainer.innerHTML = '';
     counterSection.style.display = 'block';
   } else {
@@ -265,7 +291,7 @@ function strNoAccent(str) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-function openAddCounterModal(defenseMonsters) {
+function openAddCounterModal(defenseMonsters, defenseTeamId) {
     const onConfirm = (selectedCounterMonsters) => {
         const defenseTeam = findOrCreateTeam(defenseMonsters);
         const counterTeam = findOrCreateTeam(selectedCounterMonsters);
@@ -276,11 +302,12 @@ function openAddCounterModal(defenseMonsters) {
             defenseTeam.counter.push({
                 team_id: counterTeam.team_id,
                 success: 0,
-                failure: 0
+                failure: 0,
+                defense_team_id: defenseTeam.team_id // Ajout de l'ID de la défense pour référence
             });
         }
 
-        saveTeamsDataToServer(teamsData);
+        saveTeamsDataToServer(teamsData); // Sauvegarde toutes les données mises à jour
         displayCounterTeams(defenseMonsters.map(m => m.fields.com2us_id));
     };
 
@@ -288,7 +315,7 @@ function openAddCounterModal(defenseMonsters) {
 }
 
 function displayCounterTeams(monsterIds) {
-    displayCounterTeamsUI(monsterIds, teamsData, openAddCounterModal);
+    displayCounterTeamsUI(monsterIds, teamsData, (defenseTeam) => openAddCounterModal(defenseTeam.monsters.map(m => allMonsters.find(mon => mon.fields.com2us_id === m.monster_id)), defenseTeam.team_id));
 }
 
 /**
@@ -317,4 +344,46 @@ function findOrCreateTeam(monsters) {
   }
 
   return team;
+}
+
+/**
+ * Met à jour les statistiques de victoire/défaite pour un counter spécifique.
+ * @param {string} defenseTeamId - L'ID de l'équipe de défense.
+ * @param {string} counterTeamId - L'ID de l'équipe counter.
+ * @param {'success' | 'failure'} type - Le type de compteur à incrémenter.
+ */
+function updateCounterStats(defenseTeamId, counterTeamId, type) {
+    const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId);
+    if (defenseTeam) {
+        const counterLink = defenseTeam.counter.find(c => c.team_id === counterTeamId);
+        if (counterLink) {
+            counterLink[type]++;
+            saveTeamsDataToServer(teamsData); // Sauvegarde après chaque mise à jour
+            // Rafraîchit l'affichage des counters pour l'équipe de défense actuelle
+            displayCounterTeams(defenseTeam.monsters.map(m => m.monster_id));
+        } else {
+            console.warn(`Lien counter non trouvé pour defenseTeamId: ${defenseTeamId}, counterTeamId: ${counterTeamId}`);
+        }
+    }
+}
+
+/**
+ * Met à jour les statistiques de victoire/défaite pour un counter spécifique.
+ * @param {string} defenseTeamId - L'ID de l'équipe de défense.
+ * @param {string} counterTeamId - L'ID de l'équipe counter.
+ * @param {'success' | 'failure'} type - Le type de compteur à incrémenter.
+ */
+function updateCounterStats(defenseTeamId, counterTeamId, type) {
+    const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId);
+    if (defenseTeam) {
+        const counterLink = defenseTeam.counter.find(c => c.team_id === counterTeamId);
+        if (counterLink) {
+            counterLink[type]++;
+            saveTeamsDataToServer(teamsData); // Sauvegarde après chaque mise à jour
+            // Rafraîchit l'affichage des counters pour l'équipe de défense actuelle
+            displayCounterTeams(defenseTeam.monsters.map(m => m.monster_id));
+        } else {
+            console.warn(`Lien counter non trouvé pour defenseTeamId: ${defenseTeamId}, counterTeamId: ${counterTeamId}`);
+        }
+    }
 }

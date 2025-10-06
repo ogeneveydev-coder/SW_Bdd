@@ -358,6 +358,10 @@ export function createTeamCard(teamData, counterInfo = null) {
     <div class="team-counter-stats">
       <span>Win: ${counterInfo.success}</span> | <span>Loss: ${counterInfo.failure}</span>
     </div>
+    <div class="team-counter-actions">
+      <button class="win-btn" data-counter-team-id="${teamData.team_id}" data-defense-team-id="${counterInfo.defense_team_id}">Win</button>
+      <button class="loss-btn" data-counter-team-id="${teamData.team_id}" data-defense-team-id="${counterInfo.defense_team_id}">Loss</button>
+    </div>
   ` : '';
 
   return `
