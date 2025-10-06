@@ -284,23 +284,11 @@ function strNoAccent(str) {
 
 function openAddCounterModal(defenseMonsters, defenseTeamId) {
     const onConfirmCallback = (selectedCounterMonsters) => {
-        const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId); // L'équipe de défense doit exister
-        const counterTeam = findOrCreateTeam(selectedCounterMonsters); // On crée ou trouve l'équipe counter
-
-        if (defenseTeam && counterTeam) { // Double vérification
-            const existingCounterLink = defenseTeam.counter.find(c => c.team_id === counterTeam.team_id);
-
-            if (!existingCounterLink) {
-                defenseTeam.counter.push({
-                    team_id: counterTeam.team_id,
-                    success: 0,
-                    failure: 0,
-                    defense_team_id: defenseTeam.team_id // On lie le counter à sa défense
-                });
-                saveTeamsDataToServer(teamsData); // On sauvegarde l'état complet
-            }
-        }
-        // On rafraîchit l'affichage pour voir le nouveau counter
+        // --- TEST DE DÉBOGAGE ---
+        // On ignore le counter et on force la sauvegarde des données actuelles
+        // pour vérifier si l'écriture dans le fichier fonctionne.
+        console.log("Débogage : Tentative de sauvegarde forcée de teamsData.");
+        saveTeamsDataToServer(teamsData);
         displayCounterTeams(defenseMonsters.map(m => m.fields.com2us_id));
     };
     // On passe le callback à la fonction UI
