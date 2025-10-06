@@ -340,10 +340,11 @@ function findOrCreateTeam(monsters) {
  * @param {'success' | 'failure'} type - Le type de compteur à incrémenter.
  */
 function updateCounterStats(defenseTeamId, counterTeamId, type) {
-    const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId);
+    const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId || t.counter.some(c => c.team_id === counterTeamId));
     if (defenseTeam) {
         const counterLink = defenseTeam.counter.find(c => c.team_id === counterTeamId);
         if (counterLink) {
+            counterLink.defense_team_id = defenseTeam.team_id; // Assure que la référence est toujours là
             counterLink[type]++;
             saveTeamsDataToServer(teamsData); // Sauvegarde après chaque mise à jour
             // Rafraîchit l'affichage des counters pour l'équipe de défense actuelle
