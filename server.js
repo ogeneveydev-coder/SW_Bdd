@@ -4,7 +4,7 @@ const path = require('path');
 
 const app = express();
 const PORT = 3000;
-const TEAMS_FILE_PATH = path.join(__dirname, 'teams.json');
+const TEAMS_FILE_PATH = path.join(__dirname, 'teams.json'); // On revient au fichier local pour le développement
 
 // Middleware pour parser le JSON des requêtes entrantes
 app.use(express.json());
