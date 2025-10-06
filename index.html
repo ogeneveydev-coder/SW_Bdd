@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,54 +12,44 @@
 </head>
 <body>
   <div id="version-container"></div>
+  <h1>Recherche de Monstre (Summoners War)</h1>
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Nom du monstre..." autocomplete="off">
+    <div id="suggestions-container"></div> <!-- Conteneur pour les suggestions -->
+  </div>
+  <button id="searchBtn">Search</button>
+  <button id="resetBtn">Reset</button> <!-- Bouton ajouté -->
+  <div id="result"></div>
 
-  <!-- SECTION 2: RECHERCHE DE MONSTRES ET RÉSULTATS -->
-  <section id="monster-search-section" class="page-section">
-    <h2>Recherche de Monstres</h2>
-    <div class="search-container">
-      <input type="text" id="searchInput" placeholder="Entrez le nom d'un monstre..." autocomplete="off">
-      <div id="suggestions-container"></div>
+  <!-- Onglets principaux pour basculer entre les vues -->
+  <div class="main-tabs">
+    <button class="main-tab active" data-view="full-bestiary">Bestiaire Complet</button>
+    <button class="main-tab" data-view="my-bestiary">Mes Monstres</button>
+  </div>
+
+  <!-- Conteneur pour le Bestiaire Complet -->
+  <div id="full-bestiary-container" class="view-container active">
+    <h2>Bestiaire Complet</h2>
+    <div class="element-tabs">
+      <button class="element-tab active" data-element="fire">Fire</button>
+      <button class="element-tab" data-element="water">Water</button>
+      <button class="element-tab" data-element="wind">Wind</button>
+      <button class="element-tab" data-element="light">Light</button>
+      <button class="element-tab" data-element="dark">Dark</button>
     </div>
-    <button id="searchBtn">Search</button>
-    <button id="resetBtn">Reset</button>
-    <div id="result" style="display: none;"></div> <!-- Le conteneur de résultats est maintenant ici et caché par défaut -->
-  </section>
-
-  <!-- SECTION 1 (maintenant en 3ème position): RECHERCHE D'ÉQUIPES (cachée par défaut) -->
-  <section id="team-search-section" class="page-section" style="display: none;">
-    <h2>Recherche d'Équipes</h2>
-    <!-- Le contenu pour la recherche d'équipes viendra ici -->
-    <p style="opacity: 0.5;">(Fonctionnalité à venir)</p>
-  </section>
-
-  <!-- SECTION 3: ÉQUIPES COUNTER (cachée par défaut) -->
-  <section id="counter-teams-section" class="page-section" style="display: none;">
-    <h2>Équipes Counter</h2>
-    <div id="add-counter-container" style="margin-bottom: 20px;">
-      <!-- Le bouton sera injecté ici par JavaScript -->
+    <div id="monster-list-container">
+      <!-- La liste des monstres sera injectée ici par JavaScript -->
     </div>
-    <div id="counter-teams-result"></div>
-  </section>
+  </div>
 
-  <!-- SECTION 4: BESTIAIRE (le tiroir est maintenant contenu ici) -->
-  <section id="bestiary-section" class="page-section">
-    <div id="full-bestiary-container">
-      <h2>Bestiaire Complet</h2>
-      <div class="element-tabs">
-        <button class="element-tab active" data-element="fire">Fire</button>
-        <button class="element-tab" data-element="water">Water</button>
-        <button class="element-tab" data-element="wind">Wind</button>
-        <button class="element-tab" data-element="light">Light</button>
-        <button class="element-tab" data-element="dark">Dark</button>
-      </div>
-      <div id="monster-list-container"></div>
+  <!-- Conteneur pour Mes Monstres -->
+  <div id="my-bestiary-container" class="view-container">
+    <h2>Mes Monstres</h2>
+    <div id="my-monster-list-container">
+      <!-- La liste de vos monstres sera injectée ici -->
     </div>
-  </section>
-
-  <!-- La poignée reste en dehors pour être fixe et contrôler la section 4 -->
-  <div id="drawer-handle" class="drawer-handle">›</div>
-
-  <!-- Scripts JS -->
-  <script src="script.js"></script>
+  </div>
+ 
+  <script type="module" src="main.js"></script>
 </body>
 </html>
