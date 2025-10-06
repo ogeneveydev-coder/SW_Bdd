@@ -227,10 +227,12 @@ function searchMonster(unitId = null) {
   const counterResultContainer = document.getElementById('counter-teams-result');
 
   if (foundMonsters.length === 3) {
-    const defenseTeam = findOrCreateTeam(foundMonsters); // On trouve ou crée l'équipe de défense immédiatement.
+    // On trouve ou crée l'équipe de défense. La fonction s'occupe de sauvegarder si c'est une nouvelle équipe.
+    const defenseTeam = findOrCreateTeam(foundMonsters); 
     addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
     document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModal(foundMonsters, defenseTeam.team_id));
-    displayCounterTeams(foundMonsters.map(m => m.fields.com2us_id)); // On affiche les counters existants.
+    // On affiche les counters existants pour cette équipe.
+    displayCounterTeams(foundMonsters.map(m => m.fields.com2us_id)); 
     counterSection.style.display = 'block';
   } else {
     counterSection.style.display = 'none';
@@ -282,10 +284,10 @@ function strNoAccent(str) {
 function openAddCounterModal(defenseMonsters, defenseTeamId) {
     const onConfirm = (selectedCounterMonsters) => {
         // On ne recrée pas la team de défense, on la retrouve directement dans nos données.
-        const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId);
+        const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId); // Doit exister
         const counterTeam = findOrCreateTeam(selectedCounterMonsters);
 
-        const existingCounterLink = defenseTeam && defenseTeam.counter.find(c => c.team_id === counterTeam.team_id);
+        const existingCounterLink = defenseTeam?.counter.find(c => c.team_id === counterTeam.team_id);
 
         if (!existingCounterLink) {
             defenseTeam.counter.push({
@@ -294,9 +296,10 @@ function openAddCounterModal(defenseMonsters, defenseTeamId) {
                 failure: 0,
                 defense_team_id: defenseTeam.team_id // Ajout de l'ID de la défense pour référence
             });
+            // On sauvegarde immédiatement après avoir ajouté un nouveau counter.
+            saveTeamsDataToServer(teamsData); 
         }
 
-        saveTeamsDataToServer(teamsData); // Sauvegarde toutes les données mises à jour
         displayCounterTeams(defenseMonsters.map(m => m.fields.com2us_id));
     };
 
@@ -335,6 +338,8 @@ function findOrCreateTeam(monsters) {
       notes: ""
     };
     teamsData.push(team);
+    // Sauvegarde immédiate sur le serveur si une nouvelle équipe est créée. C'est la clé.
+    saveTeamsDataToServer(teamsData);
   }
 
   return team;
