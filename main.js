@@ -135,19 +135,6 @@ function setupEventListeners() {
         }
     });
 
-    // Gestion des clics sur les boutons Win/Loss
-    document.getElementById('counter-teams-result').addEventListener('click', e => {
-        if (e.target.classList.contains('win-btn')) {
-            const counterTeamId = e.target.dataset.counterTeamId;
-            const defenseTeamId = e.target.dataset.defenseTeamId;
-            updateCounterStats(defenseTeamId, counterTeamId, 'success');
-        } else if (e.target.classList.contains('loss-btn')) {
-            const counterTeamId = e.target.dataset.counterTeamId;
-            const defenseTeamId = e.target.dataset.defenseTeamId;
-            updateCounterStats(defenseTeamId, counterTeamId, 'failure');
-        }
-    });
-
     searchInput.addEventListener('input', handleAutocomplete);
 
     document.addEventListener('click', (e) => {
@@ -344,27 +331,6 @@ function findOrCreateTeam(monsters) {
   }
 
   return team;
-}
-
-/**
- * Met à jour les statistiques de victoire/défaite pour un counter spécifique.
- * @param {string} defenseTeamId - L'ID de l'équipe de défense.
- * @param {string} counterTeamId - L'ID de l'équipe counter.
- * @param {'success' | 'failure'} type - Le type de compteur à incrémenter.
- */
-function updateCounterStats(defenseTeamId, counterTeamId, type) {
-    const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId);
-    if (defenseTeam) {
-        const counterLink = defenseTeam.counter.find(c => c.team_id === counterTeamId);
-        if (counterLink) {
-            counterLink[type]++;
-            saveTeamsDataToServer(teamsData); // Sauvegarde après chaque mise à jour
-            // Rafraîchit l'affichage des counters pour l'équipe de défense actuelle
-            displayCounterTeams(defenseTeam.monsters.map(m => m.monster_id));
-        } else {
-            console.warn(`Lien counter non trouvé pour defenseTeamId: ${defenseTeamId}, counterTeamId: ${counterTeamId}`);
-        }
-    }
 }
 
 /**
