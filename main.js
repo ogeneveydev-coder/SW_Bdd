@@ -326,8 +326,10 @@ function findOrCreateTeam(monsters) {
       counter: [],
       notes: ""
     };
+    // 1. On ajoute la nouvelle équipe au tableau en mémoire.
     teamsData.push(team);
     // Sauvegarde immédiate sur le serveur si une nouvelle équipe est créée.
+    // 2. On sauvegarde le tableau mis à jour sur le serveur.
     saveTeamsDataToServer(teamsData); 
   }
 
