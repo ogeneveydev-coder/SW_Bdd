@@ -122,6 +122,8 @@ function setupEventListeners() {
         }
     });
 
+    searchInput.addEventListener('input', handleAutocomplete);
+
     // Gestion des clics sur les boutons Win/Loss
     document.getElementById('counter-teams-result').addEventListener('click', e => {
         if (e.target.classList.contains('win-btn')) {
@@ -134,8 +136,6 @@ function setupEventListeners() {
             updateCounterStats(defenseTeamId, counterTeamId, 'failure');
         }
     });
-
-    searchInput.addEventListener('input', handleAutocomplete);
 
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.search-container')) {
