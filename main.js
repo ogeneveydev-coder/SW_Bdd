@@ -283,12 +283,11 @@ function strNoAccent(str) {
 }
 
 function openAddCounterModal(defenseMonsters, defenseTeamId) {
-    const onConfirm = (selectedCounterMonsters) => {
-        // On ne recrée pas la team de défense, on la retrouve directement dans nos données.
-        const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId);
-        const counterTeam = findOrCreateTeam(selectedCounterMonsters);
+    const onConfirmCallback = (selectedCounterMonsters) => {
+        const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId); // L'équipe de défense doit exister
+        const counterTeam = findOrCreateTeam(selectedCounterMonsters); // On crée ou trouve l'équipe counter
 
-        if (defenseTeam && counterTeam) {
+        if (defenseTeam && counterTeam) { // Double vérification
             const existingCounterLink = defenseTeam.counter.find(c => c.team_id === counterTeam.team_id);
 
             if (!existingCounterLink) {
@@ -296,16 +295,16 @@ function openAddCounterModal(defenseMonsters, defenseTeamId) {
                     team_id: counterTeam.team_id,
                     success: 0,
                     failure: 0,
-                    defense_team_id: defenseTeam.team_id
+                    defense_team_id: defenseTeam.team_id // On lie le counter à sa défense
                 });
-                saveTeamsDataToServer(teamsData); // Sauvegarde après l'ajout du nouveau counter.
+                saveTeamsDataToServer(teamsData); // On sauvegarde l'état complet
             }
         }
-
+        // On rafraîchit l'affichage pour voir le nouveau counter
         displayCounterTeams(defenseMonsters.map(m => m.fields.com2us_id));
     };
-
-    openAddCounterModalUI(defenseMonsters, onConfirm, strNoAccent);
+    // On passe le callback à la fonction UI
+    openAddCounterModalUI(defenseMonsters, onConfirmCallback, strNoAccent);
 }
 
 function displayCounterTeams(monsterIds) {
