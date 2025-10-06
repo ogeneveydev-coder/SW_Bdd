@@ -227,9 +227,10 @@ function searchMonster(unitId = null) {
   const counterResultContainer = document.getElementById('counter-teams-result');
 
   if (foundMonsters.length === 3) {
+    const defenseTeam = findOrCreateTeam(foundMonsters); // On trouve ou crée l'équipe de défense immédiatement.
     addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
-    document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModal(foundMonsters, findOrCreateTeam(foundMonsters).team_id));
-    counterResultContainer.innerHTML = '';
+    document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModal(foundMonsters, defenseTeam.team_id));
+    displayCounterTeams(foundMonsters.map(m => m.fields.com2us_id)); // On affiche les counters existants.
     counterSection.style.display = 'block';
   } else {
     counterSection.style.display = 'none';
@@ -302,7 +303,11 @@ function openAddCounterModal(defenseMonsters, defenseTeamId) {
 }
 
 function displayCounterTeams(monsterIds) {
-    displayCounterTeamsUI(monsterIds, teamsData, (defenseTeam) => openAddCounterModal(defenseTeam.monsters.map(m => allMonsters.find(mon => mon.fields.com2us_id === m.monster_id)), defenseTeam.team_id));
+    // La fonction de rappel pour "Add Counter" est maintenant gérée directement dans searchMonster.
+    // On passe une fonction vide ou null pour éviter de recréer un listener.
+    const openModalCallback = (teamData) => openAddCounterModal(teamData.monsters.map(m => allMonsters.find(mon => mon.fields.com2us_id === m.monster_id)), teamData.team_id);
+
+    displayCounterTeamsUI(monsterIds, teamsData, openModalCallback);
 }
 
 /**
@@ -311,6 +316,7 @@ function displayCounterTeams(monsterIds) {
  * @returns {object} L'objet équipe trouvé ou créé.
  */
 function findOrCreateTeam(monsters) {
+  if (!monsters || monsters.length === 0) return null;
   const monsterIds = monsters.map(m => m.fields.com2us_id).sort();
 
   let team = teamsData.find(t => {
@@ -340,11 +346,11 @@ function findOrCreateTeam(monsters) {
  * @param {'success' | 'failure'} type - Le type de compteur à incrémenter.
  */
 function updateCounterStats(defenseTeamId, counterTeamId, type) {
-    const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId || t.counter.some(c => c.team_id === counterTeamId));
+    const defenseTeam = teamsData.find(t => t.team_id === defenseTeamId);
     if (defenseTeam) {
         const counterLink = defenseTeam.counter.find(c => c.team_id === counterTeamId);
         if (counterLink) {
-            counterLink.defense_team_id = defenseTeam.team_id; // Assure que la référence est toujours là
+            // La référence defense_team_id est déjà ajoutée à la création.
             counterLink[type]++;
             saveTeamsDataToServer(teamsData); // Sauvegarde après chaque mise à jour
             // Rafraîchit l'affichage des counters pour l'équipe de défense actuelle
