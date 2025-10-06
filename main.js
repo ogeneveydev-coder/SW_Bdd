@@ -300,6 +300,9 @@ function openAddCounterModal(defenseMonsters, defenseTeamId) {
                 // 5. On sauvegarde l'état complet des données.
                 saveTeamsDataToServer(teamsData);
             }
+            else {
+                alert("Cette équipe de counter existe déjà pour cette défense.");
+            }
         }
         // 6. On rafraîchit l'affichage pour voir le nouveau counter.
         displayCounterTeams(defenseMonsters.map(m => m.fields.com2us_id));
