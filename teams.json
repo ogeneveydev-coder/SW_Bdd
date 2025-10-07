@@ -1,9 +1,13 @@
 [
   {
-    "team_id": "user_1759785054634_t9ma0",
+    "team_id": "user_1759871780148_otb0q",
     "name": "Tesarion, Teon, Teshar",
     "category": "User-Generated",
     "monsters": [
+      {
+        "monster_id": 19212,
+        "is_owned": false
+      },
       {
         "monster_id": 10914,
         "is_owned": false
@@ -11,24 +15,20 @@
       {
         "monster_id": 14513,
         "is_owned": false
-      },
-      {
-        "monster_id": 19212,
-        "is_owned": false
       }
     ],
     "counter": [
       {
-        "team_id": "user_1759785621203_ei7f1",
-        "success": 1,
+        "team_id": "user_1759872585896_ys6ea",
+        "success": 0,
         "failure": 0,
-        "defense_team_id": "user_1759785054634_t9ma0"
+        "defense_team_id": "user_1759871780148_otb0q"
       }
     ],
     "notes": ""
   },
   {
-    "team_id": "user_1759785621203_ei7f1",
+    "team_id": "user_1759872585896_ys6ea",
     "name": "Tantra, Spectra, Surtr",
     "category": "User-Generated",
     "monsters": [
@@ -45,14 +45,7 @@
         "is_owned": false
       }
     ],
-    "counter": [
-      {
-        "team_id": "user_1759785054634_t9ma0",
-        "success": 0,
-        "failure": 0,
-        "defense_team_id": "user_1759785621203_ei7f1"
-      }
-    ],
+    "counter": [],
     "notes": ""
   }
 ]

@@ -27,6 +27,7 @@ export let myMonsters = [];
 export let ownedMonsterIds = new Set();
 export let globalMonsterStats = {};
 export let teamsData = [];
+let currentCounterView = 'counters'; // 'counters' ou 'counterOf'
 
 export const MAX_STATS = { 
   hp: 20000, atk: 1000, def: 1000, spd: 135,
@@ -135,6 +136,12 @@ function setupEventListeners() {
             const counterTeamId = e.target.dataset.counterTeamId;
             const defenseTeamId = e.target.dataset.defenseTeamId;
             updateCounterStats(defenseTeamId, counterTeamId, 'failure');
+        } else if (e.target.classList.contains('delete-team-btn')) {
+            const teamCard = e.target.closest('.team-card');
+            const teamIdToDelete = teamCard.dataset.teamId;
+            if (confirm("Êtes-vous sûr de vouloir supprimer cette équipe ? Cette action est irréversible.")) {
+                deleteTeam(teamIdToDelete);
+            }
         }
     });
 
@@ -222,23 +229,23 @@ function searchMonster(unitId = null) {
     return;
   }
 
-  const cardsHtml = foundMonsters.map(monster => createMonsterCard(monster)).join('');
-  showResult(`<div class="results-container">${cardsHtml}</div>`);
-
   const counterSection = document.getElementById('counter-teams-section');
   const addCounterContainer = document.getElementById('add-counter-container');
   const counterResultContainer = document.getElementById('counter-teams-result');
 
   if (foundMonsters.length === 3) {
-    // On trouve ou crée l'équipe de défense. La fonction s'occupe de sauvegarder si nécessaire.
-    const defenseTeam = findOrCreateTeam(foundMonsters);
-    addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
-    document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModal(foundMonsters, defenseTeam.team_id));
-    
+    currentCounterView = 'counters'; // Réinitialise la vue par défaut à chaque nouvelle recherche
+    // On affiche les cartes individuelles des monstres recherchés.
+    const cardsHtml = foundMonsters.map(monster => createMonsterCard(monster)).join('');
+    showResult(`<div class="results-container">${cardsHtml}</div>`);
+
     // On affiche les counters existants pour cette équipe
     displayCounterTeams(foundMonsters.map(m => m.fields.com2us_id));
     counterSection.style.display = 'block';
   } else {
+    // Si moins de 3 monstres, on affiche leurs cartes individuelles.
+    const cardsHtml = foundMonsters.map(monster => createMonsterCard(monster)).join('');
+    showResult(`<div class="results-container">${cardsHtml}</div>`);
     counterSection.style.display = 'none';
   }
 }
@@ -314,9 +321,15 @@ function openAddCounterModal(defenseMonsters, defenseTeamId) {
 function displayCounterTeams(monsterIds) {
     // La fonction de rappel pour "Add Counter" est maintenant gérée directement dans searchMonster.
     // On passe une fonction vide ou null pour éviter de recréer un listener.
-    const openModalCallback = (teamData) => openAddCounterModal(teamData.monsters.map(m => allMonsters.find(mon => mon.fields.com2us_id === m.monster_id)), teamData.team_id);
-
-    displayCounterTeamsUI(monsterIds, teamsData, openModalCallback);
+    const openModalCallback = (teamData) => {
+        const defenseMonsters = teamData.monsters.map(m => allMonsters.find(mon => mon.fields.com2us_id === m.monster_id));
+        openAddCounterModal(defenseMonsters, teamData.team_id);
+    };
+    const switchViewCallback = (view) => {
+        currentCounterView = view;
+        displayCounterTeams(monsterIds); // Rafraîchit l'affichage avec la nouvelle vue
+    };
+    displayCounterTeamsUI(monsterIds, teamsData, openModalCallback, switchViewCallback, currentCounterView);
 }
 
 /**
@@ -325,12 +338,18 @@ function displayCounterTeams(monsterIds) {
  * @returns {object} L'objet équipe trouvé ou créé.
  */
 function findOrCreateTeam(monsters) {
-  if (!monsters || monsters.length === 0) return null;
-  const monsterIds = monsters.map(m => m.fields.com2us_id).sort();
+  // La logique s'applique uniquement aux équipes de 3.
+  if (!monsters || monsters.length !== 3) return null;
+
+  // Le premier monstre est le "leader", son ID est fixe.
+  const leaderId = monsters[0].fields.com2us_id;
+  // On trie les IDs des deux autres monstres.
+  const followerIds = [monsters[1].fields.com2us_id, monsters[2].fields.com2us_id].sort();
 
   let team = teamsData.find(t => {
-    const teamMonsterIds = t.monsters.map(m => m.monster_id).sort();
-    return teamMonsterIds.length === monsterIds.length && teamMonsterIds.every((id, i) => id === monsterIds[i]);
+    if (t.monsters.length !== 3 || t.monsters[0].monster_id !== leaderId) return false;
+    const teamFollowerIds = [t.monsters[1].monster_id, t.monsters[2].monster_id].sort();
+    return teamFollowerIds[0] === followerIds[0] && teamFollowerIds[1] === followerIds[1];
   });
 
   if (!team) {
@@ -338,7 +357,8 @@ function findOrCreateTeam(monsters) {
       team_id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
       name: `${monsters.map(m => m.fields.name).join(', ')}`,
       category: "User-Generated",
-      monsters: monsterIds.map(id => ({ monster_id: id, is_owned: false })),
+      // On sauvegarde les monstres dans l'ordre de la recherche initiale pour la cohérence de l'affichage du nom.
+      monsters: monsters.map(m => ({ monster_id: m.fields.com2us_id, is_owned: false })),
       counter: [],
       notes: ""
     };
@@ -372,4 +392,27 @@ function updateCounterStats(defenseTeamId, counterTeamId, type) {
             console.warn(`Lien counter non trouvé pour defenseTeamId: ${defenseTeamId}, counterTeamId: ${counterTeamId}`);
         }
     }
+}
+
+/**
+ * Supprime une équipe et toutes les références à celle-ci.
+ * @param {string} teamIdToDelete - L'ID de l'équipe à supprimer.
+ */
+function deleteTeam(teamIdToDelete) {
+    // 1. Supprime l'équipe de la liste principale.
+    teamsData = teamsData.filter(team => team.team_id !== teamIdToDelete);
+
+    // 2. Supprime toutes les références à cette équipe dans les listes "counter" des autres équipes.
+    teamsData.forEach(team => {
+        team.counter = team.counter.filter(c => c.team_id !== teamIdToDelete);
+    });
+
+    // 3. Sauvegarde les données mises à jour.
+    saveTeamsDataToServer(teamsData);
+
+    // 4. Rafraîchit l'affichage.
+    // On simule une recherche pour la défense actuellement affichée pour rafraîchir la liste des counters.
+    const searchTerms = searchInput.value.split(' ').map(term => term.trim()).filter(Boolean);
+    const currentDefense = findTeamByMonsterNames(searchTerms);
+    if (currentDefense) displayCounterTeams(currentDefense.monsters.map(m => m.monster_id));
 }

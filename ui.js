@@ -314,16 +314,23 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
   const addCounterContainer = document.getElementById('add-counter-container');
   const counterResultContainer = document.getElementById('counter-teams-result');
   
-  const sortedMonsterIds = [...monsterIds].sort();
+  // On utilise la même logique de recherche que findOrCreateTeam
+  const leaderId = monsterIds[0];
+  const followerIds = [monsterIds[1], monsterIds[2]].sort();
+
   const foundTeam = teamsData.find(team => {
-    const teamMonsterIds = team.monsters.map(m => m.monster_id).sort();
-    return teamMonsterIds.length === sortedMonsterIds.length && teamMonsterIds.every((id, index) => id === sortedMonsterIds[index]);
+    if (team.monsters.length !== 3 || team.monsters[0].monster_id !== leaderId) return false;
+    const teamFollowerIds = [team.monsters[1].monster_id, team.monsters[2].monster_id].sort();
+    return teamFollowerIds[0] === followerIds[0] && teamFollowerIds[1] === followerIds[1];
   });
 
   if (foundTeam) {
     // On affiche toujours le bouton "Add Counter" si une équipe est trouvée
     addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
     document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModalCallback(foundTeam));
+    // On génère et affiche le cadre de statistiques de la défense.
+    const defenseStatsHtml = createTeamStats(foundTeam, teamsData);
+
     // Logique pour trouver les équipes que cette défense contre
     const teamsCounteredByThisDef = teamsData.filter(t => t.counter.some(c => c.team_id === foundTeam.team_id));
 
@@ -341,16 +348,16 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
       if (foundTeam.counter && foundTeam.counter.length > 0) {
         const counterTeamsHtml = foundTeam.counter.map(counterInfo => {
           const counterTeamData = teamsData.find(t => t.team_id === counterInfo.team_id);
-          return counterTeamData ? createTeamCard(counterTeamData, counterInfo) : '';
+          return counterTeamData ? createTeamCard(counterTeamData, counterInfo, teamsData) : '';
         }).join('');
-        counterResultContainer.innerHTML = navHtml + counterTeamsHtml;
+        counterResultContainer.innerHTML = defenseStatsHtml + navHtml + counterTeamsHtml;
       } else {
-        counterResultContainer.innerHTML = navHtml + `<p>Aucun counter trouvé pour cette équipe.</p>`;
+        counterResultContainer.innerHTML = defenseStatsHtml + navHtml + `<p>Aucun counter trouvé pour cette équipe.</p>`;
       }
     } else {
       // Le bouton "Add Counter" est maintenant géré en dehors de cette condition
-      const teamsHtml = teamsCounteredByThisDef.map(team => createTeamCard(team)).join('');
-      counterResultContainer.innerHTML = navHtml + teamsHtml;
+      const teamsHtml = teamsCounteredByThisDef.map(team => createTeamCard(team, null, teamsData)).join('');
+      counterResultContainer.innerHTML = defenseStatsHtml + navHtml + teamsHtml;
     }
 
     // Ajout des listeners sur les boutons de navigation s'ils existent
@@ -370,12 +377,56 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
 }
 
 /**
+ * Crée le HTML pour le cadre de statistiques d'une équipe.
+ * @param {object} teamData - Les données de l'équipe.
+ * @param {object[]} allTeamsData - Toutes les données des équipes pour calculer les stats d'attaque.
+ * @returns {string} Le HTML du cadre de statistiques.
+ */
+export function createTeamStats(teamData, allTeamsData) {
+  // Stats en tant que défense
+  const defenseAttacks = teamData.counter.reduce((acc, c) => acc + c.success + c.failure, 0);
+  const defenseWins = teamData.counter.reduce((acc, c) => acc + c.failure, 0);
+  const defenseWinRate = defenseAttacks > 0 ? Math.round((defenseWins / defenseAttacks) * 100) : 0;
+  const knownCounters = teamData.counter.length;
+
+  // Stats en tant que counter (attaque)
+  const attackStats = allTeamsData.reduce((acc, t) => {
+    const counterInstance = t.counter.find(c => c.team_id === teamData.team_id);
+    if (counterInstance) {
+      acc.uses += counterInstance.success + counterInstance.failure;
+      acc.wins += counterInstance.success;
+    }
+    return acc;
+  }, { uses: 0, wins: 0 });
+  const attackSuccessRate = attackStats.uses > 0 ? Math.round((attackStats.wins / attackStats.uses) * 100) : 0;
+
+  return `
+    <div class="defense-stats-card">
+      <h3 class="section-title" style="margin-top: 0;">Stats de la Défense</h3>
+      <div class="team-stats-container">
+        <div class="team-stats-section">
+          <div class="stats-title">Performance en Défense</div>
+          <p>Attaques subies: <span>${defenseAttacks}</span></p>
+          <p>Victoires: <span>${defenseWins} (${defenseWinRate}%)</span></p>
+          <p>Counters connus: <span>${knownCounters}</span></p>
+        </div>
+        <div class="team-stats-section">
+          <div class="stats-title">Performance en Attaque</div>
+          <p>Utilisations: <span>${attackStats.uses}</span></p>
+          <p>Succès: <span>${attackStats.wins} (${attackSuccessRate}%)</span></p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/**
  * Crée le HTML pour une carte d'équipe.
  * @param {object} teamData - Les données de l'équipe depuis teams.json.
  * @param {object} [counterInfo=null] - Les informations de counter (win/loss).
  * @returns {string} Le HTML de la carte d'équipe.
  */
-export function createTeamCard(teamData, counterInfo = null) {
+export function createTeamCard(teamData, counterInfo = null, allTeamsData = []) {
   const monsterImagesHtml = teamData.monsters.map(monster => {
     const monsterInfo = allMonsters.find(m => m.fields.com2us_id === monster.monster_id);
     return createSmallMonsterCard(monsterInfo);
@@ -392,7 +443,8 @@ export function createTeamCard(teamData, counterInfo = null) {
   ` : '';
 
   return `
-    <div class="team-card">
+    <div class="team-card" data-team-id="${teamData.team_id}">
+      <div class="delete-team-btn" title="Supprimer cette équipe">&times;</div>
       <div class="team-card-main">
         <div class="team-monsters">${monsterImagesHtml}</div>
         ${counterStatsHtml}
