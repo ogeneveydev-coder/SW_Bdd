@@ -27,7 +27,6 @@ export let myMonsters = [];
 export let ownedMonsterIds = new Set();
 export let globalMonsterStats = {};
 export let teamsData = [];
-let currentCounterView = 'counters'; // 'counters' ou 'counterOf'
 
 export const MAX_STATS = { 
   hp: 20000, atk: 1000, def: 1000, spd: 135,
@@ -56,6 +55,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     calculateGlobalStats();
     initializeBestiaryViews();
     setupEventListeners();
+    // searchInput.addEventListener('input', handleAutocomplete); // On le déplace dans setupEventListeners
 
   } catch (err) {
     console.error("Erreur lors de l'initialisation de l'application.", err);
@@ -137,6 +137,8 @@ function setupEventListeners() {
             updateCounterStats(defenseTeamId, counterTeamId, 'failure');
         }
     });
+
+    searchInput.addEventListener('input', handleAutocomplete);
 
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.search-container')) {
@@ -228,7 +230,6 @@ function searchMonster(unitId = null) {
   const counterResultContainer = document.getElementById('counter-teams-result');
 
   if (foundMonsters.length === 3) {
-    currentCounterView = 'counters'; // Réinitialise la vue par défaut à chaque nouvelle recherche
     // On trouve ou crée l'équipe de défense. La fonction s'occupe de sauvegarder si nécessaire.
     const defenseTeam = findOrCreateTeam(foundMonsters);
     addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
@@ -302,9 +303,6 @@ function openAddCounterModal(defenseMonsters, defenseTeamId) {
                 // 5. On sauvegarde l'état complet des données.
                 saveTeamsDataToServer(teamsData);
             }
-            else {
-                alert("Cette équipe de counter existe déjà pour cette défense.");
-            }
         }
         // 6. On rafraîchit l'affichage pour voir le nouveau counter.
         displayCounterTeams(defenseMonsters.map(m => m.fields.com2us_id));
@@ -316,15 +314,9 @@ function openAddCounterModal(defenseMonsters, defenseTeamId) {
 function displayCounterTeams(monsterIds) {
     // La fonction de rappel pour "Add Counter" est maintenant gérée directement dans searchMonster.
     // On passe une fonction vide ou null pour éviter de recréer un listener.
-    const openModalCallback = (teamData) => {
-        const defenseMonsters = teamData.monsters.map(m => allMonsters.find(mon => mon.fields.com2us_id === m.monster_id));
-        openAddCounterModal(defenseMonsters, teamData.team_id);
-    };
-    const switchViewCallback = (view) => {
-        currentCounterView = view;
-        displayCounterTeams(monsterIds); // Rafraîchit l'affichage avec la nouvelle vue
-    };
-    displayCounterTeamsUI(monsterIds, teamsData, openModalCallback, switchViewCallback, currentCounterView);
+    const openModalCallback = (teamData) => openAddCounterModal(teamData.monsters.map(m => allMonsters.find(mon => mon.fields.com2us_id === m.monster_id)), teamData.team_id);
+
+    displayCounterTeamsUI(monsterIds, teamsData, openModalCallback);
 }
 
 /**
