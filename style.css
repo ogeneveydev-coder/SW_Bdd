@@ -697,3 +697,23 @@ strong {
   margin-top: 10px;
 }
 }
+
+/* --- Styles pour le sélecteur de vue des counters --- */
+.counter-view-switcher {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.counter-view-switcher button {
+  opacity: 0.7;
+  background: var(--jarvis-bg);
+}
+
+.counter-view-switcher button.active {
+  opacity: 1;
+  background-color: var(--jarvis-blue);
+  color: var(--jarvis-bg-solid);
+  box-shadow: 0 0 15px var(--jarvis-blue);
+}

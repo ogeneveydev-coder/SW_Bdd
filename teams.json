@@ -45,7 +45,14 @@
         "is_owned": false
       }
     ],
-    "counter": [],
+    "counter": [
+      {
+        "team_id": "user_1759785054634_t9ma0",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1759785621203_ei7f1"
+      }
+    ],
     "notes": ""
   }
 ]

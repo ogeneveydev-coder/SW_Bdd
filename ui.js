@@ -306,12 +306,14 @@ export function createSmallMonsterCard(monsterInfo) {
  * @param {number[]} monsterIds - Un tableau des com2us_id des 3 monstres de l'équipe.
  * @param {object[]} teamsData - Les données de toutes les équipes.
  * @param {function} openAddCounterModalCallback - La fonction à appeler pour ouvrir la modale.
+ * @param {function} switchViewCallback - La fonction pour changer de vue.
+ * @param {string} currentView - La vue actuelle ('counters' ou 'counterOf').
  */
-export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCallback) {
+export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCallback, switchViewCallback, currentView) {
   const counterSection = document.getElementById('counter-teams-section');
   const addCounterContainer = document.getElementById('add-counter-container');
   const counterResultContainer = document.getElementById('counter-teams-result');
-
+  
   const sortedMonsterIds = [...monsterIds].sort();
   const foundTeam = teamsData.find(team => {
     const teamMonsterIds = team.monsters.map(m => m.monster_id).sort();
@@ -319,22 +321,47 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
   });
 
   if (foundTeam) {
+    // On affiche toujours le bouton "Add Counter" si une équipe est trouvée
     addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
     document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModalCallback(foundTeam));
+    // Logique pour trouver les équipes que cette défense contre
+    const teamsCounteredByThisDef = teamsData.filter(t => t.counter.some(c => c.team_id === foundTeam.team_id));
 
-    if (foundTeam.counter && foundTeam.counter.length > 0) {
-      const counterTeamsHtml = foundTeam.counter.map(counterInfo => {
-        const counterTeamData = teamsData.find(t => t.team_id === counterInfo.team_id);
-        if (counterTeamData) {
-          return createTeamCard(counterTeamData, counterInfo);
-        }
-        return '';
-      }).join('');
-      counterResultContainer.innerHTML = counterTeamsHtml;
+    let navHtml = '';
+    if (teamsCounteredByThisDef.length > 0) {
+      navHtml = `
+        <div class="counter-view-switcher">
+          <button id="show-counters-btn" class="${currentView === 'counters' ? 'active' : ''}">Counters de cette équipe</button>
+          <button id="show-counter-of-btn" class="${currentView === 'counterOf' ? 'active' : ''}">Équipes que celle-ci contre</button>
+        </div>
+      `;
+    }
+
+    if (currentView === 'counters') {
+      if (foundTeam.counter && foundTeam.counter.length > 0) {
+        const counterTeamsHtml = foundTeam.counter.map(counterInfo => {
+          const counterTeamData = teamsData.find(t => t.team_id === counterInfo.team_id);
+          return counterTeamData ? createTeamCard(counterTeamData, counterInfo) : '';
+        }).join('');
+        counterResultContainer.innerHTML = navHtml + counterTeamsHtml;
+      } else {
+        counterResultContainer.innerHTML = navHtml + `<p>Aucun counter trouvé pour cette équipe.</p>`;
+      }
     } else {
-      counterResultContainer.innerHTML = `<p>Aucun counter trouvé pour cette équipe.</p>`;
+      // Le bouton "Add Counter" est maintenant géré en dehors de cette condition
+      const teamsHtml = teamsCounteredByThisDef.map(team => createTeamCard(team)).join('');
+      counterResultContainer.innerHTML = navHtml + teamsHtml;
+    }
+
+    // Ajout des listeners sur les boutons de navigation s'ils existent
+    const showCountersBtn = document.getElementById('show-counters-btn');
+    const showCounterOfBtn = document.getElementById('show-counter-of-btn');
+    if (showCountersBtn && showCounterOfBtn) {
+      showCountersBtn.addEventListener('click', () => switchViewCallback('counters'));
+      showCounterOfBtn.addEventListener('click', () => switchViewCallback('counterOf'));
     }
     counterSection.style.display = 'block';
+
   } else {
     addCounterContainer.innerHTML = '';
     counterResultContainer.innerHTML = '';

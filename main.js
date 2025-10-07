@@ -27,6 +27,7 @@ export let myMonsters = [];
 export let ownedMonsterIds = new Set();
 export let globalMonsterStats = {};
 export let teamsData = [];
+let currentCounterView = 'counters'; // 'counters' ou 'counterOf'
 
 export const MAX_STATS = { 
   hp: 20000, atk: 1000, def: 1000, spd: 135,
@@ -227,6 +228,7 @@ function searchMonster(unitId = null) {
   const counterResultContainer = document.getElementById('counter-teams-result');
 
   if (foundMonsters.length === 3) {
+    currentCounterView = 'counters'; // Réinitialise la vue par défaut à chaque nouvelle recherche
     // On trouve ou crée l'équipe de défense. La fonction s'occupe de sauvegarder si nécessaire.
     const defenseTeam = findOrCreateTeam(foundMonsters);
     addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
@@ -314,9 +316,15 @@ function openAddCounterModal(defenseMonsters, defenseTeamId) {
 function displayCounterTeams(monsterIds) {
     // La fonction de rappel pour "Add Counter" est maintenant gérée directement dans searchMonster.
     // On passe une fonction vide ou null pour éviter de recréer un listener.
-    const openModalCallback = (teamData) => openAddCounterModal(teamData.monsters.map(m => allMonsters.find(mon => mon.fields.com2us_id === m.monster_id)), teamData.team_id);
-
-    displayCounterTeamsUI(monsterIds, teamsData, openModalCallback);
+    const openModalCallback = (teamData) => {
+        const defenseMonsters = teamData.monsters.map(m => allMonsters.find(mon => mon.fields.com2us_id === m.monster_id));
+        openAddCounterModal(defenseMonsters, teamData.team_id);
+    };
+    const switchViewCallback = (view) => {
+        currentCounterView = view;
+        displayCounterTeams(monsterIds); // Rafraîchit l'affichage avec la nouvelle vue
+    };
+    displayCounterTeamsUI(monsterIds, teamsData, openModalCallback, switchViewCallback, currentCounterView);
 }
 
 /**
