@@ -26,7 +26,6 @@
     <div id="add-counter-container">
       <!-- Le bouton "Add Counter" sera injecté ici par JavaScript -->
     </div>
-    <div id="meta-report-section" style="display: none;"></div>
     <div id="counter-teams-result">
       <!-- Les cartes des équipes counter seront injectées ici -->
     </div>
@@ -65,7 +64,15 @@
   </div>
 
   <!-- Poignée pour ouvrir/fermer le tiroir du bestiaire -->
-  <div id="drawer-handle" class="drawer-handle">›</div>
+  <div id="drawer-handle" class="drawer-handle bestiary-drawer-handle">›</div>
+
+  <!-- Tiroir pour les statistiques (Défense & Méta) -->
+  <div id="stats-section" class="stats-drawer">
+    <div id="defense-stats-container" style="display: none;"></div>
+    <div id="meta-report-container" style="display: none;"></div>
+  </div>
+  <!-- Poignée pour le tiroir des stats -->
+  <div id="stats-drawer-handle" class="drawer-handle stats-drawer-handle">‹</div>
 
   <script type="module" src="main.js"></script>
 </body>

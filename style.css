@@ -358,6 +358,39 @@ strong {
   font-size: 0.7em;
 }
 
+/* --- Styles pour les stats de méta par monstre --- */
+.monster-meta-stats {
+  border-top: 1px solid rgba(0, 184, 255, 0.3);
+  margin-top: 15px;
+  padding-top: 10px;
+}
+
+.monster-meta-title {
+  font-size: 0.8em;
+  text-align: center;
+  color: var(--jarvis-blue);
+  margin: 0 0 10px 0;
+  text-transform: uppercase;
+}
+
+.monster-meta-stats > p {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.monster-meta-section {
+  margin-top: 8px;
+}
+
+.monster-meta-section h5 {
+  font-size: 0.7em;
+  color: #ccc;
+  margin: 0 0 4px 0;
+  font-weight: normal;
+  border-bottom: 1px solid rgba(0, 184, 255, 0.2);
+  padding-bottom: 2px;
+}
+
 /* --- Styles pour le graphique Radial à Barres --- */
 .radial-chart-container {
   width: 100%;
@@ -505,17 +538,26 @@ strong {
 }
 
 /* Le tiroir devient une section normale, cachée par défaut */
+/* CORRECTION: On restaure le style du tiroir latéral pour le bestiaire */
 #bestiary-section {
-  display: none; /* Caché par défaut */
+  position: fixed;
+  top: 0;
+  left: -450px; /* Caché à gauche par défaut */
+  width: 450px;
+  height: 100%;
   background: rgba(24, 32, 44, 0.95); /* Fond semi-transparent */
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 184, 255, 0.3);
+  border-right: 1px solid var(--jarvis-blue);
+  box-shadow: 5px 0 15px rgba(0, 184, 255, 0.3);
+  padding: 20px;
+  box-sizing: border-box;
   overflow: hidden; /* Pour s'assurer que le contenu ne dépasse pas */
+  transition: left 0.4s ease-in-out;
+  z-index: 800;
 }
 
 /* Classe pour afficher la section du bestiaire */
 #bestiary-section.is-open {
-  display: block;
+  left: 0; /* Le tiroir devient visible */
 }
 
 /* --- Poignée du tiroir --- */
@@ -540,15 +582,38 @@ strong {
   z-index: 801; /* Au-dessus du tiroir */
 }
 
+.bestiary-drawer-handle {
+  left: 20px;
+}
+
+.stats-drawer {
+  position: fixed;
+  top: 0;
+  right: -350px; /* Caché à droite par défaut */
+  width: 350px;
+  height: 100%;
+  background: rgba(24, 32, 44, 0.95); /* Fond semi-transparent */
+  border-left: 1px solid var(--jarvis-blue);
+  box-shadow: -5px 0 15px rgba(0, 184, 255, 0.3);
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  transition: right 0.4s ease-in-out;
+  z-index: 800;
+}
+
+.stats-drawer.is-open {
+  right: 0; /* Visible */
+}
+
+.stats-drawer-handle {
+  right: 20px;
+  left: auto; /* S'assure que la position gauche n'est pas appliquée */
+}
+
 .drawer-handle:hover {
   background-color: var(--jarvis-blue);
   color: var(--jarvis-bg-solid);
-}
-
-/* Quand le bestiaire est ouvert, on déplace la poignée à droite */
-#bestiary-section.is-open + .drawer-handle {
-  left: auto; /* On annule la position à gauche */
-  right: 20px; /* On la positionne à droite */
 }
 
 /* --- Styles pour les cartes d'équipes (Counters) --- */
@@ -786,11 +851,12 @@ strong {
   border: 1px solid var(--jarvis-blue);
   border-radius: 8px;
   padding: 15px;
-  margin-bottom: 20px;
+  margin-bottom: 30px; /* Espace entre les deux cadres de stats */
   box-shadow: 0 0 10px rgba(0, 184, 255, 0.3);
 }
 
 /* Nouveau style pour la carte du rapport de méta */
+/* On le fusionne avec defense-stats-card car ils sont similaires */
 .meta-report-card {
   background: var(--jarvis-bg);
   border: 1px solid var(--jarvis-blue);

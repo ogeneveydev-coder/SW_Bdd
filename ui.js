@@ -3,7 +3,7 @@
  * Module pour gérer la création et la manipulation de l'interface utilisateur.
  */
 
-import { allMonsters, awakenedMonsters, myMonsters, ownedMonsterIds, globalMonsterStats, MAX_STATS } from './main.js';
+import { allMonsters, awakenedMonsters, myMonsters, ownedMonsterIds, globalMonsterStats, monsterMetaStats, teamsData, MAX_STATS } from './main.js';
 
 // Centraliser les sélecteurs DOM pour la performance et la lisibilité
 export const searchInput = document.getElementById('searchInput');
@@ -21,9 +21,32 @@ export const drawerHandle = document.getElementById('drawer-handle');
  * @returns {string} Le HTML de la carte.
  */
 export function createMonsterCard(monsterData, unitData = null) {
-  const { name, element, archetype, max_lvl_hp, max_lvl_attack, max_lvl_defense, speed, crit_rate, crit_damage, resistance, accuracy, image_filename } = monsterData.fields;
+  const { com2us_id, name, element, archetype, max_lvl_hp, max_lvl_attack, max_lvl_defense, speed, crit_rate, crit_damage, resistance, accuracy, image_filename } = monsterData.fields;
   const radialChart = createRadialBarChart(monsterData.fields);
   const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
+
+  // Calcul des stats de méta pour ce monstre
+  const meta = monsterMetaStats[com2us_id] || {};
+  const presenceRate = teamsData.length > 0 ? ((meta.presenceCount || 0) / teamsData.length * 100).toFixed(1) : 0;
+  const totalDefUses = (meta.defenseWins || 0) + (meta.defenseLosses || 0);
+  const defWinRate = totalDefUses > 0 ? Math.round((meta.defenseWins / totalDefUses) * 100) : 0;
+  const totalAtkUses = (meta.attackWins || 0) + (meta.attackLosses || 0);
+  const atkWinRate = totalAtkUses > 0 ? Math.round((meta.attackWins / totalAtkUses) * 100) : 0;
+
+  const monsterMetaHtml = `
+    <div class="monster-meta-stats">
+      <h4 class="monster-meta-title">Statistiques de Méta</h4>
+      <p><span>Présence:</span> ${presenceRate}% (${meta.presenceCount || 0} équipes)</p>
+      <div class="monster-meta-section">
+        <h5>En Défense</h5>
+        <p><span>Winrate:</span> ${defWinRate}% (${totalDefUses} combats)</p>
+      </div>
+      <div class="monster-meta-section">
+        <h5>En Attaque</h5>
+        <p><span>Winrate:</span> ${atkWinRate}% (${totalAtkUses} combats)</p>
+      </div>
+    </div>
+  `;
 
   const statsDisplayHtml = `
       <p><span>Element:</span> ${element}</p>
@@ -45,6 +68,7 @@ export function createMonsterCard(monsterData, unitData = null) {
           <p><span>ACC:</span> ${globalMonsterStats.acc.avg}%</p>
         </div>
       </div>
+      ${monsterMetaHtml}
     `;
 
   return `
@@ -328,8 +352,12 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
     // On affiche toujours le bouton "Add Counter" si une équipe est trouvée
     addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
     document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModalCallback(foundTeam));
-    // On génère et affiche le cadre de statistiques de la défense.
+    
+    // On génère et affiche le cadre de statistiques de la défense dans son conteneur dédié (le tiroir).
     const defenseStatsHtml = createTeamStats(foundTeam, teamsData);
+    const defenseStatsContainer = document.getElementById('defense-stats-container');
+    defenseStatsContainer.innerHTML = defenseStatsHtml;
+    defenseStatsContainer.style.display = 'block';
 
     // Logique pour trouver les équipes que cette défense contre
     const teamsCounteredByThisDef = teamsData.filter(t => t.counter.some(c => c.team_id === foundTeam.team_id));
@@ -359,14 +387,14 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
           const counterTeamData = teamsData.find(t => t.team_id === counterInfo.team_id);
           return counterTeamData ? createTeamCard(counterTeamData, counterInfo) : '';
         }).join('');
-        counterResultContainer.innerHTML = defenseStatsHtml + navHtml + counterTeamsHtml;
+        counterResultContainer.innerHTML = navHtml + counterTeamsHtml;
       } else {
-        counterResultContainer.innerHTML = defenseStatsHtml + navHtml + `<p>Aucun counter trouvé pour cette équipe.</p>`;
+        counterResultContainer.innerHTML = navHtml + `<p>Aucun counter trouvé pour cette équipe.</p>`;
       }
     } else {
       // Le bouton "Add Counter" est maintenant géré en dehors de cette condition
       const teamsHtml = teamsCounteredByThisDef.map(team => createTeamCard(team, null)).join('');
-      counterResultContainer.innerHTML = defenseStatsHtml + navHtml + teamsHtml;
+      counterResultContainer.innerHTML = navHtml + teamsHtml;
     }
 
     // Ajout des listeners sur les boutons de navigation s'ils existent
@@ -381,6 +409,8 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
   } else {
     addCounterContainer.innerHTML = '';
     counterResultContainer.innerHTML = '';
+    document.getElementById('defense-stats-container').style.display = 'none';
+    document.getElementById('meta-report-container').style.display = 'none';
     counterSection.style.display = 'none';
   }
 }

@@ -15,8 +15,8 @@ import {
 
 // --- GESTION DES VERSIONS ---
 const fileVersions = {
-  script: '4.3.0', // Ajout des stats globales (méta)
-  style: '2.41', // Style pour le taux de succès
+  script: '4.4.0', // Ajout des stats par monstre
+  style: '2.42', // Style pour les stats par monstre
   index: '2.16'
 };
 
@@ -26,6 +26,7 @@ export let awakenedMonsters = [];
 export let myMonsters = [];
 export let ownedMonsterIds = new Set();
 export let globalMonsterStats = {};
+export let monsterMetaStats = {}; // Pour les stats de présence et de winrate par monstre
 export let teamsData = [];
 let currentCounterView = 'counters'; // 'counters' ou 'counterOf'
 
@@ -55,6 +56,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     calculateGlobalStats();
     initializeBestiaryViews();
+    calculateMonsterMetaStats(); // Calcul des nouvelles stats par monstre
     setupEventListeners();
     // searchInput.addEventListener('input', handleAutocomplete); // On le déplace dans setupEventListeners
 
@@ -91,11 +93,71 @@ function calculateGlobalStats() {
     };
 }
 
+/**
+ * Calcule les statistiques de méta pour chaque monstre (présence, winrate, etc.).
+ */
+function calculateMonsterMetaStats() {
+    // Initialisation
+    allMonsters.forEach(monster => {
+        monsterMetaStats[monster.fields.com2us_id] = {
+            presenceCount: 0,
+            defenseAppearances: 0,
+            defenseWins: 0,
+            defenseLosses: 0,
+            attackAppearances: 0,
+            attackWins: 0,
+            attackLosses: 0
+        };
+    });
+
+    if (teamsData.length === 0) return;
+
+    // Itération sur toutes les équipes pour collecter les données
+    teamsData.forEach(team => {
+        const teamMonsterIds = team.monsters.map(m => m.monster_id);
+
+        // 1. Calcul pour la présence en défense
+        teamMonsterIds.forEach(monsterId => {
+            if (monsterMetaStats[monsterId]) {
+                monsterMetaStats[monsterId].presenceCount++;
+                monsterMetaStats[monsterId].defenseAppearances++;
+                // Les victoires d'une défense sont les échecs de ses counters
+                const wins = team.counter.reduce((acc, c) => acc + c.failure, 0);
+                const losses = team.counter.reduce((acc, c) => acc + c.success, 0);
+                monsterMetaStats[monsterId].defenseWins += wins;
+                monsterMetaStats[monsterId].defenseLosses += losses;
+            }
+        });
+
+        // 2. Calcul pour la présence en attaque (en tant que counter)
+        teamsData.forEach(defenseTeam => {
+            defenseTeam.counter.forEach(counterInfo => {
+                if (counterInfo.team_id === team.team_id) { // Si 'team' est un counter de 'defenseTeam'
+                    teamMonsterIds.forEach(monsterId => {
+                        if (monsterMetaStats[monsterId]) {
+                            monsterMetaStats[monsterId].attackAppearances++;
+                            monsterMetaStats[monsterId].attackWins += counterInfo.success;
+                            monsterMetaStats[monsterId].attackLosses += counterInfo.failure;
+                        }
+                    });
+                }
+            });
+        });
+    });
+}
+
 function setupEventListeners() {
     drawerHandle.addEventListener('click', () => {
         const drawer = document.getElementById('bestiary-section');
         const isOpen = drawer.classList.toggle('is-open');
         drawerHandle.textContent = isOpen ? '‹' : '›';
+    });
+
+    const statsDrawer = document.getElementById('stats-section');
+    const statsDrawerHandle = document.getElementById('stats-drawer-handle');
+    statsDrawerHandle.addEventListener('click', () => {
+        const isOpen = statsDrawer.classList.toggle('is-open');
+        statsDrawerHandle.textContent = isOpen ? '›' : '‹';
     });
 
     searchInput.addEventListener('keydown', (e) => {
@@ -245,13 +307,16 @@ function searchMonster(unitId = null) {
 
     // On affiche les counters existants pour cette équipe
     displayCounterTeams(foundMonsters.map(m => m.fields.com2us_id));
-    displayMetaStats(); // On affiche le rapport de méta
+    displayMetaStats(); // Affiche le rapport de méta dans le tiroir
     counterSection.style.display = 'block';
+    document.getElementById('stats-drawer-handle').style.display = 'flex'; // Affiche la poignée du tiroir stats
   } else {
     // Si moins de 3 monstres, on affiche leurs cartes individuelles.
     const cardsHtml = foundMonsters.map(monster => createMonsterCard(monster)).join('');
     showResult(`<div class="results-container">${cardsHtml}</div>`);
     counterSection.style.display = 'none';
+    document.getElementById('stats-drawer-handle').style.display = 'none'; // Cache la poignée
+    document.getElementById('stats-section').classList.remove('is-open'); // Ferme le tiroir
   }
 }
 
@@ -291,6 +356,7 @@ function resetSearch() {
   showResult('');
   clearSuggestions();
   document.getElementById('counter-teams-section').style.display = 'none';
+  document.getElementById('stats-drawer-handle').style.display = 'none';
 }
 
 function strNoAccent(str) {
@@ -363,7 +429,7 @@ function calculateMetaStats() {
  * Affiche les statistiques de méta pré-calculées.
  */
 function displayMetaStats() {
-    const metaStatsContainer = document.getElementById('meta-report-section');
+    const metaStatsContainer = document.getElementById('meta-report-container');
     if (!metaStatsContainer) return;
 
     const { defensePopularity, defensePerformance, counterPerformance } = metaStats;
