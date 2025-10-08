@@ -346,9 +346,18 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
 
     if (currentView === 'counters') {
       if (foundTeam.counter && foundTeam.counter.length > 0) {
+        // On trie les counters par taux de succès (du plus haut au plus bas)
+        foundTeam.counter.sort((a, b) => {
+          const totalA = a.success + a.failure;
+          const rateA = totalA > 0 ? a.success / totalA : -1; // On met les équipes jamais utilisées à la fin
+          const totalB = b.success + b.failure;
+          const rateB = totalB > 0 ? b.success / totalB : -1;
+          return rateB - rateA;
+        });
+
         const counterTeamsHtml = foundTeam.counter.map(counterInfo => {
           const counterTeamData = teamsData.find(t => t.team_id === counterInfo.team_id);
-          return counterTeamData ? createTeamCard(counterTeamData, counterInfo, teamsData) : '';
+          return counterTeamData ? createTeamCard(counterTeamData, counterInfo) : '';
         }).join('');
         counterResultContainer.innerHTML = defenseStatsHtml + navHtml + counterTeamsHtml;
       } else {
@@ -356,7 +365,7 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
       }
     } else {
       // Le bouton "Add Counter" est maintenant géré en dehors de cette condition
-      const teamsHtml = teamsCounteredByThisDef.map(team => createTeamCard(team, null, teamsData)).join('');
+      const teamsHtml = teamsCounteredByThisDef.map(team => createTeamCard(team, null)).join('');
       counterResultContainer.innerHTML = defenseStatsHtml + navHtml + teamsHtml;
     }
 
@@ -377,12 +386,12 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
 }
 
 /**
- * Crée le HTML pour le cadre de statistiques d'une équipe.
+ * Calcule les statistiques de performance brutes d'une équipe (défense et attaque).
  * @param {object} teamData - Les données de l'équipe.
  * @param {object[]} allTeamsData - Toutes les données des équipes pour calculer les stats d'attaque.
- * @returns {string} Le HTML du cadre de statistiques.
+ * @returns {object} Un objet contenant les statistiques de performance.
  */
-export function createTeamStats(teamData, allTeamsData) {
+export function getTeamPerformanceStats(teamData, allTeamsData) {
   // Stats en tant que défense
   const defenseAttacks = teamData.counter.reduce((acc, c) => acc + c.success + c.failure, 0);
   const defenseWins = teamData.counter.reduce((acc, c) => acc + c.failure, 0);
@@ -390,15 +399,32 @@ export function createTeamStats(teamData, allTeamsData) {
   const knownCounters = teamData.counter.length;
 
   // Stats en tant que counter (attaque)
-  const attackStats = allTeamsData.reduce((acc, t) => {
+  let attackUses = 0;
+  let attackWins = 0;
+  allTeamsData.forEach(t => {
     const counterInstance = t.counter.find(c => c.team_id === teamData.team_id);
     if (counterInstance) {
-      acc.uses += counterInstance.success + counterInstance.failure;
-      acc.wins += counterInstance.success;
+      attackUses += counterInstance.success + counterInstance.failure;
+      attackWins += counterInstance.success;
     }
-    return acc;
-  }, { uses: 0, wins: 0 });
-  const attackSuccessRate = attackStats.uses > 0 ? Math.round((attackStats.wins / attackStats.uses) * 100) : 0;
+  });
+  const attackSuccessRate = attackUses > 0 ? Math.round((attackWins / attackUses) * 100) : 0;
+
+  return {
+    defenseAttacks, defenseWins, defenseWinRate, knownCounters,
+    attackUses, attackWins, attackSuccessRate
+  };
+}
+
+/**
+ * Crée le HTML pour le cadre de statistiques d'une équipe.
+ * @param {object} teamData - Les données de l'équipe.
+ * @param {object[]} allTeamsData - Toutes les données des équipes pour calculer les stats d'attaque.
+ * @returns {string} Le HTML du cadre de statistiques.
+ */
+export function createTeamStats(teamData, allTeamsData) {
+  // Stats en tant que défense
+  const stats = getTeamPerformanceStats(teamData, allTeamsData);
 
   return `
     <div class="defense-stats-card">
@@ -406,14 +432,14 @@ export function createTeamStats(teamData, allTeamsData) {
       <div class="team-stats-container">
         <div class="team-stats-section">
           <div class="stats-title">Performance en Défense</div>
-          <p>Attaques subies: <span>${defenseAttacks}</span></p>
-          <p>Victoires: <span>${defenseWins} (${defenseWinRate}%)</span></p>
-          <p>Counters connus: <span>${knownCounters}</span></p>
+          <p>Attaques subies: <span>${stats.defenseAttacks}</span></p>
+          <p>Victoires: <span>${stats.defenseWins} (${stats.defenseWinRate}%)</span></p>
+          <p>Counters connus: <span>${stats.knownCounters}</span></p>
         </div>
         <div class="team-stats-section">
           <div class="stats-title">Performance en Attaque</div>
-          <p>Utilisations: <span>${attackStats.uses}</span></p>
-          <p>Succès: <span>${attackStats.wins} (${attackSuccessRate}%)</span></p>
+          <p>Utilisations: <span>${stats.attackUses}</span></p>
+          <p>Succès: <span>${stats.attackWins} (${stats.attackSuccessRate}%)</span></p>
         </div>
       </div>
     </div>
@@ -426,21 +452,28 @@ export function createTeamStats(teamData, allTeamsData) {
  * @param {object} [counterInfo=null] - Les informations de counter (win/loss).
  * @returns {string} Le HTML de la carte d'équipe.
  */
-export function createTeamCard(teamData, counterInfo = null, allTeamsData = []) {
+export function createTeamCard(teamData, counterInfo = null) {
   const monsterImagesHtml = teamData.monsters.map(monster => {
     const monsterInfo = allMonsters.find(m => m.fields.com2us_id === monster.monster_id);
     return createSmallMonsterCard(monsterInfo);
   }).join('');
 
-  const counterStatsHtml = counterInfo ? `
-    <div class="team-counter-stats">
-      <span>Win: ${counterInfo.success}</span> | <span>Loss: ${counterInfo.failure}</span>
-    </div>
-    <div class="team-counter-actions">
-      <button class="win-btn" data-counter-team-id="${teamData.team_id}" data-defense-team-id="${counterInfo.defense_team_id || ''}">Win</button>
-      <button class="loss-btn" data-counter-team-id="${teamData.team_id}" data-defense-team-id="${counterInfo.defense_team_id || ''}">Loss</button>
-    </div>
-  ` : '';
+  let counterStatsHtml = '';
+  if (counterInfo) {
+    const total = counterInfo.success + counterInfo.failure;
+    const winRate = total > 0 ? Math.round((counterInfo.success / total) * 100) : 0;
+
+    counterStatsHtml = `
+      <div class="team-counter-stats">
+        <div class="win-rate">${winRate}%</div>
+        <div class="win-loss-details"><span>Win: ${counterInfo.success}</span> | <span>Loss: ${counterInfo.failure}</span></div>
+      </div>
+      <div class="team-counter-actions">
+        <button class="win-btn" data-counter-team-id="${teamData.team_id}" data-defense-team-id="${counterInfo.defense_team_id || ''}">Win</button>
+        <button class="loss-btn" data-counter-team-id="${teamData.team_id}" data-defense-team-id="${counterInfo.defense_team_id || ''}">Loss</button>
+      </div>
+    `;
+  }
 
   return `
     <div class="team-card" data-team-id="${teamData.team_id}">

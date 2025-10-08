@@ -7,7 +7,7 @@ import { loadInitialData, saveTeamsDataToServer } from './api.js';
 import {
     searchInput, resultContainer, suggestionsContainer, searchBtn, resetBtn, drawerHandle,
     createMonsterCard, clearSuggestions, showResult, displayFileVersions,
-    initializeBestiaryViews, showMonsterInModal, createTeamCard,
+    initializeBestiaryViews, showMonsterInModal, createTeamCard, getTeamPerformanceStats,
     openAddCounterModal as openAddCounterModalUI,
     displayCounterTeams as displayCounterTeamsUI,
     closeBestiaryDrawer
@@ -15,9 +15,9 @@ import {
 
 // --- GESTION DES VERSIONS ---
 const fileVersions = {
-  script: '4.1.0', // Version pour l'ajout des compteurs win/loss
-  style: '2.40',
-  index: '2.16' // Version mise à jour pour le script module
+  script: '4.3.0', // Ajout des stats globales (méta)
+  style: '2.41', // Style pour le taux de succès
+  index: '2.16'
 };
 
 // --- VARIABLES GLOBALES DE L'APPLICATION ---
@@ -62,6 +62,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.error("Erreur lors de l'initialisation de l'application.", err);
     showResult("Impossible de charger les données de l'application.");
   }
+
+  // On appelle cette fonction ici, après que le bloc try/catch a terminé et que toutes les données sont prêtes.
+  // La fonction calcule les stats et les prépare, mais ne les affiche plus directement.
+  calculateMetaStats();
 });
 
 function calculateGlobalStats() {
@@ -241,6 +245,7 @@ function searchMonster(unitId = null) {
 
     // On affiche les counters existants pour cette équipe
     displayCounterTeams(foundMonsters.map(m => m.fields.com2us_id));
+    displayMetaStats(); // On affiche le rapport de méta
     counterSection.style.display = 'block';
   } else {
     // Si moins de 3 monstres, on affiche leurs cartes individuelles.
@@ -316,6 +321,87 @@ function openAddCounterModal(defenseMonsters, defenseTeamId) {
     };
     // On passe le callback à la fonction UI
     openAddCounterModalUI(defenseMonsters, onConfirmCallback, strNoAccent);
+}
+
+let metaStats = {}; // Variable pour stocker les stats calculées
+
+/**
+ * Calcule les statistiques globales (méta) des équipes et les stocke.
+ */
+function calculateMetaStats() {
+    // 1. Top 5 des Défenses les plus Populaires (celles qui sont le plus attaquées)
+    const defensePopularity = teamsData.map(team => {
+        const stats = getTeamPerformanceStats(team, teamsData);
+        return { team, count: stats.defenseAttacks };
+    })
+    .filter(item => item.count > 0)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
+    // 2. Top 5 des Défenses les plus Solides (par win rate en défense)
+    const defensePerformance = teamsData.map(team => {
+        const stats = getTeamPerformanceStats(team, teamsData);
+        return { team, winRate: stats.defenseWinRate, defenseAttacks: stats.defenseAttacks };
+    })
+    .filter(item => item.defenseAttacks > 5) // On ne considère que les défenses attaquées plus de 5 fois pour la pertinence
+    .sort((a, b) => b.winRate - a.winRate)
+    .slice(0, 5);
+
+    // 3. Top 5 des Counters les plus Fiables (par win rate en attaque)
+    const counterPerformance = teamsData.map(team => {
+        const stats = getTeamPerformanceStats(team, teamsData);
+        return { team, winRate: stats.attackSuccessRate, totalUses: stats.attackUses };
+    })
+    .filter(item => item.totalUses > 5) // On ne considère que les counters utilisés plus de 5 fois
+    .sort((a, b) => b.winRate - a.winRate)
+    .slice(0, 5);
+    
+    metaStats = { defensePopularity, defensePerformance, counterPerformance };
+}
+
+/**
+ * Affiche les statistiques de méta pré-calculées.
+ */
+function displayMetaStats() {
+    const metaStatsContainer = document.getElementById('meta-report-section');
+    if (!metaStatsContainer) return;
+
+    const { defensePopularity, defensePerformance, counterPerformance } = metaStats;
+    if (!defensePopularity) return; // Les stats ne sont pas prêtes
+
+    let metaHtml = `<h2 class="section-title">Rapport de Méta</h2>`;
+
+    const createListHtml = (title, items, formatter) => {
+        let listHtml = `<div class="meta-section"><h3>${title}</h3><ul>`;
+        if (items.length > 0) {
+            items.forEach(item => {
+                listHtml += `<li>${formatter(item)}</li>`;
+            });
+        } else {
+            listHtml += `<li>Pas assez de données.</li>`;
+        }
+        listHtml += `</ul></div>`;
+        return listHtml;
+    };
+
+    metaHtml += createListHtml(
+        'Défenses les plus Populaires', 
+        defensePopularity,
+        item => `${item.team.name} (${item.count} attaques subies)`
+    );
+    metaHtml += createListHtml(
+        'Défenses les plus Solides', 
+        defensePerformance,
+        item => `${item.team.name} (${item.winRate}% victoires / ${item.defenseAttacks} attaques)`
+    );
+    metaHtml += createListHtml(
+        'Counters les plus Fiables', 
+        counterPerformance,
+        item => `${item.team.name} (${item.winRate}% succès / ${item.totalUses} utilisations)`
+    );
+
+    metaStatsContainer.innerHTML = `<div class="meta-report-card">${metaHtml}</div>`;
+    metaStatsContainer.style.display = 'block';
 }
 
 function displayCounterTeams(monsterIds) {
@@ -412,7 +498,14 @@ function deleteTeam(teamIdToDelete) {
 
     // 4. Rafraîchit l'affichage.
     // On simule une recherche pour la défense actuellement affichée pour rafraîchir la liste des counters.
-    const searchTerms = searchInput.value.split(' ').map(term => term.trim()).filter(Boolean);
-    const currentDefense = findTeamByMonsterNames(searchTerms);
-    if (currentDefense) displayCounterTeams(currentDefense.monsters.map(m => m.monster_id));
+    const currentSearchTerms = searchInput.value.split(' ').map(term => strNoAccent(term.trim().toLowerCase())).filter(Boolean);
+    if (currentSearchTerms.length === 3) {
+        const foundMonsters = currentSearchTerms.map(term => allMonsters.find(m => strNoAccent(m.fields.name.toLowerCase()) === term)).filter(Boolean);
+        if (foundMonsters.length === 3) {
+            displayCounterTeams(foundMonsters.map(m => m.fields.com2us_id));
+        }
+    } else {
+        // Si la recherche actuelle n'est pas une équipe de 3, on cache simplement la section des counters.
+        document.getElementById('counter-teams-section').style.display = 'none';
+    }
 }
