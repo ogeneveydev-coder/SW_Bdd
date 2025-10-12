@@ -18,12 +18,14 @@ export const drawerHandle = document.getElementById('drawer-handle');
  * Crée le HTML pour une seule carte de monstre.
  * @param {object} monsterData - Les données du type de monstre (de bestiary_data.json).
  * @param {object} [unitData=null] - Les données de l'unité spécifique du joueur (de my_bestiary.json).
- * @returns {string} Le HTML de la carte.
+ * @param {string} [type='carte'] - Le type d'élément à créer ('carte' ou 'fiche').
+ * @returns {string} Le HTML de l'élément.
  */
-export function createMonsterCard(monsterData, unitData = null) {
+export function createMonsterCard(monsterData, unitData = null, type = 'carte') {
   const { com2us_id, name, element, archetype, max_lvl_hp, max_lvl_attack, max_lvl_defense, speed, crit_rate, crit_damage, resistance, accuracy, image_filename } = monsterData.fields;
   const radialChart = createRadialBarChart(monsterData.fields);
   const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${image_filename}`;
+  const typeClass = `jarvis-${type}`; // Crée la classe 'jarvis-carte' ou 'jarvis-fiche'
 
   // Calcul des stats de méta pour ce monstre
   const meta = monsterMetaStats[com2us_id] || {};
@@ -72,7 +74,7 @@ export function createMonsterCard(monsterData, unitData = null) {
     `;
 
   return `
-    <div class="jarvis-card" data-monster-name="${name}">
+    <div class="jarvis-card ${typeClass}" data-monster-name="${name}">
       <div class="remove-btn" data-monster-name="${name}">&times;</div>
       <div class="jarvis-card-inner">
         <div class="jarvis-card-front">
@@ -177,7 +179,7 @@ export function initializeBestiaryViews() {
         const unawakenedMonster = monsterType.fields.awakens_from ? allMonsters.find(m => m.pk === monsterType.fields.awakens_from) : null;
         const unawakenedId = unawakenedMonster ? unawakenedMonster.fields.com2us_id : null;
         const ownedUnit = myMonsters.find(unit => unit.unit_master_id === monsterType.fields.com2us_id || (unawakenedId && unit.unit_master_id === unawakenedId));
-        const cardHtml = createMonsterCard(monsterType, ownedUnit || null);
+        const cardHtml = createMonsterCard(monsterType, ownedUnit || null, 'fiche'); // On génère une 'fiche' pour la modale
         showMonsterInModal(cardHtml);
       }
     }

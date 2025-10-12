@@ -136,6 +136,16 @@ button:disabled, button:disabled:hover {
   overflow: hidden; /* ESSENTIEL : Cache la partie qui dépasse (le tiroir) */
 }
 
+/* Style de base pour les cartes (résultats de recherche) */
+.jarvis-carte {
+  /* Actuellement aucun style spécifique, hérite de .jarvis-card */
+}
+
+/* Style de base pour les fiches (pop-up) */
+.jarvis-fiche {
+  /* Actuellement aucun style spécifique, hérite de .jarvis-card */
+}
+
 .jarvis-card .remove-btn {
   position: absolute;
   top: 5px;
