@@ -211,6 +211,11 @@ export function showMonsterInModal(cardHtml) {
       if (e.target.closest('.jarvis-card-front') || e.target.closest('.jarvis-card-back')) {
         card.classList.toggle('is-stats-open');
       }
+
+      // Ajout de la logique pour le bouton de fermeture de la modale
+      if (e.target.classList.contains('remove-btn')) {
+        closeModal();
+      }
     });
   }
 
