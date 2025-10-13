@@ -15,9 +15,9 @@ import {
 
 // --- GESTION DES VERSIONS ---
 const fileVersions = {
-  script: '4.4.1', // Distinction carte/fiche
-  style: '2.43', // Distinction carte/fiche
-  index: '2.17'
+  script: '3.0',
+  style: '3.0',
+  index: '3.0'
 };
 
 // --- VARIABLES GLOBALES DE L'APPLICATION ---
