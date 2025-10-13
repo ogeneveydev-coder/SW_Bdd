@@ -3,7 +3,7 @@
  * Module pour gérer la création et la manipulation de l'interface utilisateur.
  */
 
-import { allMonsters, awakenedMonsters, myMonsters, ownedMonsterIds, globalMonsterStats, monsterMetaStats, teamsData, MAX_STATS } from './main.js';
+import { allMonsters, awakenedMonsters, myMonsters, ownedMonsterIds, globalMonsterStats, monsterMetaStats, monsterSynergyStats, teamsData, MAX_STATS } from './main.js';
 
 // Centraliser les sélecteurs DOM pour la performance et la lisibilité
 export const searchInput = document.getElementById('searchInput');
@@ -50,6 +50,41 @@ export function createMonsterCard(monsterData, unitData = null, type = 'carte') 
     </div>
   `;
 
+  // Calcul et HTML pour les stats de synergie
+  const synergy = monsterSynergyStats[com2us_id] || { partners: {}, threats: {}, targets: {} };
+
+  const getTopThree = (statObject) => {
+    return Object.entries(statObject)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 3)
+      .map(([id, count]) => ({
+        monster: allMonsters.find(m => m.fields.com2us_id === parseInt(id)),
+        count
+      }));
+  };
+
+  const createSynergyHtml = (title, monsters) => {
+    let html = `<div class="synergy-section"><h5 class="synergy-title">${title}</h5>`;
+    if (monsters.length > 0) {
+      html += `<div class="synergy-monsters">`;
+      monsters.forEach(item => {
+        if (item.monster) {
+          const imgUrl = `https://swarfarm.com/static/herders/images/monsters/${item.monster.fields.image_filename}`;
+          html += `<div class="synergy-monster-item" title="${item.monster.fields.name} (${item.count} fois)"><img src="${imgUrl}" alt="${item.monster.fields.name}"></div>`;
+        }
+      });
+      html += `</div>`;
+    } else {
+      html += `<p class="no-synergy-data">Pas de données</p>`;
+    }
+    html += `</div>`;
+    return html;
+  };
+
+  const synergyHtml = createSynergyHtml('Meilleurs Partenaires', getTopThree(synergy.partners))
+                    + createSynergyHtml('Pires Ennemis', getTopThree(synergy.threats))
+                    + createSynergyHtml('Cibles Favorites', getTopThree(synergy.targets));
+
   // HTML pour les stats de base du monstre (colonne 2)
   const baseStatsHtml = `
       <h4 class="fiche-col-title">Stats de Base</h4>
@@ -94,6 +129,9 @@ export function createMonsterCard(monsterData, unitData = null, type = 'carte') 
           <div class="jarvis-fiche-col">
             ${monsterMetaHtml}
           </div>
+          <div class="jarvis-fiche-col">
+            ${synergyHtml}
+          </div>
         </div>
       </div>`;
   }
@@ -113,7 +151,7 @@ export function createMonsterCard(monsterData, unitData = null, type = 'carte') 
         </div>
         <div class="jarvis-card-back">
           <div class="jarvis-stats">
-              <div class="jarvis-name" style="margin-bottom: 10px;">${name}</div>${baseStatsHtml}${globalStatsHtml}${monsterMetaHtml}
+              <div class="jarvis-name" style="margin-bottom: 10px;">${name}</div>${baseStatsHtml}${globalStatsHtml}${monsterMetaHtml}${synergyHtml}
           </div>
         </div>
       </div>

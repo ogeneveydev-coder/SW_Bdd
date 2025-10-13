@@ -27,6 +27,7 @@ export let myMonsters = [];
 export let ownedMonsterIds = new Set();
 export let globalMonsterStats = {};
 export let monsterMetaStats = {}; // Pour les stats de présence et de winrate par monstre
+export let monsterSynergyStats = {}; // Pour les stats de partenaires, ennemis, etc.
 export let teamsData = [];
 let currentCounterView = 'counters'; // 'counters' ou 'counterOf'
 
@@ -57,6 +58,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     calculateGlobalStats();
     initializeBestiaryViews();
     calculateMonsterMetaStats(); // Calcul des nouvelles stats par monstre
+    calculateSynergyStats(); // Calcul des stats de relations
     setupEventListeners();
     // searchInput.addEventListener('input', handleAutocomplete); // On le déplace dans setupEventListeners
 
@@ -142,6 +144,68 @@ function calculateMonsterMetaStats() {
                     });
                 }
             });
+        });
+    });
+}
+
+/**
+ * Calcule les statistiques de relations (partenaires, menaces, cibles) pour chaque monstre.
+ */
+function calculateSynergyStats() {
+    // Initialisation
+    allMonsters.forEach(monster => {
+        monsterSynergyStats[monster.fields.com2us_id] = {
+            partners: {}, // { monsterId: count }
+            threats: {},  // { monsterId: count }
+            targets: {}   // { monsterId: count }
+        };
+    });
+
+    if (teamsData.length === 0) return;
+
+    // Itération sur toutes les équipes de défense
+    teamsData.forEach(defenseTeam => {
+        const defenseMonsterIds = defenseTeam.monsters.map(m => m.monster_id);
+
+        // 1. Calcul des Partenaires (Synergies)
+        for (let i = 0; i < defenseMonsterIds.length; i++) {
+            for (let j = i + 1; j < defenseMonsterIds.length; j++) {
+                const id1 = defenseMonsterIds[i];
+                const id2 = defenseMonsterIds[j];
+                if (monsterSynergyStats[id1] && monsterSynergyStats[id2]) {
+                    monsterSynergyStats[id1].partners[id2] = (monsterSynergyStats[id1].partners[id2] || 0) + 1;
+                    monsterSynergyStats[id2].partners[id1] = (monsterSynergyStats[id2].partners[id1] || 0) + 1;
+                }
+            }
+        }
+
+        // 2. Calcul des Menaces et Cibles à partir des counters
+        defenseTeam.counter.forEach(counterInfo => {
+            // On ne considère que les combats où il y a eu au moins une victoire
+            if (counterInfo.success > 0) {
+                const counterTeam = teamsData.find(t => t.team_id === counterInfo.team_id);
+                if (counterTeam) {
+                    const counterMonsterIds = counterTeam.monsters.map(m => m.monster_id);
+
+                    // Pour chaque monstre du counter, les monstres de la défense sont des "cibles"
+                    counterMonsterIds.forEach(counterMonsterId => {
+                        if (monsterSynergyStats[counterMonsterId]) {
+                            defenseMonsterIds.forEach(defenseMonsterId => {
+                                monsterSynergyStats[counterMonsterId].targets[defenseMonsterId] = (monsterSynergyStats[counterMonsterId].targets[defenseMonsterId] || 0) + 1;
+                            });
+                        }
+                    });
+
+                    // Pour chaque monstre de la défense, les monstres du counter sont des "menaces"
+                    defenseMonsterIds.forEach(defenseMonsterId => {
+                        if (monsterSynergyStats[defenseMonsterId]) {
+                            counterMonsterIds.forEach(counterMonsterId => {
+                                monsterSynergyStats[defenseMonsterId].threats[counterMonsterId] = (monsterSynergyStats[defenseMonsterId].threats[counterMonsterId] || 0) + 1;
+                            });
+                        }
+                    });
+                }
+            }
         });
     });
 }

@@ -17,6 +17,34 @@
         "is_owned": false
       }
     ],
+    "counter": [
+      {
+        "team_id": "user_1760359173178_8qvwl",
+        "success": 1,
+        "failure": 0,
+        "defense_team_id": "user_1759871780148_otb0q"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760359173178_8qvwl",
+    "name": "Tantra, Spectra, Surtr",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 10412,
+        "is_owned": false
+      },
+      {
+        "monster_id": 11512,
+        "is_owned": false
+      },
+      {
+        "monster_id": 18812,
+        "is_owned": false
+      }
+    ],
     "counter": [],
     "notes": ""
   }
