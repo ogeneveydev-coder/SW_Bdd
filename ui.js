@@ -402,6 +402,7 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
   const counterResultContainer = document.getElementById('counter-teams-result');
   
   // On utilise la même logique de recherche que findOrCreateTeam
+  // Cette logique est maintenant garantie de trouver une équipe car elle est créée en amont dans searchMonster.
   const leaderId = monsterIds[0];
   const followerIds = [monsterIds[1], monsterIds[2]].sort();
 
@@ -411,71 +412,73 @@ export function displayCounterTeams(monsterIds, teamsData, openAddCounterModalCa
     return teamFollowerIds[0] === followerIds[0] && teamFollowerIds[1] === followerIds[1];
   });
 
-  if (foundTeam) {
-    // On affiche toujours le bouton "Add Counter" si une équipe est trouvée
-    addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
-    document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModalCallback(foundTeam));
-    
-    // On génère et affiche le cadre de statistiques de la défense dans son conteneur dédié (le tiroir).
-    const defenseStatsHtml = createTeamStats(foundTeam, teamsData);
-    const defenseStatsContainer = document.getElementById('defense-stats-container');
-    defenseStatsContainer.innerHTML = defenseStatsHtml;
-    defenseStatsContainer.style.display = 'block';
-
-    // Logique pour trouver les équipes que cette défense contre
-    const teamsCounteredByThisDef = teamsData.filter(t => t.counter.some(c => c.team_id === foundTeam.team_id));
-
-    let navHtml = '';
-    if (teamsCounteredByThisDef.length > 0) {
-      navHtml = `
-        <div class="counter-view-switcher">
-          <button id="show-counters-btn" class="${currentView === 'counters' ? 'active' : ''}">Counters de cette équipe</button>
-          <button id="show-counter-of-btn" class="${currentView === 'counterOf' ? 'active' : ''}">Équipes que celle-ci contre</button>
-        </div>
-      `;
-    }
-
-    if (currentView === 'counters') {
-      if (foundTeam.counter && foundTeam.counter.length > 0) {
-        // On trie les counters par taux de succès (du plus haut au plus bas)
-        foundTeam.counter.sort((a, b) => {
-          const totalA = a.success + a.failure;
-          const rateA = totalA > 0 ? a.success / totalA : -1; // On met les équipes jamais utilisées à la fin
-          const totalB = b.success + b.failure;
-          const rateB = totalB > 0 ? b.success / totalB : -1;
-          return rateB - rateA;
-        });
-
-        const counterTeamsHtml = foundTeam.counter.map(counterInfo => {
-          const counterTeamData = teamsData.find(t => t.team_id === counterInfo.team_id);
-          return counterTeamData ? createTeamCard(counterTeamData, counterInfo) : '';
-        }).join('');
-        counterResultContainer.innerHTML = navHtml + counterTeamsHtml;
-      } else {
-        counterResultContainer.innerHTML = navHtml + `<p>Aucun counter trouvé pour cette équipe.</p>`;
-      }
-    } else {
-      // Le bouton "Add Counter" est maintenant géré en dehors de cette condition
-      const teamsHtml = teamsCounteredByThisDef.map(team => createTeamCard(team, null)).join('');
-      counterResultContainer.innerHTML = navHtml + teamsHtml;
-    }
-
-    // Ajout des listeners sur les boutons de navigation s'ils existent
-    const showCountersBtn = document.getElementById('show-counters-btn');
-    const showCounterOfBtn = document.getElementById('show-counter-of-btn');
-    if (showCountersBtn && showCounterOfBtn) {
-      showCountersBtn.addEventListener('click', () => switchViewCallback('counters'));
-      showCounterOfBtn.addEventListener('click', () => switchViewCallback('counterOf'));
-    }
-    counterSection.style.display = 'block';
-
-  } else {
+  // Si l'équipe n'est pas trouvée (ce qui ne devrait plus arriver), on nettoie.
+  if (!foundTeam) {
     addCounterContainer.innerHTML = '';
     counterResultContainer.innerHTML = '';
     document.getElementById('defense-stats-container').style.display = 'none';
     document.getElementById('meta-report-container').style.display = 'none';
     counterSection.style.display = 'none';
+    return;
   }
+
+  // --- Logique d'affichage (précédemment dans le `if (foundTeam)`) ---
+
+  // On génère et affiche le cadre de statistiques de la défense dans son conteneur dédié (le tiroir).
+  const defenseStatsHtml = createTeamStats(foundTeam, teamsData);
+  const defenseStatsContainer = document.getElementById('defense-stats-container');
+  defenseStatsContainer.innerHTML = defenseStatsHtml;
+  defenseStatsContainer.style.display = 'block';
+
+  // On affiche toujours le bouton "Add Counter".
+  addCounterContainer.innerHTML = `<button id="add-counter-btn">Add Counter</button>`;
+  document.getElementById('add-counter-btn').addEventListener('click', () => openAddCounterModalCallback(foundTeam));
+
+  // Logique pour trouver les équipes que cette défense contre
+  const teamsCounteredByThisDef = teamsData.filter(t => t.counter.some(c => c.team_id === foundTeam.team_id));
+
+  let navHtml = '';
+  if (teamsCounteredByThisDef.length > 0) {
+    navHtml = `
+      <div class="counter-view-switcher">
+        <button id="show-counters-btn" class="${currentView === 'counters' ? 'active' : ''}">Counters de cette équipe</button>
+        <button id="show-counter-of-btn" class="${currentView === 'counterOf' ? 'active' : ''}">Équipes que celle-ci contre</button>
+      </div>
+    `;
+  }
+
+  if (currentView === 'counters') {
+    if (foundTeam.counter && foundTeam.counter.length > 0) {
+      // On trie les counters par taux de succès (du plus haut au plus bas)
+      foundTeam.counter.sort((a, b) => {
+        const totalA = a.success + a.failure;
+        const rateA = totalA > 0 ? a.success / totalA : -1; // On met les équipes jamais utilisées à la fin
+        const totalB = b.success + b.failure;
+        const rateB = totalB > 0 ? b.success / totalB : -1;
+        return rateB - rateA;
+      });
+
+      const counterTeamsHtml = foundTeam.counter.map(counterInfo => {
+        const counterTeamData = teamsData.find(t => t.team_id === counterInfo.team_id);
+        return counterTeamData ? createTeamCard(counterTeamData, counterInfo) : '';
+      }).join('');
+      counterResultContainer.innerHTML = navHtml + counterTeamsHtml;
+    } else {
+      counterResultContainer.innerHTML = navHtml + `<p>Aucun counter trouvé pour cette équipe.</p>`;
+    }
+  } else {
+    const teamsHtml = teamsCounteredByThisDef.map(team => createTeamCard(team, null)).join('');
+    counterResultContainer.innerHTML = navHtml + teamsHtml;
+  }
+
+  // Ajout des listeners sur les boutons de navigation s'ils existent
+  const showCountersBtn = document.getElementById('show-counters-btn');
+  const showCounterOfBtn = document.getElementById('show-counter-of-btn');
+  if (showCountersBtn && showCounterOfBtn) {
+    showCountersBtn.addEventListener('click', () => switchViewCallback('counters'));
+    showCounterOfBtn.addEventListener('click', () => switchViewCallback('counterOf'));
+  }
+  counterSection.style.display = 'block';
 }
 
 /**

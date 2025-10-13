@@ -364,12 +364,14 @@ function searchMonster(unitId = null) {
   const counterResultContainer = document.getElementById('counter-teams-result');
 
   if (foundMonsters.length === 3) {
+    // On trouve ou on crée l'équipe de défense dès le début.
+    const defenseTeam = findOrCreateTeam(foundMonsters);
+
     currentCounterView = 'counters'; // Réinitialise la vue par défaut à chaque nouvelle recherche
     // On affiche les cartes individuelles des monstres recherchés.
     const cardsHtml = foundMonsters.map(monster => createMonsterCard(monster)).join('');
     showResult(`<div class="results-container">${cardsHtml}</div>`);
 
-    // On affiche les counters existants pour cette équipe
     displayCounterTeams(foundMonsters.map(m => m.fields.com2us_id));
     displayMetaStats(); // Affiche le rapport de méta dans le tiroir
     counterSection.style.display = 'block';

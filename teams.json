@@ -17,31 +17,394 @@
         "is_owned": false
       }
     ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760387722263_4hixi",
+    "name": "Trinity, Triton, Trevor",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 13815,
+        "is_owned": false
+      },
+      {
+        "monster_id": 19713,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20012,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760390230860_o7l5y",
+    "name": "Woosa, Diana, Nora",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 18611,
+        "is_owned": false
+      },
+      {
+        "monster_id": 21513,
+        "is_owned": false
+      },
+      {
+        "monster_id": 25612,
+        "is_owned": false
+      }
+    ],
     "counter": [
       {
-        "team_id": "user_1760359173178_8qvwl",
+        "team_id": "user_1760390277336_y5pxk",
         "success": 1,
         "failure": 0,
-        "defense_team_id": "user_1759871780148_otb0q"
+        "defense_team_id": "user_1760390230860_o7l5y"
+      },
+      {
+        "team_id": "user_1760390867196_y2kte",
+        "success": 0,
+        "failure": 1,
+        "defense_team_id": "user_1760390230860_o7l5y"
       }
     ],
     "notes": ""
   },
   {
-    "team_id": "user_1760359173178_8qvwl",
-    "name": "Tantra, Spectra, Surtr",
+    "team_id": "user_1760390277336_y5pxk",
+    "name": "Galleon, Tiana, Zaiross",
     "category": "User-Generated",
     "monsters": [
       {
-        "monster_id": 10412,
+        "monster_id": 19411,
         "is_owned": false
       },
       {
-        "monster_id": 11512,
+        "monster_id": 18913,
         "is_owned": false
       },
       {
-        "monster_id": 18812,
+        "monster_id": 14412,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760390559707_fv7g7",
+    "name": "Galleon, Garo, Skogul",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 19411,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13512,
+        "is_owned": false
+      },
+      {
+        "monster_id": 22413,
+        "is_owned": false
+      }
+    ],
+    "counter": [
+      {
+        "team_id": "user_1760390670530_rclup",
+        "success": 1,
+        "failure": 0,
+        "defense_team_id": "user_1760390559707_fv7g7"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760390670530_rclup",
+    "name": "Malaka, Sian, Fran",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 18111,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13411,
+        "is_owned": false
+      },
+      {
+        "monster_id": 19114,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760390712371_0ggzt",
+    "name": "Ritesh, Velajuel, Camilla",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 17413,
+        "is_owned": false
+      },
+      {
+        "monster_id": 17012,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13811,
+        "is_owned": false
+      }
+    ],
+    "counter": [
+      {
+        "team_id": "user_1760390806695_ndj5k",
+        "success": 1,
+        "failure": 0,
+        "defense_team_id": "user_1760390712371_0ggzt"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760390806695_ndj5k",
+    "name": "Bulldozer, Imesety, Copper",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 20832,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20613,
+        "is_owned": false
+      },
+      {
+        "monster_id": 16533,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760390867196_y2kte",
+    "name": "Baleygr, Qebehsenuef, Katarina",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 22612,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20611,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13813,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760391302584_840yq",
+    "name": "Carcano, Chilling, Seren",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 22712,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20711,
+        "is_owned": false
+      },
+      {
+        "monster_id": 12115,
+        "is_owned": false
+      }
+    ],
+    "counter": [
+      {
+        "team_id": "user_1760391368035_dxwlz",
+        "success": 1,
+        "failure": 0,
+        "defense_team_id": "user_1760391302584_840yq"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760391368035_dxwlz",
+    "name": "Malite, Vigor, Tetra",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 23313,
+        "is_owned": false
+      },
+      {
+        "monster_id": 14031,
+        "is_owned": false
+      },
+      {
+        "monster_id": 19611,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760391420991_v022o",
+    "name": "Carcano, Eshir, Triana",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 22712,
+        "is_owned": false
+      },
+      {
+        "monster_id": 14014,
+        "is_owned": false
+      },
+      {
+        "monster_id": 21413,
+        "is_owned": false
+      }
+    ],
+    "counter": [
+      {
+        "team_id": "user_1760391475010_nqlzf",
+        "success": 1,
+        "failure": 0,
+        "defense_team_id": "user_1760391420991_v022o"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760391475010_nqlzf",
+    "name": "Galleon, Bernard, Julie",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 19411,
+        "is_owned": false
+      },
+      {
+        "monster_id": 11533,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13911,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760391762908_jshw2",
+    "name": "Seara, Orion, Masha",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 15713,
+        "is_owned": false
+      },
+      {
+        "monster_id": 18011,
+        "is_owned": false
+      },
+      {
+        "monster_id": 23512,
+        "is_owned": false
+      }
+    ],
+    "counter": [
+      {
+        "team_id": "user_1760391788892_c1erm",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760391762908_jshw2"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760391788892_c1erm",
+    "name": "Bolverk, Amelia, Feng Yan",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 22611,
+        "is_owned": false
+      },
+      {
+        "monster_id": 21511,
+        "is_owned": false
+      },
+      {
+        "monster_id": 21213,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760391824768_ba90q",
+    "name": "Tesarion, Minato, Riley",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 19212,
+        "is_owned": false
+      },
+      {
+        "monster_id": 25911,
+        "is_owned": false
+      },
+      {
+        "monster_id": 25613,
+        "is_owned": false
+      }
+    ],
+    "counter": [
+      {
+        "team_id": "user_1760391852635_3vpm8",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760391824768_ba90q"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760391852635_3vpm8",
+    "name": "Galleon, Tiana, Poseidon",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 19411,
+        "is_owned": false
+      },
+      {
+        "monster_id": 18913,
+        "is_owned": false
+      },
+      {
+        "monster_id": 19711,
         "is_owned": false
       }
     ],
