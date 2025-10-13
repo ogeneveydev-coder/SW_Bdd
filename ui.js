@@ -631,35 +631,53 @@ export function openAddCounterModal(defenseMonsters, onConfirm, strNoAccent) {
   const confirmButton = modal.querySelector('#confirm-add-counter');
   let selectedCounterMonsters = [];
 
-  counterSearchInput.addEventListener('input', () => {
-    const query = counterSearchInput.value.trim().toLowerCase();
+  const handleCounterInput = () => {
+    const query = counterSearchInput.value;
+    const words = query.split(' ').filter(w => w.length > 0);
+    const currentWord = words.length > 0 ? words[words.length - 1] : '';
+
+    // --- Logique d'ajout de monstre ---
+    // Si l'utilisateur a tapé un nom complet et appuyé sur espace
+    if (query.endsWith(' ') && currentWord.length > 0) {
+      const monsterName = strNoAccent(currentWord.toLowerCase());
+      const monsterInfo = allMonsters.find(m => strNoAccent(m.fields.name.toLowerCase()) === monsterName);
+      const isAlreadySelected = selectedCounterMonsters.some(m => m.fields.com2us_id === monsterInfo?.fields.com2us_id);
+
+      if (monsterInfo && !isAlreadySelected && selectedCounterMonsters.length < 3) {
+        selectedCounterMonsters.push(monsterInfo);
+        updateCounterPreview();
+        // On met à jour le champ de recherche pour qu'il contienne les noms des monstres déjà sélectionnés
+        counterSearchInput.value = selectedCounterMonsters.map(m => m.fields.name).join(' ') + ' ';
+        counterSearchInput.focus();
+      }
+    }
+
+    // --- Logique d'autocomplétion (sur le mot en cours) ---
+    const normalizedCurrentWord = strNoAccent(currentWord.toLowerCase());
     const suggestionsContainer = document.getElementById('counter-suggestions-container');
-    if (query.length < 2) {
+    if (normalizedCurrentWord.length < 2) {
       suggestionsContainer.innerHTML = '';
       return;
     }
     const selectedIds = new Set(selectedCounterMonsters.map(m => m.fields.com2us_id));
     const suggestions = allMonsters
-      .filter(m => m.fields.is_awakened && !selectedIds.has(m.fields.com2us_id) && strNoAccent(m.fields.name.toLowerCase()).includes(strNoAccent(query)))
+      .filter(m => m.fields.is_awakened && !selectedIds.has(m.fields.com2us_id) && strNoAccent(m.fields.name.toLowerCase()).startsWith(normalizedCurrentWord))
       .slice(0, 5);
 
     suggestionsContainer.innerHTML = suggestions.map(s => 
       `<div class="suggestion-item" data-monster-id="${s.fields.com2us_id}">${s.fields.name}</div>`
     ).join('');
-  });
+  };
+
+  counterSearchInput.addEventListener('input', handleCounterInput);
 
   modal.querySelector('#counter-suggestions-container').addEventListener('click', e => {
     if (e.target.classList.contains('suggestion-item') && selectedCounterMonsters.length < 3) { 
-      const monsterId = parseInt(e.target.dataset.monsterId, 10);
-      const monsterInfo = allMonsters.find(m => m.fields.com2us_id === monsterId);
-      const isAlreadySelected = selectedCounterMonsters.some(m => m.fields.com2us_id === monsterId);
-      if (monsterInfo && !isAlreadySelected) {
-        selectedCounterMonsters.push(monsterInfo);
-        updateCounterPreview();
-        counterSearchInput.value = '';
-        document.getElementById('counter-suggestions-container').innerHTML = '';
-        counterSearchInput.focus();
-      }
+      const monsterName = e.target.textContent;
+      const words = counterSearchInput.value.split(' ');
+      const baseQuery = words.slice(0, -1).join(' ');
+      counterSearchInput.value = (baseQuery ? baseQuery + ' ' : '') + monsterName + ' ';
+      handleCounterInput(); // On déclenche la logique de traitement
     }
   });
 
