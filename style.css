@@ -136,14 +136,11 @@ button:disabled, button:disabled:hover {
   overflow: hidden; /* ESSENTIEL : Cache la partie qui dépasse (le tiroir) */
 }
 
-/* Style de base pour les cartes (résultats de recherche) */
-.jarvis-carte {
-  /* Actuellement aucun style spécifique, hérite de .jarvis-card */
-}
-
-/* Style de base pour les fiches (pop-up) */
+/* La fiche est plus large et n'a pas de curseur "pointeur" */
 .jarvis-fiche {
-  /* Actuellement aucun style spécifique, hérite de .jarvis-card */
+  width: 800px; /* Largeur augmentée pour 3 colonnes */
+  height: 400px; /* Hauteur légèrement augmentée */
+  cursor: default;
 }
 
 .jarvis-card .remove-btn {
@@ -211,31 +208,6 @@ button:disabled, button:disabled:hover {
   border-left: 1px solid var(--jarvis-blue);
 }
 
-.jarvis-corner {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  border-color: var(--jarvis-blue);
-  border-style: solid; /* Style commun pour tous les coins */
-  display: none; /* Cache les coins */
-}
-.jarvis-corner.top-left { 
-  top: -2px; left: -2px; 
-  border-top-width: 2px; border-left-width: 2px; 
-}
-.jarvis-corner.top-right { 
-  top: -2px; right: -2px; 
-  border-top-width: 2px; border-right-width: 2px; 
-}
-.jarvis-corner.bottom-left { 
-  bottom: -2px; left: -2px; 
-  border-bottom-width: 2px; border-left-width: 2px; 
-}
-.jarvis-corner.bottom-right { 
-  bottom: -2px; right: -2px; 
-  border-bottom-width: 2px; border-right-width: 2px; 
-}
-
 .jarvis-content {
   display: flex;
   flex-direction: column;
@@ -244,9 +216,43 @@ button:disabled, button:disabled:hover {
   height: 100%;
 }
 
+/* --- Styles spécifiques pour la Fiche --- */
+.jarvis-fiche {
+  background: var(--jarvis-bg);
+  box-shadow: 0 0 15px var(--jarvis-blue), inset 0 0 10px rgba(0, 184, 255, 0.5);
+  border: 1px solid var(--jarvis-blue); /* On ajoute une bordure pour compenser la perte des coins */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.jarvis-fiche-content {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+}
+.jarvis-fiche-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: flex-start; /* Aligne le contenu en haut */
+  flex: 1; /* Chaque colonne prend une part égale de l'espace */
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+/* Ajout d'une bordure pour séparer les colonnes */
+.jarvis-fiche-col:not(:last-child) {
+  border-right: 1px solid rgba(0, 184, 255, 0.2);
+}
+/* La première colonne est un peu plus large pour l'image et le radar */
+.jarvis-fiche-col:first-child {
+  flex-basis: 220px;
+  flex-shrink: 0;
+}
+
 .jarvis-image-container {
   position: relative;
-  width: 160px;
+  width: 140px; /* Taille légèrement réduite pour éviter le chevauchement */
   height: 160px;
   overflow: hidden;
   display: grid;
@@ -291,53 +297,38 @@ button:disabled, button:disabled:hover {
   color: var(--jarvis-blue);
 }
 
+/* Style pour la ligne Element/Archetype */
+.fiche-sub-info {
+  font-size: 0.8em;
+  margin-top: 10px;
+}
+
+/* Titre pour les colonnes de la fiche */
+.fiche-col-title {
+  color: var(--jarvis-blue);
+  font-size: 1em;
+  margin: 0 0 15px 0;
+  text-transform: uppercase;
+}
 /* --- Style de la barre de défilement pour un look "Jarvis" --- */
 /* Appliqué au tiroir de stats ET au tiroir du bestiaire */
-.jarvis-stats::-webkit-scrollbar, #monster-list-container::-webkit-scrollbar {
+.jarvis-card-back::-webkit-scrollbar, #monster-list-container::-webkit-scrollbar {
   width: 6px;
 }
 
-.jarvis-stats::-webkit-scrollbar-track {
+.jarvis-card-back::-webkit-scrollbar-track, .jarvis-fiche-right::-webkit-scrollbar-track, #monster-list-container::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.jarvis-stats::-webkit-scrollbar-thumb {
+.jarvis-card-back::-webkit-scrollbar-thumb, .jarvis-fiche-right::-webkit-scrollbar-thumb, #monster-list-container::-webkit-scrollbar-thumb {
   background-color: var(--jarvis-blue);
   border-radius: 3px;
 }
 
-.jarvis-stats::-webkit-scrollbar-thumb:hover {
+.jarvis-card-back::-webkit-scrollbar-thumb:hover, .jarvis-fiche-right::-webkit-scrollbar-thumb:hover, #monster-list-container::-webkit-scrollbar-thumb:hover {
   background-color: #008fcc;
 }
 
-
-/* --- Styles pour les stats comparatives --- */
-.comparative-stats {
-  border-top: 1px solid rgba(0, 184, 255, 0.3);
-  margin-top: 15px;
-  padding-top: 10px;
-  font-size: 0.7em;
-}
-
-.comparative-stats p {
-  margin: 5px 0;
-  color: #ccc; /* Couleur un peu moins vive pour les valeurs min/max */
-}
-.comparative-stats span {
-  color: var(--jarvis-blue); /* La valeur moyenne ressort */
-}
-
-/* CORRECTION : Le sélecteur est maintenant plus général pour s'appliquer correctement */
-.rune-bonus {
-  color: #4caf50; /* Vert pour les stats bonus */
-  font-weight: bold;
-}
-
-strong {
-  color: #fff;
-  text-shadow: 0 0 3px var(--jarvis-blue);
-  margin-left: 8px;
-}
 
 .stats-separator {
   border: none;
@@ -713,36 +704,21 @@ strong {
   color: #ccc;
 }
 
-.team-stats-container {
+.team-counter-actions {
   display: flex;
-  justify-content: space-around;
-  gap: 20px;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.team-counter-actions button {
+  padding: 4px 8px;
+  font-size: 0.8em;
+}
+
+.team-notes {
   border-top: 1px solid rgba(0, 184, 255, 0.2);
   padding-top: 10px;
   margin-top: 10px;
-}
-
-.team-stats-section {
-  text-align: center;
-}
-
-.team-stats-section .stats-title {
-  color: var(--jarvis-blue);
-  font-size: 0.9em;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.team-stats-section p {
-  margin: 4px 0;
-  font-size: 0.8em;
-  color: #ccc;
-}
-
-.team-stats-section p span {
-  color: white;
-  font-weight: bold;
 }
 
 .team-notes p {
@@ -865,6 +841,38 @@ strong {
   box-shadow: 0 0 10px rgba(0, 184, 255, 0.3);
 }
 
+.team-stats-container {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+  border-top: 1px solid rgba(0, 184, 255, 0.2);
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.team-stats-section {
+  text-align: center;
+}
+
+.team-stats-section .stats-title {
+  color: var(--jarvis-blue);
+  font-size: 0.9em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.team-stats-section p {
+  margin: 4px 0;
+  font-size: 0.8em;
+  color: #ccc;
+}
+
+.team-stats-section p span {
+  color: white;
+  font-weight: bold;
+}
+
 /* Nouveau style pour la carte du rapport de méta */
 /* On le fusionne avec defense-stats-card car ils sont similaires */
 .meta-report-card {
@@ -919,4 +927,31 @@ strong {
   background-color: var(--jarvis-blue);
   color: var(--jarvis-bg-solid);
   box-shadow: 0 0 15px var(--jarvis-blue);
+}
+
+/* --- Styles pour les onglets principaux (Bestiaire / Mes Monstres) --- */
+.main-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.main-tab {
+  opacity: 0.7;
+}
+
+.main-tab.active {
+  opacity: 1;
+  background-color: var(--jarvis-blue);
+  color: var(--jarvis-bg-solid);
+  box-shadow: 0 0 20px var(--jarvis-blue);
+}
+
+.view-container {
+  display: none; /* Caché par défaut */
+}
+
+.view-container.active {
+  display: block; /* Affiché si actif */
 }

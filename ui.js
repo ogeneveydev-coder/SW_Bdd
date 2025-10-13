@@ -50,38 +50,59 @@ export function createMonsterCard(monsterData, unitData = null, type = 'carte') 
     </div>
   `;
 
-  const statsDisplayHtml = `
-      <p><span>Element:</span> ${element}</p>
-      <p><span>Archetype:</span> ${archetype}</p>
+  // HTML pour les stats de base du monstre (colonne 2)
+  const baseStatsHtml = `
+      <h4 class="fiche-col-title">Stats de Base</h4>
       <p><span>HP:</span> ${max_lvl_hp} | <span>ATK:</span> ${max_lvl_attack}</p>
       <p><span>DEF:</span> ${max_lvl_defense} | <span>SPD:</span> ${speed}</p>
       <p><span>CR:</span> ${crit_rate}% | <span>CD:</span> ${crit_damage}%</p>
       <p><span>RES:</span> ${resistance}% | <span>ACC:</span> ${accuracy}%</p>
-      <div class="rune-stats">
-        <p class="rune-stats-title">Stats Moyennes (Tous les monstres)</p>
-        <div class="rune-stats-grid">
-          <p><span>HP:</span> ${globalMonsterStats.hp.avg}</p>
-          <p><span>ATK:</span> ${globalMonsterStats.atk.avg}</p>
-          <p><span>DEF:</span> ${globalMonsterStats.def.avg}</p>
-          <p><span>SPD:</span> ${globalMonsterStats.spd.avg}</p>
-          <p><span>CR:</span> ${globalMonsterStats.cr.avg}%</p>
-          <p><span>CD:</span> ${globalMonsterStats.cd.avg}%</p>
-          <p><span>RES:</span> ${globalMonsterStats.res.avg}%</p>
-          <p><span>ACC:</span> ${globalMonsterStats.acc.avg}%</p>
-        </div>
+  `;
+
+  // HTML pour les stats globales et méta (colonne 3)
+  const globalStatsHtml = `
+    <div class="rune-stats">
+      <p class="rune-stats-title">Stats Moyennes (Tous les monstres)</p>
+      <div class="rune-stats-grid">
+        <p><span>HP:</span> ${globalMonsterStats.hp.avg}</p>
+        <p><span>ATK:</span> ${globalMonsterStats.atk.avg}</p>
+        <p><span>DEF:</span> ${globalMonsterStats.def.avg}</p>
+        <p><span>SPD:</span> ${globalMonsterStats.spd.avg}</p>
+        <p><span>CR:</span> ${globalMonsterStats.cr.avg}%</p>
+        <p><span>CD:</span> ${globalMonsterStats.cd.avg}%</p>
+        <p><span>RES:</span> ${globalMonsterStats.res.avg}%</p>
+        <p><span>ACC:</span> ${globalMonsterStats.acc.avg}%</p>
       </div>
-      ${monsterMetaHtml}
-    `;
+    </div>
+  `;
+
+  // Si c'est une 'fiche', on retourne une structure unifiée non-cliquable.
+  if (type === 'fiche') {
+    return `
+      <div class="jarvis-card ${typeClass}" data-monster-name="${name}">
+        <div class="remove-btn" data-monster-name="${name}">&times;</div>
+        <div class="jarvis-fiche-content">
+          <div class="jarvis-fiche-col">
+            <div class="jarvis-image-container">
+                <img src="${imgUrl}" alt="${name}">
+            </div>
+            ${radialChart}
+            <div class="jarvis-name" style="margin-top: 5px;">${name}</div>
+            <p class="fiche-sub-info"><span>Element:</span> ${element} | <span>Archetype:</span> ${archetype}</p>
+          </div>
+          <div class="jarvis-fiche-col jarvis-stats">${baseStatsHtml}${globalStatsHtml}</div>
+          <div class="jarvis-fiche-col">
+            ${monsterMetaHtml}
+          </div>
+        </div>
+      </div>`;
+  }
 
   return `
     <div class="jarvis-card ${typeClass}" data-monster-name="${name}">
       <div class="remove-btn" data-monster-name="${name}">&times;</div>
       <div class="jarvis-card-inner">
         <div class="jarvis-card-front">
-          <div class="jarvis-corner top-left"></div>
-          <div class="jarvis-corner top-right"></div>
-          <div class="jarvis-corner bottom-left"></div>
-          <div class="jarvis-corner bottom-right"></div>
           <div class="jarvis-content">
               <div class="jarvis-image-container">
                   <img src="${imgUrl}" alt="${name}">
@@ -91,13 +112,8 @@ export function createMonsterCard(monsterData, unitData = null, type = 'carte') 
           </div>
         </div>
         <div class="jarvis-card-back">
-          <div class="jarvis-corner top-left"></div>
-          <div class="jarvis-corner top-right"></div>
-          <div class="jarvis-corner bottom-left"></div>
-          <div class="jarvis-corner bottom-right"></div>
           <div class="jarvis-stats">
-              <div class="jarvis-name" style="margin-bottom: 10px;">${name}</div>
-              ${statsDisplayHtml}
+              <div class="jarvis-name" style="margin-bottom: 10px;">${name}</div>${baseStatsHtml}${globalStatsHtml}${monsterMetaHtml}
           </div>
         </div>
       </div>
@@ -207,9 +223,11 @@ export function showMonsterInModal(cardHtml) {
 
     modal.addEventListener('click', (e) => {
       const card = e.target.closest('.jarvis-card');
-      if (!card) return;
-      if (e.target.closest('.jarvis-card-front') || e.target.closest('.jarvis-card-back')) {
-        card.classList.toggle('is-stats-open');
+      // On ne retourne que les 'cartes', pas les 'fiches'
+      if (card && card.classList.contains('jarvis-carte')) {
+        if (e.target.closest('.jarvis-card-front') || e.target.closest('.jarvis-card-back')) {
+          card.classList.toggle('is-stats-open');
+        }
       }
 
       // Ajout de la logique pour le bouton de fermeture de la modale
