@@ -410,5 +410,628 @@
     ],
     "counter": [],
     "notes": ""
+  },
+  {
+    "team_id": "user_1760393204581_6xeoc",
+    "name": "Destiny, Pater, Mi Ying",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 26115,
+        "is_owned": false
+      },
+      {
+        "monster_id": 22215,
+        "is_owned": false
+      },
+      {
+        "monster_id": 21215,
+        "is_owned": false
+      }
+    ],
+    "counter": [
+      {
+        "team_id": "user_1760393233750_66lvn",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760393204581_6xeoc"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760393233750_66lvn",
+    "name": "Rina, Camilla, Belial",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 15311,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13811,
+        "is_owned": false
+      },
+      {
+        "monster_id": 23111,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760432002723_o3am7",
+    "name": "Bastet, Perna, Leona",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 20511,
+        "is_owned": false
+      },
+      {
+        "monster_id": 14512,
+        "is_owned": false
+      },
+      {
+        "monster_id": 21815,
+        "is_owned": false
+      }
+    ],
+    "counter": [
+      {
+        "team_id": "user_1760432026043_tl2r5",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760432002723_o3am7"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760432026043_tl2r5",
+    "name": "Carcano, Teon, Lushen",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 22712,
+        "is_owned": false
+      },
+      {
+        "monster_id": 10914,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13413,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760432423008_mwlxb",
+    "name": "Bolverk, Rakan, Aaliyah",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 22611,
+        "is_owned": false
+      },
+      {
+        "monster_id": 14612,
+        "is_owned": false
+      },
+      {
+        "monster_id": 25611,
+        "is_owned": false
+      }
+    ],
+    "counter": [
+      {
+        "team_id": "user_1760432480628_8zhuq",
+        "success": 1,
+        "failure": 0,
+        "defense_team_id": "user_1760432423008_mwlxb"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760432480628_8zhuq",
+    "name": "Ashour, Praha, Ritesh",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 28012,
+        "is_owned": false
+      },
+      {
+        "monster_id": 15711,
+        "is_owned": false
+      },
+      {
+        "monster_id": 17413,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760432517073_jicpg",
+    "name": "Carcano, Betta, Fuuki",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 22712,
+        "is_owned": false
+      },
+      {
+        "monster_id": 19615,
+        "is_owned": false
+      },
+      {
+        "monster_id": 25113,
+        "is_owned": false
+      }
+    ],
+    "counter": [
+      {
+        "team_id": "user_1760433199933_bo7vu",
+        "success": 6,
+        "failure": 2,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760432636955_j0431",
+        "success": 4,
+        "failure": 3,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760432683310_y48bz",
+        "success": 1,
+        "failure": 1,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760391852635_3vpm8",
+        "success": 1,
+        "failure": 1,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760432769403_ukm8w",
+        "success": 2,
+        "failure": 3,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760433291297_q5aye",
+        "success": 0,
+        "failure": 1,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760432725886_d9blq",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760432572970_7grpk",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760433336856_b9iew",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760433357215_ji8qr",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760433379589_xvqp5",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760433448286_6zeky",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760433469662_u6ofn",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760433532969_m1qyx",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760432517073_jicpg"
+      },
+      {
+        "team_id": "user_1760433574992_vp4cj",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760432517073_jicpg"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760432572970_7grpk",
+    "name": "Thrain, Sath, Triana",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 16015,
+        "is_owned": false
+      },
+      {
+        "monster_id": 16012,
+        "is_owned": false
+      },
+      {
+        "monster_id": 21413,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760432636955_j0431",
+    "name": "Eshir, Kahli, Skogul",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 14014,
+        "is_owned": false
+      },
+      {
+        "monster_id": 12012,
+        "is_owned": false
+      },
+      {
+        "monster_id": 22413,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760432683310_y48bz",
+    "name": "Carcano, Imesety, Bulldozer",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 22712,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20613,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20812,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760432725886_d9blq",
+    "name": "Kunite, Lulu and Friends, Windy",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 23312,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13231,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20713,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760432769403_ukm8w",
+    "name": "Icaru, Raoq, Verdehile",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 11011,
+        "is_owned": false
+      },
+      {
+        "monster_id": 11012,
+        "is_owned": false
+      },
+      {
+        "monster_id": 14712,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760433199933_bo7vu",
+    "name": "Garo, Raoq, Verdehile",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 13512,
+        "is_owned": false
+      },
+      {
+        "monster_id": 11012,
+        "is_owned": false
+      },
+      {
+        "monster_id": 14712,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760433291297_q5aye",
+    "name": "Malite, Lulu and Friends, Windy",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 23313,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13231,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20713,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760433336856_b9iew",
+    "name": "Carcano, Lulu and Friends, Kaki",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 22712,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13231,
+        "is_owned": false
+      },
+      {
+        "monster_id": 25112,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760433357215_ji8qr",
+    "name": "Fran, Thrain, Sath",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 19114,
+        "is_owned": false
+      },
+      {
+        "monster_id": 16015,
+        "is_owned": false
+      },
+      {
+        "monster_id": 16012,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760433379589_xvqp5",
+    "name": "Carcano, Lulu and Friends, Windy",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 22712,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13231,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20713,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760433448286_6zeky",
+    "name": "Vigor, Kaki, Tractor",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 14011,
+        "is_owned": false
+      },
+      {
+        "monster_id": 25112,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20811,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760433469662_u6ofn",
+    "name": "Kahli, Eshir, Skogul",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 12012,
+        "is_owned": false
+      },
+      {
+        "monster_id": 14014,
+        "is_owned": false
+      },
+      {
+        "monster_id": 22413,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760433532969_m1qyx",
+    "name": "Kahli, Lulu and Friends, Triana",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 12012,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13231,
+        "is_owned": false
+      },
+      {
+        "monster_id": 21413,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760433574992_vp4cj",
+    "name": "Tractor, Windy, Lulu and Friends",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 20811,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20713,
+        "is_owned": false
+      },
+      {
+        "monster_id": 13231,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760435671837_5li8m",
+    "name": "Carcano, Betta, Iunu",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 22712,
+        "is_owned": false
+      },
+      {
+        "monster_id": 19615,
+        "is_owned": false
+      },
+      {
+        "monster_id": 20413,
+        "is_owned": false
+      }
+    ],
+    "counter": [
+      {
+        "team_id": "user_1760433199933_bo7vu",
+        "success": 0,
+        "failure": 0,
+        "defense_team_id": "user_1760435671837_5li8m"
+      }
+    ],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760445022884_t8zfu",
+    "name": "Raoq, Ralph, Ramagos",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 11012,
+        "is_owned": false
+      },
+      {
+        "monster_id": 10213,
+        "is_owned": false
+      },
+      {
+        "monster_id": 10713,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
+  },
+  {
+    "team_id": "user_1760447940549_th1no",
+    "name": "Tesarion, Teon, Teshar",
+    "category": "User-Generated",
+    "monsters": [
+      {
+        "monster_id": 19212,
+        "is_owned": false
+      },
+      {
+        "monster_id": 10914,
+        "is_owned": false
+      },
+      {
+        "monster_id": 14513,
+        "is_owned": false
+      }
+    ],
+    "counter": [],
+    "notes": ""
   }
 ]
